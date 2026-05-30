@@ -90,6 +90,14 @@
       "strict": false
     },
     {
+      "name": "paper-obsidian-review",
+      "skills": [
+        "./"
+      ],
+      "source": "./paper-obsidian-review",
+      "strict": false
+    },
+    {
       "name": "shanghai-high-school-score-report",
       "skills": [
         "./"

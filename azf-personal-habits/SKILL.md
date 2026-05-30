@@ -22,6 +22,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - At confirmed success points, remind the user to create a Git tag.
 - If a change goes wrong, prefer safe rollback commands such as `git restore --source=<commit> -- <file>` or `git revert <commit>`; avoid destructive reset unless the user explicitly asks.
 - Maintain or update a progress handoff file for multi-step projects so a new chat/model can resume quickly.
+- When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
 
 ## Markdown Document Habit
 
