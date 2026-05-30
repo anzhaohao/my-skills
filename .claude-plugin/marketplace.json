@@ -18,6 +18,15 @@
       "strict": false
     },
     {
+      "description": "An Zhaofeng's Obsidian project-record workflow. Use when Codex needs to create, evaluate, reorganize, or maintain Obsidian notes for a new or ongoing project, especially project folders under 01-Project, research/debugging workflows, experiment records, material/status images, hardware/software notes, progress handoff notes, or requests such as \"帮我记录这个项目\", \"整理项目笔记\", \"建立主笔记\", \"根据图片更新实验记录\", \"维护工作流\", \"新项目也按这个方式记录\".",
+      "name": "azf-obsidian-workflow",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-obsidian-workflow",
+      "strict": false
+    },
+    {
       "description": "An Zhaofeng's global personal working habits for any intelligent agent. Use at the start of tasks for An Zhaofeng, especially programming, writing Markdown documents, project planning, debugging, research workflows, long-running handoffs, Git/GitHub version control, rollback-sensitive changes, or any task where personal preferences affect execution. Prioritize these habits: proactive Git branch/commit/push/tag/rollback reminders during coding, progress handoff files for multi-step projects, concise checkpointing, and no duplicate title inside Markdown document body content when creating .md files.",
       "name": "azf-personal-habits",
       "skills": [

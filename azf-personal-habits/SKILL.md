@@ -22,7 +22,19 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - At confirmed success points, remind the user to create a Git tag.
 - If a change goes wrong, prefer safe rollback commands such as `git restore --source=<commit> -- <file>` or `git revert <commit>`; avoid destructive reset unless the user explicitly asks.
 - Maintain or update a progress handoff file for multi-step projects so a new chat/model can resume quickly.
+- Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to a two-level Desktop backup structure: create or reuse `Desktop\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that second-level folder. This keeps the Desktop clean while making each rollback point easy to find.
+- When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
 - When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
+
+## Backup Habit
+
+When An Zhaofeng asks for a backup but does not name a location:
+
+1. Use `Desktop\Codex备份` as the default top-level backup folder.
+2. Create one task-specific second-level folder named with timestamp and purpose, for example `20260530_190000_FrogTrace笔记整理前备份`.
+3. Put all files for that rollback point inside this second-level folder, preserving useful directory structure when possible.
+4. Tell An Zhaofeng the exact backup path before making edits.
+5. Avoid scattering backup files directly on the Desktop.
 
 ## Markdown Document Habit
 

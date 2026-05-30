@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF Obsidian Workflow"
+  short_description: "为安钊锋的新项目建立和维护 Obsidian 工作流记录。"
+  default_prompt: "帮我按 AZF Obsidian 工作流整理这个项目的主笔记、进度、实验记录和补充笔记。"
