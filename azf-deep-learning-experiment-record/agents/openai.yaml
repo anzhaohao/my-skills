@@ -1,0 +1,4 @@
+interface:
+  display_name: "深度学习实验记录填入"
+  short_description: "从训练归档自动整理并填入深度学习实验记录和Obsidian笔记"
+  default_prompt: "Use $azf-deep-learning-experiment-record to fill a deep-learning experiment note from archived configs, logs, metrics, and figures."

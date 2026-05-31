@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF 服务器部署"
+  short_description: "记录安钊锋的 Docker、自托管服务和服务器部署目录规范。"
+  default_prompt: "按我的服务器部署规范，把这个 Docker 服务部署到 /anzhaofeng 下的独立子目录里。"

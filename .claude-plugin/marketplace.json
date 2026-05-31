@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.05.30"
+    "version": "2026.05.31"
   },
   "name": "my-skills",
   "owner": {
@@ -9,12 +9,21 @@
   },
   "plugins": [
     {
-      "description": "Audit third-party AI API relay/proxy services for security risks. Detects hidden prompt injection, prompt leakage, instruction override, identity hijacking (Chinese-market substitutes), jailbreak vulnerabilities, context truncation, tool-call package substitution (AC-1.a), error response header leakage (AC-2 adjacent), SSE-level stream integrity anomalies (AC-1 streaming), and Web3 prompt injection (SlowMist signature isolation). Use when: test relay, audit API, audit relay, detect injection, relay security, API relay audit, is this relay safe, does it inject prompts, test proxy API, check API key, 中转站安全, 测试中转站, 中转站审计.",
-      "name": "api-relay-audit",
+      "description": "An Zhaofeng's personal workflow for filling or updating deep-learning experiment records in Markdown or Obsidian from archived experiment artifacts such as configs, manifests, train logs, metrics JSON, figures, predictions, checkpoints, and prior baseline notes. Use when the user asks to 整理实验记录, 填入实验记录, update an Obsidian experiment note, summarize a training run, compare deep-learning experiments, or convert training outputs into a beginner-friendly research log across any project or agent environment.",
+      "name": "azf-deep-learning-experiment-record",
       "skills": [
         "./"
       ],
-      "source": "./api-relay-audit",
+      "source": "./azf-deep-learning-experiment-record",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's hardware and server asset memory. Use whenever the user provides, asks about, verifies, deploys to, or updates information about servers, computers, GPUs, cameras, acquisition cards, storage devices, experiment instruments, network devices, or other hardware. Automatically supplement this skill when new hardware facts appear, but never record passwords, API keys, tokens, private keys, cookies, or other secrets.",
+      "name": "azf-hardware-skill",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-hardware-skill",
       "strict": false
     },
     {
@@ -27,7 +36,7 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's global personal working habits for any intelligent agent. Use at the start of tasks for An Zhaofeng, especially programming, writing Markdown documents, project planning, debugging, research workflows, long-running handoffs, Git/GitHub version control, rollback-sensitive changes, or any task where personal preferences affect execution. Prioritize these habits: proactive Git branch/commit/push/tag/rollback reminders during coding, progress handoff files for multi-step projects, concise checkpointing, and no duplicate title inside Markdown document body content when creating .md files.",
+      "description": "An Zhaofeng's global personal working habits for any intelligent agent. Use at the start of tasks for An Zhaofeng, especially programming, writing Markdown documents, project planning, debugging, research workflows, long-running handoffs, Git/GitHub version control, rollback-sensitive changes, skill creation or maintenance, or any task where personal preferences affect execution. Prioritize these habits: proactive Git branch/commit/push/tag/rollback reminders during coding, progress handoff files for multi-step projects, concise checkpointing, maintaining Chinese README files when creating or updating skills, and no duplicate title inside Markdown document body content when creating .md files.",
       "name": "azf-personal-habits",
       "skills": [
         "./"
@@ -36,12 +45,39 @@
       "strict": false
     },
     {
-      "description": "Fill or update deep-learning experiment records in Markdown or Obsidian from archived experiment artifacts such as configs, manifests, train logs, metrics JSON, figures, predictions, checkpoints, and prior baseline notes. Use when the user asks to 整理实验记录, 填入实验记录, update an Obsidian experiment note, summarize a training run, compare deep-learning experiments, or convert training outputs into a beginner-friendly research log across any project or agent environment.",
-      "name": "deep-learning-experiment-record",
+      "description": "Bind An Zhaofeng's code projects to Obsidian project notes and keep code-understanding notes synchronized with code changes. Use when the user asks to bind a repository/project to Obsidian, create or update .azf/project-notes.yaml, sync notes after code edits, update code-understanding notes, maintain project handoff notes from code diffs, or asks \"代码改了笔记怎么同步\", \"项目和笔记绑定\", \"同步项目笔记\".",
+      "name": "azf-project-note-binding",
       "skills": [
         "./"
       ],
-      "source": "./deep-learning-experiment-record",
+      "source": "./azf-project-note-binding",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's server deployment conventions. Use when deploying, updating, inspecting, backing up, or troubleshooting Docker, Docker Compose, reverse proxies, databases, self-hosted services, n8n, webhooks, or server-side automation on An Zhaofeng's servers. Prefer the default service root /anzhaofeng/<service-name> unless an existing server convention clearly says otherwise.",
+      "name": "azf-server-deploy",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-server-deploy",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's personal workflow for generating Shanghai high-school score analysis reports from Excel score sheets, including class comparison, gender-group analysis, teaching quality summaries, charts, and PDF/HTML output. Use when the user asks to analyze 上海高中成绩单, generate a 教学质量分析报告, compare classes, analyze girls or boys groups, apply gender rules, or create score-report PDFs from Excel files.",
+      "name": "azf-shanghai-high-school-score-report",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-shanghai-high-school-score-report",
+      "strict": false
+    },
+    {
+      "description": "Guides users through creating effective Agent Skills for Cursor. Use when you want to create, write, or author a new skill, or asks about skill structure, best practices, or SKILL.md format.",
+      "name": "create-skill",
+      "skills": [
+        "./"
+      ],
+      "source": "./create-skill",
       "strict": false
     },
     {
@@ -104,14 +140,6 @@
         "./"
       ],
       "source": "./paper-obsidian-review",
-      "strict": false
-    },
-    {
-      "name": "shanghai-high-school-score-report",
-      "skills": [
-        "./"
-      ],
-      "source": "./shanghai-high-school-score-report",
       "strict": false
     }
   ]

@@ -19,6 +19,10 @@ Maintain five kinds of notes:
 
 Keep the main note light. Put long details in linked records or supplement notes.
 
+## Deep Learning Experiment Link
+
+When a project note involves deep-learning training runs, model metrics, archived experiment artifacts, checkpoints, baseline comparison, or prediction figures, use `azf-deep-learning-experiment-record` as the evidence-writing layer. Keep this skill responsible for the project-level structure: main workflow note, progress handoff note, linked event records, and current status synchronization.
+
 ## Style
 
 Write like a clear lab handoff in An Zhaofeng's own working-note tone.

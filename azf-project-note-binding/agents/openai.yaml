@@ -1,0 +1,3 @@
+display_name: Project Note Binding
+short_description: Bind code projects to Obsidian notes and sync notes from code changes.
+default_prompt: Bind this code project to my Obsidian project notes and keep the code-understanding notes synchronized.

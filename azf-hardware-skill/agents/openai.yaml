@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF 硬件信息"
+  short_description: "记录安钊锋的服务器、电脑、实验设备和硬件资产信息。"
+  default_prompt: "帮我记录或核对这台服务器/设备的硬件信息，注意不要保存密码、token 或私钥。"
