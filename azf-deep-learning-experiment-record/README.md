@@ -13,7 +13,7 @@
 - 先确认目标实验记录文件；路径不明确时不要擅自写入。
 - 只写有证据支撑的内容，指标、图表、checkpoint 都要能回到具体文件。
 - 写作风格要适合初学者理解：说明每个文件用来判断什么、读到了什么、能说明什么、还不能说明什么。
-- 如果实验记录属于 An Zhaofeng 的 Obsidian 项目，必要时联动 `azf-obsidian-workflow` 和项目进度笔记。
+- 如果实验记录属于 An Zhaofeng 的 Obsidian 项目，必要时联动 `azf-obsidian-work-record` 和项目调试/进度笔记。
 
 ## 最近维护
 

@@ -14,7 +14,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Before doing anything to a project, first state the proposed plan. If any important requirement, target path, scope, risk, or expected output is uncertain, ask An Zhaofeng for confirmation. Wait for explicit confirmation before running commands, editing files, or making irreversible project changes, unless the user has already clearly authorized immediate execution.
 - Be proactive, but keep reminders concise and timed to natural checkpoints.
 - For multi-step work, keep a visible next-step trail so a new chat/model can resume quickly.
-- When creating Markdown documents, do not write the document title again inside the body content unless the user explicitly asks for an in-document heading.
+- When creating Markdown documents, do not write the document title again inside the body content unless the user explicitly asks for an in-document heading. If there is no body title, start the remaining section hierarchy at `#` instead of `##`.
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
 - Before risky or broad changes, remind the user to create a branch.
@@ -26,7 +26,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to a two-level Desktop backup structure: create or reuse `Desktop\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that second-level folder. This keeps the Desktop clean while making each rollback point easy to find.
 - When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
 - When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
-- When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. Examples: `azf-hardware-skill`, `azf-server-deploy`, `azf-obsidian-workflow`.
+- When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. Examples: `azf-hardware-skill`, `azf-server-deploy`, `azf-obsidian-work-record`.
 - Treat skills with the `azf-` prefix as An Zhaofeng's own custom skills. When a task can match both a generic/system skill and an `azf-` custom skill, read and follow the relevant `azf-` skill first, then use generic skills only as supporting implementation tools.
 - If An Zhaofeng explicitly names or provides a custom skill for a task, prioritize that skill even when another installed skill has a similar description. State which custom skill is being used and follow its output, QA, and workflow requirements.
 - When creating, supplementing, or optimizing any skill, maintain the README file in that skill folder at the same time. The README should be written in Chinese for An Zhaofeng, summarize what the skill does, when it should trigger, important stored facts or preferences, and the latest meaningful maintenance note.
@@ -49,6 +49,7 @@ When creating a `.md` document file for the user:
 - Do not duplicate the document title as a first `# ...` heading in the body by default.
 - Let the filename, Obsidian note title, or surrounding context carry the title.
 - Start the body directly with the substantive content, metadata block, summary, or first necessary section.
+- If the Markdown body has no explicit document title, use `#` for the first-level content sections, `##` for subsections, and `###` only below that. Do not start ordinary sections at `##` unless a body title already occupies `#`.
 - Add a body title only when the user explicitly requests it, the template requires it, or the document would be ambiguous without it.
 
 Example preferred body start:
@@ -60,7 +61,7 @@ tags:
   - frogtrace
 ---
 
-## 背景
+# 背景
 
 ...
 ```
@@ -79,7 +80,7 @@ Avoid this unless requested:
 
 When creating diagrams, visual notes, paper idea maps, project maps, or Excalidraw files for An Zhaofeng:
 
-- Prefer An Zhaofeng's relevant custom skills first, especially `azf-project-note-binding`, `azf-obsidian-workflow`, and any task-specific `azf-` skill supplied by the user.
+- Prefer An Zhaofeng's relevant custom skills first, especially `azf-project-note-binding`, `azf-obsidian-work-record`, and any task-specific `azf-` skill supplied by the user.
 - Borrow the non-code visual rules from `azf-project-note-binding`: use Excalidraw as an infinite canvas, keep generous spacing, size cards from actual text length, leave writable whitespace, and avoid cramming the whole idea into one screenshot.
 - After generating or updating a visual artifact, render or screenshot a preview when possible and inspect the image, not only the JSON or element count.
 - Do not report a diagram as finished if text is clipped, touches card borders, overlaps other text, or arrows collide with card content. Iterate the layout until the screenshot is readable.

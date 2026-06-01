@@ -55,7 +55,7 @@ description: Use when the user wants to turn one or more papers, code repositori
   FAM-HRI.md
   TCC-IRoNL.md
   三篇人机机器人交互论文对比.md
-  attachments/
+  附件/
   pdfs/
 ```
 
@@ -78,7 +78,7 @@ description: Use when the user wants to turn one or more papers, code repositori
 推荐放入：
 
 ```text
-<vault>/attachments/<paper>-method.png
+<vault>/附件/<paper>-method.png
 ```
 
 并在笔记中引用：
@@ -86,7 +86,7 @@ description: Use when the user wants to turn one or more papers, code repositori
 ```markdown
 ## 论文方法/框架图
 
-![[attachments/<paper>-method.png]]
+![[附件/<paper>-method.png]]
 ```
 
 若本地代码没有图片，可从 README、项目主页或论文 PDF 中提取。若无法确认是哪张方法图，先说明候选图并让用户确认。
@@ -123,7 +123,7 @@ created: YYYY-MM-DD
 
 ## 论文方法/框架图
 
-![[attachments/xxx-method.png]]
+![[附件/xxx-method.png]]
 
 ## 研究背景与问题动因
 
@@ -268,7 +268,7 @@ created: YYYY-MM-DD
 完成前检查：
 
 - 三类链接都能在笔记中看到：本地 PDF、本地代码、在线论文/代码。
-- PDF 已在 `pdfs/` 下，图片已在 `attachments/` 下。
+- PDF 已在 `pdfs/` 下，图片已在 `附件/` 下。
 - 每篇都有方法/框架图，且不是统计/结果图。
 - 每篇都有“研究背景与问题动因、核心科学问题、问题求解路径、主要创新贡献”。
 - 每篇保留“方法定位、输入输出、方法框架、关键机制、复现要点、与指标关联”。

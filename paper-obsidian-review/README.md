@@ -35,7 +35,7 @@ The skill avoids vague summaries such as "what this paper does" and instead enfo
   PaperB.md
   PaperC.md
   多篇论文对比.md
-  attachments/
+  附件/
   pdfs/
 ```
 
@@ -45,11 +45,15 @@ PDFs are copied into the vault and linked using Obsidian internal links, for exa
 - 本地 PDF：[[pdfs/PaperA.pdf]]
 ```
 
-Framework or method figures are stored under `attachments/` and embedded as:
+Framework or method figures are stored under `附件/` and embedded as:
 
 ```markdown
-![[attachments/PaperA-method.png]]
+![[附件/PaperA-method.png]]
 ```
+
+## Maintenance Note
+
+- 2026-06-01: Default method/framework figure folder changed from `attachments/` to `附件/` for Chinese Obsidian vaults.
 
 ## Single-Paper Note Template
 

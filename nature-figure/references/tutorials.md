@@ -2,6 +2,7 @@
 
 End-to-end walkthroughs for the most common publication figure types.
 All examples use helpers from [api.md](api.md) and patterns from [common-patterns.md](common-patterns.md).
+For real production scripts and output previews from figures4papers, open [demos.md](demos.md).
 
 ---
 

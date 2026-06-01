@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "AZF Obsidian Work Record"
+  short_description: "为安钊锋维护 Obsidian 项目工作记录、主线笔记、调试记录和附件链接。"
+  default_prompt: "请按 AZF Obsidian 工作记录方法，整理项目总笔记、主线笔记、调试记录、硬件信息和补充资料。"

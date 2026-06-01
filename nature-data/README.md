@@ -3,8 +3,7 @@
 A data-availability skill for preparing manuscript data statements, repository plans, dataset
 citations, and FAIR metadata checks in a Nature / Springer Nature publication style.
 
-This skill is bilingual-aware. It accepts Chinese author notes such as "数据可用性声明",
-"数据可向通讯作者索取", "原始数据", "受限数据", or "公开数据库", then converts them into
+This skill is bilingual-aware. It accepts Chinese author notes covering data availability statements, data requests to the corresponding author, raw data, restricted data, or public databases, then converts them into
 submission-ready English with Chinese action notes for the author.
 
 ## What it does
@@ -26,12 +25,20 @@ submission-ready English with Chinese action notes for the author.
 
 ## File structure
 
+The skill uses a router/static-dynamic split (like the other nature-* skills): a short `SKILL.md` router plus a `manifest.yaml`. nature-data is a linear workflow with no content axis, so the split is core (always loaded) plus on-demand references.
+
 ```text
 nature-data/
-├── SKILL.md
+├── SKILL.md                     # short router
+├── manifest.yaml                # always_load core + on-demand references (no axis)
 ├── README.md
 ├── agents/
 │   └── openai.yaml
+├── static/
+│   └── core/                    # always loaded
+│       ├── stance.md            # default stance + source hierarchy
+│       ├── chinese-mode.md      # Chinese-user operating mode
+│       └── workflow.md          # the 8-step workflow + output format
 └── references/
     ├── fair-metadata-checklist.md
     ├── chinese-author-alignment.md

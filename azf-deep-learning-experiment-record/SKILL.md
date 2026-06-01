@@ -32,7 +32,7 @@ Always resolve the target note before filling it.
 
 ## Project Workflow Link
 
-If the target experiment note belongs to an An Zhaofeng Obsidian project folder, use `azf-obsidian-workflow` for project-level maintenance. After filling the experiment note, check whether the main workflow note or progress handoff note should be updated with the latest status, key conclusion, blocker, or next step.
+If the target experiment note belongs to an An Zhaofeng Obsidian project folder, use `azf-obsidian-work-record` for project-level maintenance. After filling the experiment note, check whether the total note, mainline note, or debug progress note should be updated with the latest status, key conclusion, blocker, or next step.
 
 ## Beginner-Friendly Writing Style
 

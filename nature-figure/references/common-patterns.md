@@ -347,3 +347,4 @@ Rules:
 - [nature-2026-observations.md](nature-2026-observations.md) — Real Nature page archetypes behind these patterns
 - [tutorials.md](tutorials.md) — End-to-end walkthroughs
 - [chart-types.md](chart-types.md) — Radar, 3D, scatter patterns
+- [demos.md](demos.md) — Bundled figures4papers scripts and previews

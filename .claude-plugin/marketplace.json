@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.05.31"
+    "version": "2026.06.01"
   },
   "name": "my-skills",
   "owner": {
@@ -27,12 +27,12 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's Obsidian project-record workflow. Use when Codex needs to create, evaluate, reorganize, or maintain Obsidian notes for a new or ongoing project, especially project folders under 01-Project, research/debugging workflows, experiment records, material/status images, hardware/software notes, progress handoff notes, or requests such as \"帮我记录这个项目\", \"整理项目笔记\", \"建立主笔记\", \"根据图片更新实验记录\", \"维护工作流\", \"新项目也按这个方式记录\".",
-      "name": "azf-obsidian-workflow",
+      "description": "An Zhaofeng's Obsidian project work-record system. Use when Codex needs to create a new Obsidian project record from scratch, reorganize an existing project, or maintain notes under 01-Project, especially total notes, mainline notes, debugging records, experiment records, hardware/software facts, project-understanding notes, material screenshots, or requests such as \"帮我记录这个项目\", \"新开一个项目\", \"整理项目笔记\", \"建立总笔记\", \"同步调试记录\", \"根据图片更新实验记录\", \"新项目也按这个方式记录\".",
+      "name": "azf-obsidian-work-record",
       "skills": [
         "./"
       ],
-      "source": "./azf-obsidian-workflow",
+      "source": "./azf-obsidian-work-record",
       "strict": false
     },
     {
@@ -45,7 +45,7 @@
       "strict": false
     },
     {
-      "description": "Bind An Zhaofeng's code projects to Obsidian project notes and keep code-understanding notes synchronized with code changes. Use when the user asks to bind a repository/project to Obsidian, create or update .azf/project-notes.yaml, sync notes after code edits, update code-understanding notes, maintain project handoff notes from code diffs, or asks \"代码改了笔记怎么同步\", \"项目和笔记绑定\", \"同步项目笔记\".",
+      "description": "Bind An Zhaofeng's code projects to Obsidian project notes and maintain the `4_项目理解` code-understanding layer. Use when the user asks to bind a repository/project to Obsidian, create or update .azf/project-notes.yaml, generate or sync project-understanding notes, source breakdowns, Excalidraw code maps, or asks \"代码改了笔记怎么同步\", \"项目和笔记绑定\", \"同步项目笔记\", \"整理项目理解\", \"源码拆解\".",
       "name": "azf-project-note-binding",
       "skills": [
         "./"
@@ -90,6 +90,24 @@
       "strict": false
     },
     {
+      "description": "Multi-source literature search, citation verification, MeSH search strategy, citation file management (.nbib/.ris/.bib conversion), and reference management (BibTeX, related articles, ID conversion) via MCP tools (PubMed, CrossRef, arXiv). Use when the user needs coordinated multi-step literature workflows beyond a single MCP call.",
+      "name": "nature-academic-search",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-academic-search",
+      "strict": false
+    },
+    {
+      "description": "Add strict Nature/CNS citations to manuscript text by splitting long passages into citable segments, searching only accepted flagship and subjournal titles from Nature Portfolio, the AAAS Science family, and Cell Press, filtering by publication time range, and exporting one reference-manager-ready output by default. Use this skill whenever the user asks to input text and automatically get references, add citations to a paragraph/manuscript, find Nature-series or CNS support for statements, create text-to-reference correspondence, \"分段引用\", \"自动给出引用\", \"Nature系列引用\", \"CNS及子刊\", \"支撑文献\", \"补引用\", \"找引用\", or export EndNote/RIS/ENW/Zotero RDF.",
+      "name": "nature-citation",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-citation",
+      "strict": false
+    },
+    {
       "description": "Prepare, audit, or revise Nature-ready Data Availability statements, data repository plans, dataset citations, and FAIR metadata checklists for manuscripts. Use when the user asks about Nature data availability, research data sharing, repository selection, accession numbers, restricted or sensitive data, source data, supplementary datasets, DataCite-style dataset references, FAIR metadata for academic publication, or Chinese-to-English data availability wording for Chinese-speaking authors preparing Nature-family submissions.",
       "name": "nature-data",
       "skills": [
@@ -99,7 +117,7 @@
       "strict": false
     },
     {
-      "description": "Submission-grade Nature/high-impact journal figure workflow for Python or R. Use whenever the user asks to create, revise, audit, or polish manuscript figures, multi-panel scientific plots, or journal-ready SVG/PDF/TIFF outputs, especially for Nature-family or other high-impact journals. Before plotting, define the figure's conclusion, evidence logic, export needs, and review risks. If the user has not chosen Python or R, ask \"Python or R?\" and stop. Use only the selected backend for figure generation, previewing, exporting, and QA. Supports matplotlib/seaborn and ggplot2/patchwork/ComplexHeatmap. Not for dashboards or Illustrator/Figma-first infographics.",
+      "description": "Submission-grade Nature/high-impact journal figure workflow for Python or R. Use whenever the user asks to create, revise, audit, or polish manuscript figures, multi-panel scientific plots, figures4papers-style matplotlib plots, or journal-ready SVG/PDF/TIFF outputs, especially for Nature-family or other high-impact journals. Before plotting, define the figure's conclusion, evidence logic, export needs, and review risks. If the user has not chosen Python or R, ask \"Python or R?\" and stop. Use only the selected backend for figure generation, previewing, exporting, and QA. Supports matplotlib/seaborn and ggplot2/patchwork/ComplexHeatmap. Not for dashboards or Illustrator/Figma-first infographics.",
       "name": "nature-figure",
       "skills": [
         "./"
@@ -108,7 +126,7 @@
       "strict": false
     },
     {
-      "description": "Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and performs lightweight verification with cross-platform Python tooling by default.",
+      "description": "Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and runs an explicit self-review/corrective revision loop focused on figure quality, text overflow prevention, and non-template visual design before delivery.",
       "name": "nature-paper2ppt",
       "skills": [
         "./"
@@ -117,12 +135,48 @@
       "strict": false
     },
     {
-      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using the paper-architecture and writing-strategy principles from Scientific English Writing & Communication, with phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English.",
+      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, \"Float too large\", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md.",
       "name": "nature-polishing",
       "skills": [
         "./"
       ],
       "source": "./nature-polishing",
+      "strict": false
+    },
+    {
+      "description": "Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, arXiv, publisher HTML, or pasted text. Use whenever the user asks to translate or read a paper, make 中英文对照/原文对照/全文翻译解读, extract figures or tables into the right positions, preserve figure/table placement near relevant prose, or keep exact source anchors for every block. This skill must not degrade into a summary-only output unless the user explicitly asks for a summary.",
+      "name": "nature-reader",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-reader",
+      "strict": false
+    },
+    {
+      "description": "Draft, audit, or revise point-by-point reviewer response letters for Nature-family manuscript revisions. Use when the user provides reviewer comments, editor decision letters, revision notes, response drafts, or asks how to respond to major/minor revision requests, rebuttal letters, response to reviewers, peer-review reports, 审稿意见回复, 逐点回复, 修回信, 大修回复, 小修回复, or 如何回复 reviewer.",
+      "name": "nature-response",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-response",
+      "strict": false
+    },
+    {
+      "description": "Simulate a Nature-style reviewer assessment from the referee perspective rather than an author rebuttal. Use when the user wants a pre-submission review, reviewer report, peer-review style critique, novelty/significance/technical soundness assessment, reviewer-style manuscript evaluation, 审稿人视角评估, 预审稿意见, or Nature reviewer report. Return 3 reviewer reports plus a cross-review synthesis, grounded only in the local Nature reviewer source basis.",
+      "name": "nature-reviewer",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-reviewer",
+      "strict": false
+    },
+    {
+      "description": "Draft, restructure, or plan Nature-style manuscript sections from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduction, related-work, method, experiments, discussion, conclusion, title, or full manuscript argument rather than only polish finished prose.",
+      "name": "nature-writing",
+      "skills": [
+        "./"
+      ],
+      "source": "./nature-writing",
       "strict": false
     },
     {

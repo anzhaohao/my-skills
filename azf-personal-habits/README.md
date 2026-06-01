@@ -15,6 +15,7 @@
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 多步骤任务要留下可接手的进度线索。
 - 创建 Markdown 文档时，默认不要在正文重复写文件标题。
+- 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
@@ -32,6 +33,7 @@
 
 ## 最近维护
 
+- 2026-06-01：补充 Markdown 标题层级习惯：不写正文标题时，正文主要章节从 `#` 开始；只有正文已经有 `# 标题` 时，后续章节才从 `##` 开始。
 - 2026-05-31：加入“优先参考 An Zhaofeng 自定义 `azf-` skill”的长期习惯。
 - 2026-05-31：加入 Excalidraw/视觉产物必须截图 QA，并参考 `azf-project-note-binding` 非代码视觉规范的规则。
 - 2026-05-31：重写中文 README，修复乱码并同步最新习惯。
