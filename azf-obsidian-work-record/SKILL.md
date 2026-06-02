@@ -18,7 +18,7 @@ Maintain six note roles:
 5. Project-understanding notes: code maps, process explanations, source reading, and diagrams.
 6. Supplement notes: GUI guides, plans, old schemes, temporary investigations, and archived material.
 
-Keep the total note light. Put details into linked records, then use mainline notes to explain how those records relate.
+Keep the total note light. Put details into linked records, then use mainline notes to explain how those records relate. For ongoing projects, treat the total note as a dashboard, not as the place where every recent record, shortcut, and folder explanation lives.
 
 ## Preferred Folder Pattern
 
@@ -76,23 +76,27 @@ At creation time:
 5. If An Zhaofeng says no, keep `4_项目理解/` empty and do not create code maps, source breakdowns, or `.azf/project-notes.yaml`.
 6. If An Zhaofeng says yes, let `azf-project-note-binding` own `.azf/project-notes.yaml` and the `4_项目理解/` code-understanding notes.
 7. Create mainline notes only for real threads already known; otherwise leave `1_主线笔记/` empty or create one placeholder named after the first active thread.
-8. If images or materials are added on day one, copy lightweight image files into the vault and embed them in the relevant note immediately; create the matching `Attachments/...` mirror naturally through Obsidian or move it together during cleanup.
+8. If the project will accumulate small bug/debug records, create or plan a lightweight "未归类调试记录 / 小 bug 收件箱" in the total note. Prefer an Obsidian Bases `.base` file when available; otherwise use a manual table.
+9. If images or materials are added on day one, copy lightweight image files into the vault and embed them in the relevant note immediately; create the matching `Attachments/...` mirror naturally through Obsidian or move it together during cleanup.
 
 ## Total Note
 
 Name it like `项目名总笔记.md`. It should answer "where are we now?" before anything else.
 
-Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、当前主线`, `# 三、最近调试记录`. Keep subsection headings short.
+Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、当前主线`, `# 三、目前待解决的问题`. Keep subsection headings short.
 
-Preferred total-note flow:
+Preferred total-note dashboard flow for active projects:
 
 1. `现在先看这里`: current status and immediate handoff.
 2. `当前主线`: the few active threads that explain the project state.
-3. `最近调试记录`: newest chronological records worth opening next.
-4. `目前待解决的问题`: unresolved issue index and issue detail cards.
-5. `新手阅读顺序`: beginner reading path.
-6. `常用入口`: stable links and shortcuts.
-7. `文件夹说明`: folder map.
+3. `目前待解决的问题`: unresolved issue index and issue detail cards.
+4. `未归类调试记录 / 小 bug 收件箱`: automatically or manually list records that have not yet been attached to a mainline note.
+
+Move longer navigation material out of the total note:
+
+- Put beginner reading order in `0_总览/项目名新手阅读顺序.md`.
+- Put stable shortcuts and folder explanations in the beginner/navigation note or another supplement note.
+- Do not keep long `最近调试记录`, `新手阅读顺序`, `常用入口`, or `文件夹说明` sections in the total note once the project has a stable structure.
 
 When reorganizing an existing total note, keep the section content intact, move only whole top-level sections, then renumber the Chinese numeral prefixes to match the final order.
 
@@ -126,9 +130,7 @@ aliases:
 状态：
 下一步：
 
-# 三、最近调试记录
-
-# 四、目前待解决的问题
+# 三、目前待解决的问题
 
 > [!note] 阅读方式
 > 上表只放索引；具体判断和下一步放在下面的问题卡片里。
@@ -144,22 +146,19 @@ aliases:
 > - **关联证据：**  
 > - **下一步：**
 
-# 五、新手阅读顺序
+# 四、未归类调试记录 / 小 bug 收件箱
 
-1. [[项目名新手阅读顺序]]
-2. [[主线笔记A]]
-3. [[主线笔记B]]
+> [!note] 阅读方式
+> 新建小 bug 或临时调试记录时，先在 frontmatter 写 `归类状态: 未归类`。等它接入某条主线后，把 `归类状态` 改为 `已归类`，并补上 `关联主线`。
 
-# 六、常用入口
-
-# 七、文件夹说明
+![[项目名未归类调试记录.base]]
 ```
 
 If a note is renamed, add aliases for old names instead of rewriting every old record.
 
 ## Unresolved Issues Table
 
-Every total note should maintain a `目前待解决的问题` section near the top, usually after `当前主线` and `最近调试记录`, and before `新手阅读顺序`.
+Every total note should maintain a `目前待解决的问题` section near the top, usually after `当前主线` and before `未归类调试记录 / 小 bug 收件箱`.
 
 Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row.
 
@@ -194,6 +193,37 @@ Rules:
 - When new progress arrives, update this table first if it changes an active issue.
 - If an issue needs more than one short phrase of explanation, put the detail in the `问题详情` card, not in the table.
 - Do not let solved problems disappear without trace; mark them `✅ 已解决` or move the details to the relevant debug/mainline note if the table is getting too long.
+
+## Small Bug Inbox And Mainline Attachment
+
+Small bugs should not each become their own mainline note by default, but every bug/debug record must be findable from a common entrance.
+
+Default rule:
+
+1. Create the concrete bug/debug process record under `2_调试记录/`.
+2. Add frontmatter:
+
+```yaml
+项目: 项目名
+类型: 调试记录
+归类状态: 未归类
+关联主线:
+```
+
+3. Show unclassified records from the total note's `未归类调试记录 / 小 bug 收件箱`.
+4. When the record is attached to an existing or new mainline note, update frontmatter:
+
+```yaml
+归类状态: 已归类
+关联主线:
+  - 主线名称
+```
+
+5. Update the relevant mainline note's `过程脉络` or `关键证据` section with a link to the record.
+
+Use a new mainline note only when the bug reveals a reusable project thread, such as hardware state management, wavelength mapping, acquisition flow, reconstruction output, dependency/environment setup, or another theme that will likely connect multiple records. Otherwise attach it to an existing mainline or a broad `问题与修复总线` if no better mainline exists yet.
+
+When Obsidian Bases is available, create a `.base` file for the inbox and embed it in the total note. The `.base` file can filter by `项目 == "项目名"` and `归类状态 == "未归类"`. If Bases is unavailable or the format is uncertain, use a manual Markdown table and leave a note to convert it later.
 
 ## Mainline Notes
 
@@ -244,6 +274,8 @@ Event record template:
 类型: 实验记录 / 调试记录 / Bug复盘
 阶段:
 结果: success / partial / fail
+归类状态: 未归类
+关联主线:
 ---
 
 ## 本次目标
