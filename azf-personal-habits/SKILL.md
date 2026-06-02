@@ -18,6 +18,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
 - Before risky or broad changes, remind the user to create a branch.
+- When Codex creates branches, makes commits, merges, rebases, tags, or otherwise manages Git history for An Zhaofeng, generate or update a lightweight Git visualization/handoff record by default.
 - After each small completed milestone, remind the user to make a local commit.
 - At important checkpoints, remind the user to push to GitHub.
 - At confirmed success points, remind the user to create a Git tag.
@@ -170,6 +171,65 @@ fix-zolix-dll-loading
 gui-spectrometer-id
 single-spectrum-test
 ```
+
+## Git Visualization Handoff
+
+When Codex performs Git work for An Zhaofeng, default to generating a branch/commit visualization and recording branch provenance. This is required when creating a branch, making a commit, merging, rebasing, tagging, or preparing a rollback point. After Codex makes a Git commit for An Zhaofeng, generate a Mermaid `gitGraph` visualization by default, using the readable "branch story" style An Zhaofeng prefers.
+
+Use these commands to collect the raw Git shape unless the repository has a better established tool:
+
+```text
+git log --oneline --graph --decorate --all --simplify-by-decoration
+git log --oneline --graph --decorate --all -n 40
+```
+
+When a new branch is created, record:
+
+```text
+Branch:
+Created at:
+Created from branch:
+Start commit:
+Purpose:
+Expected files or scope:
+```
+
+When a commit is made, record:
+
+```text
+Current branch:
+New commit:
+Parent commit:
+What changed:
+Verification:
+Graph command used:
+Visualization:
+```
+
+Prefer writing this into the project's progress handoff file, such as `FROGTRACE_PROGRESS.md`, `PROJECT_PROGRESS.md`, or an Obsidian debugging/progress note. If the project already has a dedicated Git/branch note, use that. For projects with several active branches, also create or update a small Markdown file named like `GIT_BRANCH_MAP.md`, `BRANCH_MAP.md`, or the project's established equivalent.
+
+For An Zhaofeng's preferred visual output, use a Mermaid `gitGraph` diagram when the branch story is simple enough to keep accurate. Keep commit labels short and readable, group commits by meaningful branch line, and mark the current local position directly in the graph, for example with `当前HEAD`, `HEAD`, or `当前本地HEAD`. If the working tree has uncommitted changes, state under the graph that the real working position is `HEAD + 未提交修改`, and list the modified files.
+
+Preferred Mermaid style:
+
+```text
+```mermaid
+gitGraph
+   commit id: "855e07a 初始快照"
+   commit id: "55411d7 main基线"
+   branch "feature-branch"
+   checkout "feature-branch"
+   commit id: "abc1234 功能起点"
+   commit id: "def5678 当前HEAD"
+```
+```
+
+If Mermaid would be misleading because the history is too complex, fall back to or add one of:
+
+- A Markdown fenced text graph from `git log --graph`.
+- A screenshot/export from VS Code Git Graph, GitLens, Fork, SourceTree, or another available GUI tool if the user wants an external visual view.
+
+Never claim Git records preserve the original source branch perfectly by default. If the source branch was not recorded at branch creation time, infer it from `git merge-base`, `git reflog`, and commit history, and clearly mark it as inferred.
 
 ## Commit Guidance
 

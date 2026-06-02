@@ -17,6 +17,17 @@
 - 服务器 Docker 部署位置和运维习惯不写在这里，写到 `azf-server-deploy`。
 - 每次更新 `SKILL.md` 后，同步更新这个 README。
 
+
+## 本机软件路径习惯
+
+- 用户说明：除默认 Windows 安装位置外，常用非默认软件多数放在 `E:\software`。
+- 已验证示例：
+  - QQ：`E:\software\QQ\QQ.exe`
+  - Next AI Draw.io：`E:\software\Next AI Draw.io\Next AI Draw.io.exe`
+  - QQ 音乐：`E:\software\QQMusic\QQMusic.exe`
+  - 腾讯会议：`E:\software\TencentMeeting`
+- 后续打开本机 GUI 软件时，应优先检查 `E:\software`，不要只查 `C:\Program Files` 或开始菜单。
+
 ## 当前已记录硬件
 
 ### FrogTrace Zolix SGM1700 近红外光纤光谱仪
@@ -31,6 +42,8 @@
 - 当前状态：官方 GUI 能连接；FrogTrace GUI 的光谱仪单独测试链路曾采到 512 点光谱
 - 重要限制：`800 nm` 不在 SGM1700 波段内；如果 SHG-FROG 二倍频信号在 800 nm 附近，应使用覆盖 800 nm 的可见光谱仪/Ocean/FX 入口
 - FrogTrace 类型：`Zolix_IR`
+- 自动选型依据：固定有效范围 `898.7-1705.1 nm`；目标中心波长低于 `898.7 nm` 时不应自动选择这台光谱仪
+- 代码依据：`hardware/spectrometer_zolix.py` 默认 `898.7-1705.1 nm` 并线性重建波长轴；`64位/inc/dfield.h` 当前未公开逐像素波长标定数组函数
 - 相关 Obsidian 记录：`E:\software\Obsidian\安钊锋的外置大脑\01-Project\20260527_FROG\20260527_FrogTrace\3_硬件信息\卓立汉光SGM1700近红外光谱仪.md`
 - 相关实验记录：`E:\software\Obsidian\安钊锋的外置大脑\01-Project\20260527_FROG\20260527_FrogTrace\2_调试记录\20260529_Zolix在800nm插值空白问题.md`
 
@@ -41,6 +54,10 @@
 - 当前状态：2026-06-01 通过安装驱动后已连接成功，并完成一次采集
 - 驱动：已安装；驱动名称、版本、来源路径和具体步骤待补充
 - 型号/序列号：待补充
+- FrogTrace 类型：`Ocean`
+- 波长范围：完整硬件范围待实机读取；FrogTrace 代码通过 SeaBreeze `Spectrometer.wavelengths()` 在连接后取得波长轴
+- 历史数据窗口：项目数据里可见约 `339.456-500.339 nm`、`327.381-471.756 nm` 的采集/分析窗口；这些不等于完整硬件范围
+- 自动选型依据：已连接时读取 `wavelengths()[0]` 和 `wavelengths()[-1]` 判断目标中心波长是否覆盖；未连接时不要仅凭历史窗口硬选
 - 采集参数和数据路径：待补充
 - 相关 Obsidian 记录：`E:\software\Obsidian\安钊锋的外置大脑\01-Project\20260527_FROG\20260527_FrogTrace\3_硬件信息\Ocean光谱仪.md`
 
@@ -51,6 +68,10 @@
 - 当前状态：2026-06-01 通过安装驱动后已连接成功，并完成一次采集
 - 驱动：已安装；驱动名称、版本、来源路径和具体步骤待补充
 - 型号/序列号：待补充
+- FrogTrace 类型：`FX_Vis`
+- 波长范围：完整硬件范围待实机读取；FrogTrace 代码通过 Ideaoptics SDK `GetWavelength()` 在连接后取得波长轴
+- 历史数据窗口：项目配置里可见约 `533.466-752.979 nm`、`746.0940-852.1881 nm`、以及约 `645.249-1053.366 nm` 内的多个采集/分析窗口；这些不等于完整硬件范围
+- 自动选型依据：已连接时读取 `GetWavelength()` 返回数组的首尾值判断目标中心波长是否覆盖；未连接时不要仅凭历史窗口硬选
 - 采集参数和数据路径：待补充
 - 相关 Obsidian 记录：`E:\software\Obsidian\安钊锋的外置大脑\01-Project\20260527_FROG\20260527_FrogTrace\3_硬件信息\可见光光谱仪.md`
 
@@ -73,6 +94,8 @@
 - n8n 记录：2026-05-31 已部署到 `/anzhaofeng/n8n`，公网入口暂为 `http://103.56.112.21:5678/`
 
 ## 最近维护
+- 2026-06-02：补充 FrogTrace 三类光谱仪的波长范围来源和自动选型依据：Zolix 使用固定官方 `898.7-1705.1 nm`；Ocean/FX 应连接后分别从 SeaBreeze `wavelengths()` 和 Ideaoptics `GetWavelength()` 读取真实波长轴，历史采集窗口不当作完整硬件范围。
+- 2026-06-02：记录本机软件路径习惯：常用非默认软件多在 `E:\software`；验证 QQ、Next AI Draw.io、QQ 音乐和腾讯会议路径。
 
 - 2026-06-01：补充 FrogTrace 的 Zolix SGM1700 近红外光谱仪信息：S/N、厂商官方 `898.7-1705.1 nm` 有效范围，以及 `800 nm` 不在该波段内导致相关插值/反演测试不应使用 SGM1700 的限制。
 - 2026-06-01：补充用户提供的卓立汉光官方波长范围图片信息：光谱范围要求 `900-1700 nm`、光栅 `150 g/mm @1250 nm`、校准允许值 `2 nm`、最大偏差 `0.66 nm`，并同步更新 Obsidian 记录路径到新工作记录结构。

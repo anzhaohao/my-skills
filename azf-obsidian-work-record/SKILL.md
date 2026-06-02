@@ -82,7 +82,19 @@ At creation time:
 
 Name it like `项目名总笔记.md`. It should answer "where are we now?" before anything else.
 
-Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、目前待解决的问题`, `# 三、新手阅读顺序`. Keep subsection headings short.
+Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、当前主线`, `# 三、最近调试记录`. Keep subsection headings short.
+
+Preferred total-note flow:
+
+1. `现在先看这里`: current status and immediate handoff.
+2. `当前主线`: the few active threads that explain the project state.
+3. `最近调试记录`: newest chronological records worth opening next.
+4. `目前待解决的问题`: unresolved issue index and issue detail cards.
+5. `新手阅读顺序`: beginner reading path.
+6. `常用入口`: stable links and shortcuts.
+7. `文件夹说明`: folder map.
+
+When reorganizing an existing total note, keep the section content intact, move only whole top-level sections, then renumber the Chinese numeral prefixes to match the final order.
 
 Use this shape:
 
@@ -100,13 +112,23 @@ aliases:
 # 一、现在先看这里
 
 > [!summary] 当前状态
-> 当前阶段：
-> 当前结论：
-> 已经做通：
-> 还没做通：
-> 下一步：
+> - 当前阶段：
+> - 当前结论：
+> - 已经做通：
+> - 还没做通：
+> - 下一步：
 
-# 二、目前待解决的问题
+# 二、当前主线
+
+## 1. 主线名称
+
+入口：[[主线笔记A]]
+状态：
+下一步：
+
+# 三、最近调试记录
+
+# 四、目前待解决的问题
 
 > [!note] 阅读方式
 > 上表只放索引；具体判断和下一步放在下面的问题卡片里。
@@ -118,25 +140,15 @@ aliases:
 ## 问题详情
 
 > [!todo] Q1
-> **当前判断：**  
-> **关联证据：**  
-> **下一步：**
+> - **当前判断：**  
+> - **关联证据：**  
+> - **下一步：**
 
-# 三、新手阅读顺序
+# 五、新手阅读顺序
 
 1. [[项目名新手阅读顺序]]
 2. [[主线笔记A]]
 3. [[主线笔记B]]
-
-# 四、当前主线
-
-## 1. 主线名称
-
-入口：[[主线笔记A]]
-状态：
-下一步：
-
-# 五、最近调试记录
 
 # 六、常用入口
 
@@ -147,12 +159,12 @@ If a note is renamed, add aliases for old names instead of rewriting every old r
 
 ## Unresolved Issues Table
 
-Every total note should maintain a `目前待解决的问题` section near the top, usually after `现在先看这里` and before `新手阅读顺序`.
+Every total note should maintain a `目前待解决的问题` section near the top, usually after `当前主线` and `最近调试记录`, and before `新手阅读顺序`.
 
 Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row.
 
 ```markdown
-# 二、目前待解决的问题
+# 四、目前待解决的问题
 
 | 事项 | 等级 | 问题 | 状态 |
 |---|---|---|---|
@@ -161,13 +173,14 @@ Use a compact index table to avoid cramped Markdown. Do not put long judgments, 
 ## 问题详情
 
 > [!todo] Q1
-> **当前判断：**  
-> **关联证据：**  
-> **下一步：**
+> - **当前判断：**  
+> - **关联证据：**  
+> - **下一步：**
 ```
 
 Rules:
 
+- In issue detail cards and status cards, prefer list syntax inside the callout: `> - **字段：** 内容`. This renders as a cleaner card with stable alignment, especially for `当前判断`, `关联证据`, `关联入口`, and `下一步`.
 - Do not include an `入口` column in the issue index table. Put links and evidence in the issue detail card.
 - Use clear item markers in the form `Q1`, `Q2`, `Q3` so unresolved issues are easy to cite in conversation and commits.
 - Keep priority visually distinctive with icon labels instead of bare `P0` / `P1`.
