@@ -39,12 +39,12 @@ Use this skill as An Zhaofeng's durable hardware and server inventory. Keep fact
 
 - 项目：FrogTrace / 20260527_FROG
 - 类型：卓立汉光 / Zolix SGM1700 近红外光纤光谱仪
-- 光谱仪 S/N：`SGM26002` / `26002`
+- 光谱仪 S/N：型号下存在多台设备；`SGM26002` / `26002` 曾到货并拍摄实物照片，现已退换；2026-06-11 实际连接设备为 `SGM25003` / `25003`
 - 有效波长范围：厂商官方 `898.7-1705.1 nm`
 - 光谱范围要求：厂商文件标注 `900-1700 nm`
 - 光栅：`150 g/mm @1250 nm`
 - 波长准确度：厂商校准表允许值 `2 nm`，用户提供的官方图片中最大偏差 `0.66 nm`
-- 当前状态：官方 GUI 能连接；FrogTrace GUI 的光谱仪单独测试链路曾采到 512 点光谱
+- 当前状态：型号级信息保留；具体设备按 S/N 分开记录。2026-06-11 SGM25003 在 FrogTrace GUI 中完成 970 nm 采集；SGM26002 已退换，照片归属这台设备，不与 SGM25003 采集结果混用
 - 重要限制：`800 nm` 不在 SGM1700 波段内；如果 SHG-FROG 二倍频信号在 800 nm 附近，应使用覆盖 800 nm 的可见光谱仪/Ocean/FX 入口
 - FrogTrace 类型：`Zolix_IR`
 - 自动选型依据：固定有效范围 `898.7-1705.1 nm`；目标中心波长低于 `898.7 nm` 时不应自动选择这台光谱仪
@@ -100,3 +100,12 @@ Use this skill as An Zhaofeng's durable hardware and server inventory. Keep fact
 - 当前用途：Docker 自托管服务、n8n 自动化、已有 Portainer/openlist/pdf2zh/codexmanager 等服务
 - n8n 记录：2026-05-31 已部署到 `/anzhaofeng/n8n`，公网入口暂为 `http://103.56.112.21:5678/`
 - 记录来源：用户在 2026-05-31 提供的服务器截图，以及同日 SSH 实测
+
+
+## 2026-06-11 FrogTrace 光谱仪按 S/N 拆分记录
+
+- Ocean `USB2+U201510`：2026-06-11 已读取完整波长轴，339.45648-1063.004557 nm，2048 像素；GUI/SN 枚举仍待修。
+- Ocean `USB4H11541`：GUI 日志/配置中出现，未完成实机确认，波长范围待读取。
+- FX_Vis `FX4K261710`：2026-06-11 已读取完整波长轴，299.1692368-1094.6974945 nm，3648 像素；按 S/N 打开待验证。
+- Zolix SGM1700 `SGM25003` / `25003`：2026-06-11 实际连接设备，dfield 信息 `Zolix,SGM1700,25003,20251124,V1.1`，完成 970 nm 采集；降温 CSV 未生成。
+- Zolix SGM1700 `SGM26002` / `26002`：曾到货并拍摄实物照片，现已退换；2026-06-11 未连接确认，不能和 `SGM25003` 的采集结果混用。

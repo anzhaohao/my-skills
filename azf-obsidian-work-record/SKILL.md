@@ -100,7 +100,7 @@ Move longer navigation material out of the total note:
 
 When reorganizing an existing total note, keep the section content intact, move only whole top-level sections, then renumber the Chinese numeral prefixes to match the final order.
 
-Use this shape:
+Use this shape. Keep it dashboard-like: the total note is for "where are we now", not for full process history.
 
 ```markdown
 ---
@@ -115,40 +115,42 @@ aliases:
 
 # 一、现在先看这里
 
-> [!summary] 当前状态
-> - 当前阶段：
-> - 当前结论：
-> - 已经做通：
-> - 还没做通：
-> - 下一步：
+理解本项目参考：[[项目流程理解总图]]
+
+> [!summary] 当前阶段
+> 项目当前处在“……”阶段。
 
 # 二、当前主线
 
 ## 1. 主线名称
 
-入口：[[主线笔记A]]
-状态：
-下一步：
+- **入口：** [[【主线】主线名称]]
+- **当前状态：** 用一句话说明这条主线现在到哪了。
+
+### 1.1 从上面主线引出的独立问题
+
+- **入口：** [[【主线】从属问题主线]]
+- **从属关系：** 这是上面主线过程中发现的问题，但仍保留为独立主线笔记。
+- **当前状态：** 用一句话说明当前理解。
 
 # 三、目前待解决的问题
 
 > [!note] 阅读方式
-> 上表只放索引；具体判断和下一步放在下面的问题卡片里。
+> 上表只放索引，避免太挤；具体理解放在下面的问题卡片里。
 
 | 事项 | 等级 | 问题 | 状态 |
 |---|---|---|---|
 | Q1 | 🚨 核心 |  | 🔥 待处理 |
 
-## 问题详情
+## 问题理解
 
 > [!todo] Q1
-> - **当前判断：**  
-> - **关联证据：**  
-> - **下一步：**
+> - **理解：**  
+> - **主线入口：** [[【主线】主线名称]]
 
 # 四、未归类调试记录 / 小 bug 收件箱
 
-> [!note] 阅读方式
+> [!note] 使用方式
 > 新建小 bug 或临时调试记录时，先判断它能否接入已有主线。能接入时，直接写 `归类状态: 已归类`，并补上 `关联主线`；暂时没有合适主线时，才写 `归类状态: 未归类`，让它进入这里。每次整理结束时，需要向用户说明本次记录的归类判断。
 
 ![[项目名未归类调试记录.base]]
@@ -156,11 +158,18 @@ aliases:
 
 If a note is renamed, add aliases for old names instead of rewriting every old record.
 
+Total-note rules:
+
+- The mainline display title in the total note may be more direct than the filename. Do not rename the mainline file just to improve the dashboard title.
+- A mainline derived from another mainline can be shown as an indented `### 1.1 ...` block, but it should remain an independent mainline note when it has its own reusable problem logic.
+- In `当前主线`, do not use tables. Use short Markdown bullets with bold field labels, such as `- **入口：** ...` and `- **当前状态：** ...`; add `- **从属关系：** ...` only for subordinate mainlines.
+- Do not include `下一步` in the mainline list by default. The total note should stay clean; next actions belong in records or direct user planning unless the user explicitly asks for them.
+
 ## Unresolved Issues Table
 
 Every total note should maintain a `目前待解决的问题` section near the top, usually after `当前主线` and before `未归类调试记录 / 小 bug 收件箱`.
 
-Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row.
+Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row. Prefer a `问题理解` section below the table; it should explain the problem in plain words and link only to the mainline entrance.
 
 ```markdown
 # 四、目前待解决的问题
@@ -169,17 +178,16 @@ Use a compact index table to avoid cramped Markdown. Do not put long judgments, 
 |---|---|---|---|
 | Q1 | 🚨 核心 |  | 🔥 待处理 |
 
-## 问题详情
+## 问题理解
 
 > [!todo] Q1
-> - **当前判断：**  
-> - **关联证据：**  
-> - **下一步：**
+> - **理解：**  
+> - **主线入口：** [[【主线】主线名称]]
 ```
 
 Rules:
 
-- In issue detail cards and status cards, prefer list syntax inside the callout: `> - **字段：** 内容`. This renders as a cleaner card with stable alignment, especially for `当前判断`, `关联证据`, `关联入口`, and `下一步`.
+- In issue detail cards and status cards, prefer list syntax inside the callout: `> - **字段：** 内容`. This renders as a cleaner card with stable alignment, especially for `理解` and `主线入口`.
 - Do not include an `入口` column in the issue index table. Put links and evidence in the issue detail card.
 - Use clear item markers in the form `Q1`, `Q2`, `Q3` so unresolved issues are easy to cite in conversation and commits.
 - Keep priority visually distinctive with icon labels instead of bare `P0` / `P1`.
@@ -189,9 +197,9 @@ Rules:
 - `🌱 后续`: known limitation, cleanup, or future improvement.
 - Keep the status set small, but make the icons visually obvious. Preferred status values are only: `🔥 待处理`, `⚙️ 进行中`, `✅ 已解决`, `💤 暂缓`.
 - Put details such as "待排查", "待补充", or "待设计" in the issue card, not in the status column.
-- Link each issue to the mainline note, stable reference note, supplement/explanation note, hardware card, or project-understanding note that carries details. Do not put debug/work/experiment records from `2_调试记录/` in a Q issue card `关联入口`; attach those process records to the relevant mainline note instead.
+- Link each issue primarily to the mainline note that carries the relationship. Do not put debug/work/experiment records from `2_调试记录/` in a Q issue card; attach those process records to the relevant mainline note instead.
 - When new progress arrives, update this table first if it changes an active issue.
-- If an issue needs more than one short phrase of explanation, put the detail in the `问题详情` card, not in the table.
+- If an issue needs more than one short phrase of explanation, put the detail in the `问题理解` card, not in the table.
 - Do not let solved problems disappear without trace; mark them `✅ 已解决` or move the details to the relevant debug/mainline note if the table is getting too long.
 
 ## Small Bug Inbox And Mainline Attachment
@@ -202,12 +210,18 @@ Small bugs should not each become their own mainline note by default, but every 
 
 The total note's `Q1` / `Q2` / `Q3` issue cards are status entrances, not the final place for process history. When a new record, code change, verification result, GUI finding, or design decision changes an active Q issue and also belongs to an existing mainline, update both layers in the same sync pass.
 
+Important permission boundary:
+
+- This synchronization rule applies only when An Zhaofeng explicitly asks to update/sync/write/organize Obsidian notes or confirms a proposed note-sync pass.
+- During ordinary code modification, debugging, Git work, hardware troubleshooting, or log reading, the Obsidian vault is read-only by default. Read notes for context if useful, but do not update total notes, mainline notes, debug records, or hardware cards.
+- If code/debug progress should be recorded but An Zhaofeng did not ask for note updates, leave the note vault untouched and report that note synchronization is pending.
+
 Use this rule especially when the user asks to update a work record, debug record, or project status:
 
-1. Update the total note's Q issue table/card only as the dashboard entry: current judgment, linked entrances, next step, and status. In `关联入口`, link only mainline notes, stable references, supplement/explanation notes, hardware cards, or project-understanding notes; never link concrete debug/work/experiment records from `2_调试记录/`.
+1. Update the total note's Q issue table/card only as the dashboard entry: short problem understanding, mainline entrance, and status. Link only mainline notes by default; never link concrete debug/work/experiment records from `2_调试记录/`.
 2. Create or update the concrete debug/work record under `2_调试记录/`, including frontmatter `归类状态: 已归类` and `关联主线`.
-3. Append the record to the relevant mainline note's `过程脉络`, then adjust `当前结论`, `还没完成`, and `下一步` if the new record changes the thread.
-4. If the progress is a prerequisite for another mainline, add a short cross-link in `辅助说明与相关入口` or `关键证据`; do not rely on the Q card alone to carry that relationship. Keep concrete debug-record links in mainline `过程脉络` or `关键证据`, not in the Q card `关联入口`.
+3. Append the record to the relevant mainline note's `过程脉络`, then rewrite the relevant Step in plain language if the new record changes the thread.
+4. If the progress is a prerequisite for another mainline, add a short cross-link in `辅助说明与相关入口`; do not rely on the Q card alone to carry that relationship. Keep concrete debug-record links in mainline `过程脉络`, not in the Q card.
 5. End the user-facing response by reporting the sync coverage, for example: `已更新总笔记 Q3、调试记录、[[根据中心波长自动选择光谱仪]] 主线` or `只更新了 Q3，主线未改，因为...`.
 
 Avoid the common mistake: updating only `FrogTrace项目总笔记.md` 的 Q 入口 while leaving the corresponding `1_主线笔记/` page stale. For example, a change such as "analysis wavelength range is automatically derived from spectrometer wavelengths and pixel window" may appear in Q3, but if it is a prerequisite for "根据中心波长自动选择光谱仪", it must also be appended to that mainline as process context.
@@ -263,42 +277,64 @@ Suggested structure:
 
 # 一句话说明
 
-## 辅助说明与相关入口
+# 辅助说明与相关入口
 
-- 通俗解释：[[解释笔记]]
-- 相关主线：[[相邻主线]]
-- 稳定参考：[[硬件/环境/协议卡片]]
-
-# 当前结论
+- 相邻主线：[[【主线】相邻主线]]
+- 相关硬件：[[硬件卡片]]
+- 参考方案：[[【方案】方案名称v0]]、[[【方案】方案名称v1]]
+- 代码修改：[[YYYYMMDD_主题代码修改]]
 
 # 过程脉络
 
-1. [[调试记录/实验记录/代码同步记录1]]
-2. [[调试记录/实验记录/代码同步记录2]]
+## Step 1：发现问题
 
-# 关键证据
+先用一两句话说清楚这一步为什么出现，以及它解决什么问题：[[具体记录]]
 
-# 还没完成
+- 具体来说就是：
+- <mark style="background:#fff88f">用一句话写出这一步带来的关键判断。</mark>
 
-# 下一步
+## Step 2：制定方案
+
+- **问题分析和原则方案**：[[【方案】主题v0]]
+- **落地实现方案**：[[【方案】主题v1]]
+- **代码相关调试记录：** [[YYYYMMDD_主题调试记录]]
+
+## Step 3：实机验证计划
+
+第一版逻辑已经进入实机验证阶段，重点确认几件事：
+- 
+
+下面是调试记录：[[YYYYMMDD_主题实机调试]]
 ```
 
 Good mainline topics include "光谱仪连接与采集", "波长映射与频率插值", "FROG迹图反演与结果保存", or the equivalent threads for another project.
 
-`过程脉络` is a chronological/process section. Put only records where work actually happened, such as debug records, experiment records, code-change handoffs, verification records, and major decision records. Do not number explanation notes, GUI usage notes, stable reference cards, source-reading notes, or neighboring mainline notes inside `过程脉络`.
+`过程脉络` is a chronological/process section written as `Step 1`, `Step 2`, `Step 3`. Each step should explain why that step exists, what it changed in the understanding, and which concrete record or plan carries the detail. Do not use the old four-part debug style (`为什么做` / `这次想确认` / `得到的判断` / `对本主线的影响`) inside mainline notes.
 
-Mainline note body sections should normally start at `#` level, because the filename already acts as the document title. Put `辅助说明与相关入口` inside the first `# 一句话说明` chapter as a `##` subsection, not as a separate top-level chapter.
+Mainline note body sections should normally start at `#` level, because the filename already acts as the document title. Use `# 辅助说明与相关入口` as a separate top-level chapter after `# 一句话说明` when it helps keep entrances visible.
 
-If a reader needs context notes before reading the process, place them near the beginning in `# 一句话说明` > `## 辅助说明与相关入口`. Typical entries are `通俗解释`, `相关主线`, `稳定参考`, `GUI说明`, and `源码理解`. It is fine for `过程脉络` to contain only one item when the mainline currently has only one real process record.
+If a reader needs context notes before reading the process, place them near the beginning in `# 辅助说明与相关入口`. Typical entries are `相邻主线`, `相关硬件`, `参考方案`, `代码修改`, `GUI说明`, and `源码理解`. Keep neighboring mainlines, hardware cards, and方案 notes in this entrance section unless they are the subject of an actual process step.
+
+Mainline-writing rules:
+
+- Start mainline filenames with `【主线】` unless the user says otherwise. Do not force rename older files without asking.
+- Mainlines should sound like a clear handoff for a future beginner: "具体来说就是..." is better than formal abstract wording.
+- `过程脉络` may include方案 links when the step is about制定方案, but do not pretend a方案 note is a调试记录.
+- After each debugging or implementation step, write what that step taught us, not only that the step happened.
+- Keep `当前理解`, `当前卡点`, and `下一步` out of mainline notes by default; fold useful parts into `过程脉络`.
+- Use highlighted `<mark style="background:#fff88f">...</mark>` sparingly for the one judgment a future reader must not miss.
+- A mainline derived from another mainline can remain independent. Show the hierarchy in the total note; keep the mainline note itself focused on its own problem.
 
 ## Debug Records
 
-Use `2_调试记录` for things that happened while working: progress handoff, debugging sessions, bug reviews, hardware tests, and experiment records.
+Use `2_调试记录` for things that happened while working: code debugging, hardware tests, bug reviews, log reading, real-device validation, Git-backed changes, and progress handoff.
+
+There is only one debug-record body format for FrogTrace-style records: the timeline debug process format below. Do not create separate debug-record templates such as `实机验证记录`, `代码修改记录`, test-sheet records, or standalone Git-card records. If a note is a debug/process record, use the same timeline structure regardless of whether the work is code-only, hardware-only, real-device validation, or mixed code + hardware.
 
 - Existing experiment-record Markdown files should be moved under `2_调试记录/实验记录/` when the user wants a simpler structure.
 - Do not rewrite old experiment records unless the user asks. If a later conclusion changes the interpretation, add a new note or a `后续更正` section only when appropriate.
 - Keep chronological evidence in records; keep relationship summaries in mainline notes.
-- If a debug/work/experiment record is tied to code in a Git repository, the record itself must include a `关联代码版本` section. Do not put the Git version only in a project progress file, code-sync note, or commit message.
+- If a debug/work/experiment record is tied to code in a Git repository, include code version information inside the relevant chronological Step. Do not put the Git version only in a project progress file, code-sync note, or commit message.
 
 Git-bound debug records must state:
 
@@ -308,43 +344,109 @@ Git-bound debug records must state:
 - push status and working-tree status;
 - the verification commands that belong to that code version;
 - the Git graph command used;
-- a compact visualization, preferably a Mermaid `gitGraph`. If Mermaid cannot represent the shape clearly, include a concise raw `git log --oneline --graph --decorate` excerpt.
+- a complete visualization, preferably a Mermaid `gitGraph`, placed inside the Step where the branch/commit/code change actually happened. If Mermaid would be misleading, include a raw `git log --oneline --graph --decorate` excerpt in that same Step.
 
-If the record has no separate body title, the template headings below may be promoted from `##` to `#`, but keep the section names and order.
+For modern FrogTrace-style records, use top-level `#` headings because the filename already carries the title. Avoid a duplicate body title.
 
-Event record template:
+### Timeline Debug Process Record
 
 ```markdown
 ---
 创建时间: YYYY-MM-DDTHH:mm
 修改时间: YYYY-MM-DDTHH:mm
 项目: 项目名
-类型: 实验记录 / 调试记录 / Bug复盘
-阶段:
-结果: success / partial / fail
-状态: 已验证 / 待复测 / 待补证据
+类型: 调试记录
+记录类型: 代码调试 / 硬件调试 / 代码与硬件联合调试 / 实机验证 / 结果复测
+调试日期: YYYY-MM-DD
+状态: 已记录 / 进行中 / 待复测
 归类状态: 未归类 / 已归类
 关联主线:
+  - 主线名
 ---
 
-## 归类判断
+# 一、调试目标
 
-## 本次目标
+用几句话说明这次到底在解决什么问题。先写外行也能看懂的现象和目标，不要一上来写代码细节。
 
-## 材料状态
+# 二、调试过程
 
-## 关联代码版本（涉及代码时）
+## Step 1：先发生了什么
 
-## 操作记录
+操作：
 
-## 结果
+现象：
 
-## 问题与原因判断
+判断：
 
-## 下一步
+证据入口：
 
-## 后续更正
+## Step 2：接着怎么排查或修改
+
+操作：
+
+涉及文件：
+
+现象：
+
+处理：
+
+验证：
+
+判断：
+
+## Step 3：如果发生了代码提交或分支变化，把 Git 放在这里
+
+操作：
+
+涉及文件：
+
+验证：
+
+Git 信息：
+
+```text
+代码仓库：
+当前分支：
+远端分支：
+起点提交：
+当前/记录提交：
+推送状态：
+工作区状态：
+验证命令：
+Git 图命令：
 ```
+
+Git 可视化：
+
+```mermaid
+gitGraph
+   commit id: "base"
+   branch "feature-or-current"
+   checkout "feature-or-current"
+   commit id: "current HEAD"
+```
+
+判断：
+
+# 三、调试结论
+
+1. 已经确认什么。
+2. 已经修掉什么。
+3. 还没有彻底解决什么。
+4. 下一次应该从哪里继续。
+```
+
+Timeline debug process rules:
+
+- Keep the main structure fixed as `调试目标` -> `调试过程` -> `调试结论`.
+- Write `Step 1`, `Step 2`, `Step 3` in real chronological order. Each Step should explain what was done, what was seen, and what judgment changed.
+- The small fields inside each Step are flexible. Use only what the step needs: `操作`, `现象`, `证据入口`, `涉及文件`, `处理`, `验证`, `判断`, `Git 信息`, or `Git 可视化`.
+- Tables are allowed inside Steps when they compare devices, expected/actual behavior, pass/fail items, files, commands, or result paths. Do not turn the whole record into a test sheet.
+- Do not manually expand code diffs. For code-related steps, write the intent, affected files, verification result, Git commit/branch/card, and evidence paths. Codex can recover exact code changes from Git later.
+- Put Git cards and Mermaid `gitGraph` inside the Step where the code change, branch change, commit, push, or rollback happened. Do not create a separate top-level Git chapter.
+- Make Git visualization complete enough to reconstruct the branch story. For a simple linear branch, include the relevant current-branch commits from the branch/start point through the current HEAD, not only a three-node sketch. If there are important side branches in the visible history, either include them in Mermaid or add the raw `git log --graph` excerpt under the Mermaid.
+- Use highlighted `<mark style="background:#fff88f">...</mark>` sparingly for the one judgment future An Zhaofeng must not miss.
+- Planned on-site checklists are still allowed, but if they live under `2_调试记录`, write them in the same timeline format with `状态: 待复测` and future-tense Steps. Do not introduce a separate top-level template.
 
 ## Reference And Supplement Notes
 
@@ -356,6 +458,53 @@ Use stable reference notes for facts that should not be rediscovered:
 - SOP notes: repeated operation steps.
 
 Use supplement notes for GUI guides, dependency notes, old plans, code-reading introductions, and result evaluations.
+
+### Hardware Information Notes
+
+Hardware notes should stay fact-first. They are reference cards, not debug records.
+
+For a hardware type or model index card, the core content is the index. When there are multiple physical devices, prefer an Obsidian Bases `.base` table filtered by `项目`, `类型`, and `设备类型`. Show useful columns such as device card, serial number, status, and modified time. Do not filter the index by a code-specific field such as `FrogTrace类型` unless the user explicitly wants that.
+
+Recommended type/model card shape:
+
+```markdown
+# 光谱仪索引
+
+![[设备索引.base]]
+
+# 型号通用信息
+
+| 项目 | 记录 |
+|---|---|
+| 设备类型 |  |
+| FrogTrace 类型 | `...` |
+| 波长范围来源 |  |
+
+# 可选补充
+
+- 关联记录：
+```
+
+For a concrete physical device card, the core content is `# 硬件信息` plus a two-column table. Put serial number, current status, wavelength range, pixel count, source file, connection/cable facts, and data source there first. Photos, connection method, warnings, and related records are optional supplements after the hardware table.
+
+Recommended concrete-device card shape:
+
+```markdown
+# 硬件信息
+
+| 项目 | 记录 |
+|---|---|
+| 设备类型 |  |
+| FrogTrace 类型 | `...` |
+| S/N | `...` |
+| 当前状态 |  |
+
+# 可选补充
+
+- 关联记录：
+```
+
+Avoid using `当前结论`, `YYYY-MM-DD 记录`, or `下一步` as the main section structure of hardware cards. If the content is process history, put it in `2_调试记录/` and link it from the hardware card only when it helps identify the device.
 
 ## Images And Attachments
 

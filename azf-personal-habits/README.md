@@ -12,6 +12,8 @@
 ## 当前关键规则
 
 - 重要代码修改前检查 Git 状态，必要时提醒创建分支。
+- 项目代码或项目文件改动前必须先二次确认：如果我只是要求“更新工作记录、分析问题、评估方案、解释行为”，不要顺手改代码；必须先给出修改方案、影响文件和风险点，等我明确确认后再改。
+- 调试、修 bug、代码改动、硬件/软件排查或 Git 提交/推送时，Obsidian 笔记库默认只读。除非我在当前回合明确说“更新笔记、同步笔记、写入笔记、整理笔记”，否则不要修改 Obsidian 正文；如果确实值得补记，只在最后说明“笔记未更新，可作为后续待办”。
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
 - 多步骤任务要留下可接手的进度线索。
@@ -20,25 +22,30 @@
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
+- 我说“精读”“逐句精读”“论文精读”时，默认使用 `azf-paper-sentence-deep-reading`。如果我明确说“不需要跳转”，不要强制 PDF++ 链接，保留逐段成文、破冰前瞻、逐句卡片和扫盲班术语结构即可。
 - 创建、补充、优化 skill 时，要同步维护该 skill 文件夹下的中文 `README.md`。
-- 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，要参考 `azf-project-note-binding` 的非代码视觉规范，并在可行时截图检查布局，尤其检查连线交叉和箭头压卡片上沿。
+- 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 
 ## Visual / Excalidraw 习惯
 
-- 使用无限画布思维，不要为了塞进一张截图而压缩信息。
-- 卡片尺寸要根据文字长度和行数估算，保留舒适内边距。
-- 生成后要截图或渲染预览，检查文字裁切、重叠、箭头穿过内容、卡片拥挤等问题。
-- 箭头之间不要交叉，也不要直接越过或贴着卡片上沿；发现这类问题要移动节点或改折线路由。
-- 虚线箭头也要单独检查，不能贴着/压着卡片边框、斜线填充、笔记边界或其他连线。
-- 不能只做 JSON 校验或元素计数就交付视觉图。
+- 实际 Excalidraw 生成规则集中维护在 `excalidraw-diagram`。
+- `azf-project-note-binding`、`azf-obsidian-work-record` 等个人 workflow skill 只决定图属于哪个项目、放到哪里、承担什么记录职责。
+- 如果多个 skill 都涉及图，先用个人 workflow skill 判断任务边界，再用 `excalidraw-diagram` 执行画图和检查。
+- 使用 Excalidraw MCP 时，如果 `127.0.0.1:3000` 或 `api/elements` 连不上，不要直接绕开 MCP 手写 `.excalidraw.md`；先检查并启动本地 canvas 服务。当前机器的部署目录是 `E:\software\MCP\mcp_excalidraw`，在该目录运行 `npm run canvas`，再访问 `http://127.0.0.1:3000/health` 验证。
+- 记住两层服务不同：`dist/index.js` 是 MCP stdio server，`npm run canvas` 才是 Excalidraw 画布 / REST API 服务。
+- 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
 
+- 2026-06-23：加入论文精读默认路由规则。以后我说“精读”默认指 `azf-paper-sentence-deep-reading`；若明确说“不需要跳转”，则不强制 PDF++ 链接。
+- 2026-06-15：修正代码调试与 Obsidian 同步边界。调试、修 bug、硬件排查和代码修改时，笔记库默认只读；只有我在当前回合明确要求更新/同步/写入/整理笔记，才允许改 Obsidian，并且结构性改动前必须先备份。
+- 2026-06-04：加入“项目代码/项目文件改动前必须二次确认”的硬规则。只要求记录、分析、评估或解释时，不得顺手修改代码；必须先给方案、影响范围和风险，得到明确确认后再改。
+- 2026-06-04：曾加入“每次调试记录也同步一份到 Obsidian 调试记录”的习惯规则；2026-06-15 已废止这个默认自动同步规则，避免代码调试时误改笔记结构。
+- 2026-06-04：加入 Excalidraw MCP 本地服务启动规则：3000 端口不通时先主动启动 `E:\software\MCP\mcp_excalidraw` 的 `npm run canvas`，并做视觉核对，不再绕开 MCP 生成可能缺字的图。
 - 2026-06-02：补充 Git 可视化偏好：每次 Codex 提交 Git 后，优先按 Mermaid `gitGraph` 生成“分支故事图”，在图上标出当前本地 HEAD；如果还有未提交修改，要在图后说明 `HEAD + 未提交修改` 并列出文件。
 - 2026-06-02：加入 Git 可视化交接习惯：Codex 做分支、提交、合并、rebase、tag 或回滚点时，默认记录分支来源、起点提交、关键提交，并生成 `git log --graph` 文本图；复杂项目可同步维护 `GIT_BRANCH_MAP.md` / `BRANCH_MAP.md` 或 Obsidian Git 分支记录。
+- 2026-06-03：将 Excalidraw 具体生成、无限画布、卡片、箭头和 QA 规则集中到 `excalidraw-diagram`，本 skill 只保留路由习惯。
 - 2026-06-01：补充 Markdown 标题层级习惯：不写正文标题时，正文主要章节从 `#` 开始；只有正文已经有 `# 标题` 时，后续章节才从 `##` 开始。
 - 2026-05-31：加入“优先参考 An Zhaofeng 自定义 `azf-` skill”的长期习惯。
-- 2026-05-31：加入 Excalidraw/视觉产物必须截图 QA，并参考 `azf-project-note-binding` 非代码视觉规范的规则。
+- 2026-05-31：曾加入 Excalidraw/视觉产物截图 QA 习惯；具体规则已在 2026-06-03 迁移到 `excalidraw-diagram`。
 - 2026-05-31：重写中文 README，修复乱码并同步最新习惯。
-- 2026-05-31：补充 Excalidraw 连线路由习惯：避免箭头交叉和箭头压卡片上沿。
-- 2026-05-31：补充虚线箭头 QA 习惯：虚线贴边、压边或与卡片纹理重叠也算布局失败。

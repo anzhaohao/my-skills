@@ -1,0 +1,4 @@
+interface:
+  display_name: "逐句精读 skill"
+  short_description: "为论文生成 Obsidian 逐句精读笔记，并保留 PDF++ 句级跳转链接。"
+  default_prompt: "对这篇文献进行逐句精读"
