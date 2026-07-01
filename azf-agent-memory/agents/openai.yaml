@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF Agent Memory"
+  short_description: "Use An Zhaofeng local Codex memory vault."
+  default_prompt: "Use $azf-agent-memory to recall and update the local Codex memory for this project."

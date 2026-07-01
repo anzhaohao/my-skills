@@ -16,6 +16,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Be proactive, but keep reminders concise and timed to natural checkpoints.
 - For multi-step work, keep a visible next-step trail so a new chat/model can resume quickly.
 - When creating Markdown documents, do not write the document title again inside the body content unless the user explicitly asks for an in-document heading. If there is no body title, start the remaining section hierarchy at `#` instead of `##`.
+- When creating or editing Obsidian Markdown notes with properties, write exactly one YAML frontmatter block at the very start of the file. The first bytes must be plain `---` with no UTF-8 BOM or hidden character before it; never create a second `--- ... ---` metadata block below the first one. Merge `创建时间` / `修改时间` and business fields such as `项目`, `类型`, `状态`, `aliases`, and `tags` into that single block.
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
 - Before risky or broad changes, remind the user to create a branch.
@@ -54,6 +55,8 @@ When creating a `.md` document file for the user:
 - Do not duplicate the document title as a first `# ...` heading in the body by default.
 - Let the filename, Obsidian note title, or surrounding context carry the title.
 - Start the body directly with the substantive content, metadata block, summary, or first necessary section.
+- For Obsidian notes with properties, the metadata block must be the only frontmatter block and must start at byte 0 with plain `---`. Save files as UTF-8 without BOM. Do not paste or generate `---` (`U+FEFF` before the delimiter), because Obsidian plugins such as `Update time on edit` may fail to recognize the existing properties and create a duplicate `创建时间` / `修改时间` block.
+- If adding AI-generated metadata to an existing note, inspect the current top frontmatter first and merge new fields into it. Keep `创建时间`, `修改时间`, `项目`, `类型`, `状态`, `aliases`, `tags`, and similar fields together in the single top block; do not insert another YAML block into the body.
 - If the Markdown body has no explicit document title, use `#` for the first-level content sections, `##` for subsections, and `###` only below that. Do not start ordinary sections at `##` unless a body title already occupies `#`.
 - Add a body title only when the user explicitly requests it, the template requires it, or the document would be ambiguous without it.
 

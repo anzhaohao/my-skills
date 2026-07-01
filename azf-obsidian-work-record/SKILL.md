@@ -279,6 +279,12 @@ Suggested structure:
 
 # 辅助说明与相关入口
 
+先用几句话写清楚这条主线的问题语义、背景、为什么它需要单独成线。这里可以写“背景是”“具体来说就是”，并放一条最重要的高亮判断。
+
+> [!NOTE] 关系说明
+> - 这条主线解决什么。
+> - 它和相邻主线的边界是什么。
+
 - 相邻主线：[[【主线】相邻主线]]
 - 相关硬件：[[硬件卡片]]
 - 参考方案：[[【方案】方案名称v0]]、[[【方案】方案名称v1]]
@@ -286,25 +292,11 @@ Suggested structure:
 
 # 过程脉络
 
-## Step 1：发现问题
+## Step 1：实际发生的一段推进（YYYY-MM-DD）
 
-先用一两句话说清楚这一步为什么出现，以及它解决什么问题：[[具体记录]]
+写这一步实际发生了什么，以及它让这条主线的理解发生了什么变化。只有真实发生过或正在发生的推进才写进 Step；不要提前铺满未来空步骤。
 
-- 具体来说就是：
 - <mark style="background:#fff88f">用一句话写出这一步带来的关键判断。</mark>
-
-## Step 2：制定方案
-
-- **问题分析和原则方案**：[[【方案】主题v0]]
-- **落地实现方案**：[[【方案】主题v1]]
-- **代码相关调试记录：** [[YYYYMMDD_主题调试记录]]
-
-## Step 3：实机验证计划
-
-第一版逻辑已经进入实机验证阶段，重点确认几件事：
-- 
-
-下面是调试记录：[[YYYYMMDD_主题实机调试]]
 ```
 
 Good mainline topics include "光谱仪连接与采集", "波长映射与频率插值", "FROG迹图反演与结果保存", or the equivalent threads for another project.
@@ -315,12 +307,21 @@ Mainline note body sections should normally start at `#` level, because the file
 
 If a reader needs context notes before reading the process, place them near the beginning in `# 辅助说明与相关入口`. Typical entries are `相邻主线`, `相关硬件`, `参考方案`, `代码修改`, `GUI说明`, and `源码理解`. Keep neighboring mainlines, hardware cards, and方案 notes in this entrance section unless they are the subject of an actual process step.
 
+For newly created or lightly developed mainlines, prefer this layout:
+
+1. Put problem semantics, background, "具体来说就是", and the key highlighted judgment in `# 辅助说明与相关入口`.
+2. Put the callout after the plain explanation, using it to summarize relationships or boundaries rather than replacing the explanation.
+3. Put ordinary entrance links after the explanation/callout so the reader first understands the problem and then chooses where to jump.
+4. Use `# 过程脉络` only for work that has actually happened or is actively being performed.
+5. Do not pre-create many empty future Steps. If An Zhaofeng explicitly asks to leave not-yet-done Steps blank, keep at most one broad next-action Step, such as `## Step 1：制定 GUI 与流程方案并修改代码（YYYY-MM-DD）`, instead of splitting it into multiple empty `Step 2/3/4/5`.
+
 Mainline-writing rules:
 
 - Start mainline filenames with `【主线】` unless the user says otherwise. Do not force rename older files without asking.
 - Mainlines should sound like a clear handoff for a future beginner: "具体来说就是..." is better than formal abstract wording.
 - `过程脉络` may include方案 links when the step is about制定方案, but do not pretend a方案 note is a调试记录.
 - After each debugging or implementation step, write what that step taught us, not only that the step happened.
+- Step titles should describe a natural chunk of progress. If design and implementation are one continuous work chunk, combine them in one Step title rather than forcing artificial substeps.
 - Keep `当前理解`, `当前卡点`, and `下一步` out of mainline notes by default; fold useful parts into `过程脉络`.
 - Use highlighted `<mark style="background:#fff88f">...</mark>` sparingly for the one judgment a future reader must not miss.
 - A mainline derived from another mainline can remain independent. Show the hierarchy in the total note; keep the mainline note itself focused on its own problem.
