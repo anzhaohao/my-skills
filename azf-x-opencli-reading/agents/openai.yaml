@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF X OpenCLI Reading"
+  short_description: "Read X/Twitter links through Edge + OpenCLI, with Article-first handling."
+  default_prompt: "Use $azf-x-opencli-reading to read this X/Twitter link through Edge + OpenCLI before falling back to web fetch."

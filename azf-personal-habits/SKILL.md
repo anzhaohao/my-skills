@@ -28,7 +28,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Maintain or update a progress handoff file for multi-step projects so a new chat/model can resume quickly.
 - During debugging, bug fixes, project code changes, hardware/software investigation, or Git commit/push workflows, do not modify Obsidian notes unless An Zhaofeng explicitly asks in the current turn to update/sync/write/organize notes. Bound Obsidian notes may be read for context, but the note vault is read-only by default during code work. If note updates would be useful but were not requested, mention them as a pending optional follow-up in the final response instead of editing the vault.
 - If An Zhaofeng explicitly asks to update Obsidian notes, first state the affected note files and whether the change is append-only or structural. For broad, structural, or formatting-sensitive note changes, create a rollback backup before writing, then report exactly what changed and why.
-- Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to a two-level Desktop backup structure: create or reuse `Desktop\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that second-level folder. This keeps the Desktop clean while making each rollback point easy to find.
+- Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to the Codex backup root `E:\software\CodexPlusPlus\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that task folder. This keeps rollback points centralized and easy to find.
 - When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
 - When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
 - When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. Examples: `azf-hardware-skill`, `azf-server-deploy`, `azf-obsidian-work-record`.
@@ -42,11 +42,11 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 
 When An Zhaofeng asks for a backup but does not name a location:
 
-1. Use `Desktop\Codex备份` as the default top-level backup folder.
+1. Use `E:\software\CodexPlusPlus\Codex备份` as the default top-level backup folder.
 2. Create one task-specific second-level folder named with timestamp and purpose, for example `20260530_190000_FrogTrace笔记整理前备份`.
 3. Put all files for that rollback point inside this second-level folder, preserving useful directory structure when possible.
 4. Tell An Zhaofeng the exact backup path before making edits.
-5. Avoid scattering backup files directly on the Desktop.
+5. Avoid scattering backup files directly on the Desktop or other project folders.
 
 ## Markdown Document Habit
 

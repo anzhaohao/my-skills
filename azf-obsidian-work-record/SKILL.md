@@ -554,7 +554,7 @@ Before broad changes:
 
 1. Read the current tree with `rg --files`.
 2. Read the total note, progress/debug note, and recent records.
-3. Create a rollback backup under `Desktop\Codex备份\YYYYMMDD_HHMMSS_任务名_修改前备份`.
+3. Create a rollback backup under `E:\software\CodexPlusPlus\Codex备份\YYYYMMDD_HHMMSS_任务名_修改前备份`.
 4. Move notes and attachment mirrors together.
 5. Update navigation notes, old aliases, and direct attachment paths.
 6. Verify ordinary wikilinks and embedded images after the move.
