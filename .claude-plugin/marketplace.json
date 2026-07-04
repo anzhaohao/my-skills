@@ -36,6 +36,15 @@
       "strict": false
     },
     {
+      "description": "An Zhaofeng's Codex-to-Claude bridge workflow. Use when the user asks Codex to call Claude, ask Claude for a second opinion, have Claude review a diff, run a Claude adversarial review, compare Codex and Claude judgments, or use Claude Code CLI from inside Codex. Defaults to read-only Claude consultation through the local `claude -p` CLI, with Codex retaining implementation control.",
+      "name": "azf-codex-claude-bridge",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-codex-claude-bridge",
+      "strict": false
+    },
+    {
       "description": "An Zhaofeng's personal workflow for filling or updating deep-learning experiment records in Markdown or Obsidian from archived experiment artifacts such as configs, manifests, train logs, metrics JSON, figures, predictions, checkpoints, and prior baseline notes. Use when the user asks to 整理实验记录, 填入实验记录, update an Obsidian experiment note, summarize a training run, compare deep-learning experiments, or convert training outputs into a beginner-friendly research log across any project or agent environment.",
       "name": "azf-deep-learning-experiment-record",
       "skills": [
