@@ -27,7 +27,7 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's local Codex long-term memory workflow. Use at the start of existing-project, debugging, continuation, \"last time\", repository, hardware, deployment, or preference-sensitive tasks to recall relevant memory from E:\\software\\Obsidian\\agent-memory before inspecting code. Use at task closeout to write stable facts, decisions, project state, reusable debugging lessons, or next steps back into the memory vault and rebuild its SQLite/Zvec indexes. Especially use for FrogTrace and other long-running local E-drive projects.",
+      "description": "An Zhaofeng's local agent-memory long-term memory workflow. Use at the start of existing-project, debugging, continuation, \"last time\", repository, hardware, deployment, or preference-sensitive tasks to recall relevant memory from E:\\software\\Obsidian\\agent-memory before inspecting code. Use at task closeout to write stable facts, decisions, project state, reusable debugging lessons, or next steps back into the memory vault and rebuild its SQLite/Zvec indexes. Especially use for FrogTrace and other long-running local E-drive projects. Also use when updating agent-memory prompts, workflows, source scripts, or GitHub backup rules.",
       "name": "azf-agent-memory",
       "skills": [
         "./"

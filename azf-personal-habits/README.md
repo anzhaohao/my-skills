@@ -4,7 +4,7 @@
 
 ## 什么时候触发
 
-- 开始为 An Zhaofeng 做编程、文档、实验记录、项目规划或调试任务。
+- 开始为 An Zhaofeng 做编程、前端页面/应用、文档、实验记录、项目规划或调试任务。
 - 任务涉及 Git 分支、提交、推送、回滚、备份或交接记录。
 - 创建、补充、优化任何 skill。
 - 创建 Markdown 文档、Obsidian 项目记录、Excalidraw 图或论文思路图。
@@ -22,11 +22,13 @@
 - 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - 创建或修改 Obsidian 笔记属性时，只允许文件最开头有一个 YAML frontmatter；第一行必须是纯 `---`，不能有 UTF-8 BOM 或隐藏字符。`创建时间`、`修改时间`、`项目`、`类型`、`状态`、`aliases`、`tags` 等字段必须合并在同一个属性块里，不能在正文再补一个属性块。
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
+- `C:\Users\anzhaofeng\.skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
 - 我说“精读”“逐句精读”“论文精读”时，默认使用 `azf-paper-sentence-deep-reading`。如果我明确说“不需要跳转”，不要强制 PDF++ 链接，保留逐段成文、破冰前瞻、逐句卡片和扫盲班术语结构即可。
 - 创建、补充、优化 skill 时，要同步维护该 skill 文件夹下的中文 `README.md`。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
+- 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
 
 ## Visual / Excalidraw 习惯
 
@@ -39,6 +41,8 @@
 
 ## 最近维护
 
+- 2026-07-04：加入独立前端偏好。以后做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits + GSAP 的组合：React Bits 用于现成动画组件和视觉素材，GSAP 用于自定义动画编排和 React 动画工程规范，但以可用性、项目风格和轻量性优先。
+- 2026-07-04：加入 Skills Manager 链接方向规则。`C:\Users\anzhaofeng\.skills-manager\skills` 必须作为真实源目录；其它 agent/plugin 目录需要共用 skill 时，反向链接回 Skills Manager。
 - 2026-07-02：将 Codex 默认回滚备份根目录从桌面迁移到 `E:\software\CodexPlusPlus\Codex备份`，以后只在该目录下创建时间戳任务子目录。
 - 2026-06-30：加入 Obsidian frontmatter 防重复规则。以后创建/补充 AI 笔记属性时，必须使用 UTF-8 无 BOM、文件首行纯 `---`、全文件只保留一个顶部 YAML 属性块，避免 `Update time on edit` 误判后重复创建 `创建时间/修改时间`。
 - 2026-06-23：加入论文精读默认路由规则。以后我说“精读”默认指 `azf-paper-sentence-deep-reading`；若明确说“不需要跳转”，则不强制 PDF++ 链接。

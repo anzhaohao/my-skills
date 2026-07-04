@@ -6,7 +6,7 @@ description: >-
 
 # AZF Personal Habits
 
-Use this skill as An Zhaofeng's global personal preference layer. Treat it as a standing collaboration habit: protect rollback ability, keep work recoverable, leave a clean handoff trail, and follow document-format preferences.
+Use this skill as An Zhaofeng's global personal preference layer. Treat it as a standing collaboration habit: protect rollback ability, keep work recoverable, leave a clean handoff trail, follow document-format preferences, and preserve frontend style preferences.
 
 ## Core Rules
 
@@ -30,13 +30,23 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - If An Zhaofeng explicitly asks to update Obsidian notes, first state the affected note files and whether the change is append-only or structural. For broad, structural, or formatting-sensitive note changes, create a rollback backup before writing, then report exactly what changed and why.
 - Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to the Codex backup root `E:\software\CodexPlusPlus\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that task folder. This keeps rollback points centralized and easy to find.
 - When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
-- When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
+- When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. This directory is the canonical source of local skills and must contain real skill directories, not links that point outward into another agent or plugin directory. When another agent or plugin needs the same skill, create the link in that agent/plugin directory pointing back to Skills Manager. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
 - When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. Examples: `azf-hardware-skill`, `azf-server-deploy`, `azf-obsidian-work-record`.
 - Treat skills with the `azf-` prefix as An Zhaofeng's own custom skills. When a task can match both a generic/system skill and an `azf-` custom skill, read and follow the relevant `azf-` skill first, then use generic skills only as supporting implementation tools.
 - If An Zhaofeng explicitly names or provides a custom skill for a task, prioritize that skill even when another installed skill has a similar description. State which custom skill is being used and follow its output, QA, and workflow requirements.
 - When An Zhaofeng says "精读", "逐句精读", "论文精读", or asks to generate paper deep-reading notes, default to the `azf-paper-sentence-deep-reading` skill. If he explicitly says "不需要跳转", do not force PDF++ selection links; keep the paragraph-per-note structure, break-ice preview, sentence cards, and glossary workflow, and use page/paragraph/sentence positioning instead.
 - When creating, supplementing, or optimizing any skill, maintain the README file in that skill folder at the same time. The README should be written in Chinese for An Zhaofeng, summarize what the skill does, when it should trigger, important stored facts or preferences, and the latest meaningful maintenance note.
 - For hardware, server assets, or equipment facts, prefer `azf-hardware-skill`. For server Docker deployment paths, compose layout, reverse proxy, backup, and service-operation conventions, prefer `azf-server-deploy`.
+
+## Frontend Preference
+
+When An Zhaofeng asks to build a frontend, website, app, dashboard, landing page, game, or interactive page:
+
+- Prefer considering React Bits as a source of ready-made animated React components, visual backgrounds, text effects, and polished interaction pieces when the project is React/Next/Vite-compatible.
+- Prefer GSAP for custom animation logic, page-level choreography, timelines, scroll-driven animation, and React animation cleanup/performance patterns.
+- Treat React Bits as a visual component source, not a mandatory dependency. Do not add it when the design should stay plain, operational, lightweight, or when the existing project style conflicts with it.
+- Combine React Bits and GSAP when useful: React Bits for local visual components, GSAP for orchestration and custom behavior.
+- Prioritize usability, readability, product fit, and the existing design system over visual flash.
 
 ## Backup Habit
 

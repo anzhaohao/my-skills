@@ -1,13 +1,15 @@
 ---
 name: azf-agent-memory
 description: >-
-  An Zhaofeng's local Codex long-term memory workflow. Use at the start of
+  An Zhaofeng's local agent-memory long-term memory workflow. Use at the start of
   existing-project, debugging, continuation, "last time", repository, hardware,
   deployment, or preference-sensitive tasks to recall relevant memory from
   E:\software\Obsidian\agent-memory before inspecting code. Use at task closeout
   to write stable facts, decisions, project state, reusable debugging lessons, or
   next steps back into the memory vault and rebuild its SQLite/Zvec indexes.
-  Especially use for FrogTrace and other long-running local E-drive projects.
+  Especially use for FrogTrace and other long-running local E-drive projects. Also
+  use when updating agent-memory prompts, workflows, source scripts, or GitHub
+  backup rules.
 ---
 
 # AZF Agent Memory
@@ -21,11 +23,28 @@ SQLite and optional Zvec semantic indexes.
 - Memory root: `E:\software\Obsidian\agent-memory`
 - Vault: `E:\software\Obsidian\agent-memory\vault`
 - Entry instructions: `E:\software\Obsidian\agent-memory\vault\AGENTS.md`
+- Index: `E:\software\Obsidian\agent-memory\vault\INDEX.md`
+- Maintenance principles: `E:\software\Obsidian\agent-memory\MAINTENANCE_PRINCIPLES.md`
 - Source scripts: `E:\software\Obsidian\agent-memory\source\scripts`
 - Environment loader: `E:\software\Obsidian\agent-memory\Load-AgentMemoryEnv.ps1`
 - Python: `E:\software\Anaconda\envs\agent-memory\python.exe`
 - Basic check: `E:\software\Obsidian\agent-memory\Run-AgentMemoryCheck-Conda.ps1`
 - Vector index: `E:\software\Obsidian\agent-memory\Run-AgentMemoryVectorIndex.ps1`
+
+## Naming And Repository Rules
+
+- The project name is `agent-memory`.
+- Keep `codex_memory_*`, `CODEX_MEMORY_*`, and `mcncarl/codex-memory` only for
+  inherited script/API names, environment variables, or the upstream repository.
+- Do not call the whole project `codex-memory`.
+- The backup remote is `anzhaohao/agent-memory`.
+- The long-term backup branch is `main`.
+- `source/` is a normal tracked source directory, not a Git submodule.
+- Never create `source-main`, a new source repository, a fork, or a submodule for
+  `source/` unless An Zhaofeng explicitly changes this rule.
+- Do not use `git clone --recurse-submodules` or `git submodule update` for this
+  repository.
+- If `.gitmodules` appears, report it before changing repository structure.
 
 ## Start-Of-Task Recall
 
@@ -34,9 +53,11 @@ answering a user preference/history question:
 
 1. Read `vault\AGENTS.md`.
 2. Read `vault\INDEX.md`.
-3. Search memory with project/task keywords.
-4. Read only the most relevant 1-3 Markdown files.
-5. Then inspect the target codebase.
+3. Read `MAINTENANCE_PRINCIPLES.md` when the task touches agent-memory itself,
+   prompts, scripts, source updates, Git, backup, or onboarding other agents.
+4. Search memory with project/task keywords.
+5. Read only the most relevant 1-3 Markdown files.
+6. Then inspect the target codebase.
 
 PowerShell keyword search:
 
@@ -107,6 +128,40 @@ After writing or changing memory, rebuild and check:
 powershell -ExecutionPolicy Bypass -File "E:\software\Obsidian\agent-memory\Run-AgentMemoryCheck-Conda.ps1"
 powershell -ExecutionPolicy Bypass -File "E:\software\Obsidian\agent-memory\Run-AgentMemoryVectorIndex.ps1"
 ```
+
+When changing agent-memory prompts, workflow notes, source scripts, or repository
+rules, run the closeout entry too:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "E:\software\Obsidian\agent-memory\Run-AgentMemoryCloseout.ps1"
+```
+
+## Prompt Maintenance
+
+When asked to update prompts for Claude Code, other local agents, or generic
+agentic tools:
+
+1. Keep the prompt path-relative around `MEMORY_ROOT`; do not bake in the local
+   E-drive path unless the target is this exact machine.
+2. Require the agent to ask for `MEMORY_ROOT` if it was not provided.
+3. Require first-round local-only diagnosis for missing dependencies, indexes,
+   HF cache, or embedding models.
+4. Allow联网下载, dependency installation, or large rebuilds only after the user
+   explicitly confirms in a later turn.
+5. Include the repository rule: only use `anzhaohao/agent-memory` `main`; no
+   `source-main`, no submodule, no extra repo/fork.
+6. Tell agents to read `AGENTS.md`, `INDEX.md`, and `MAINTENANCE_PRINCIPLES.md`
+   before touching agent-memory itself.
+
+## Git Backup
+
+When the user asks to commit or push agent-memory:
+
+- Show `git status -sb` and `git diff --stat` before committing.
+- Commit only files related to the current task.
+- Push only `origin main` for `anzhaohao/agent-memory`.
+- Do not create PRs, branches, submodules, forks, or new GitHub repositories
+  unless the user explicitly asks for that exact action.
 
 ## Importing Old Codex Chats
 
