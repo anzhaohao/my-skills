@@ -11,6 +11,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 ## Core Rules
 
 - Prefer reading this skill first when a task is for An Zhaofeng and personal workflow preferences may matter.
+- User facts and boundaries have their formal version in `agent-memory` under `vault/用户记忆/`; this skill only maintains operational procedures. If they conflict, follow the vault and remind An Zhaofeng. Locate `agent-memory` through `azf-agent-memory` first.
 - Before doing anything to a project, first state the proposed plan. If any important requirement, target path, scope, risk, or expected output is uncertain, ask An Zhaofeng for confirmation. Wait for explicit confirmation before running commands, editing files, or making irreversible project changes, unless the user has already clearly authorized immediate execution.
 - Before changing project code or project artifacts, explicitly distinguish whether the user asked for analysis/recording only or also authorized implementation. If the user only asks to update a work record, analyze a problem, evaluate a scheme, or explain behavior, do not modify project code "while you are there". First provide a short implementation plan, list affected files and risks, and wait for An Zhaofeng's second confirmation before editing code. Treat this as mandatory for all code changes, even small obvious fixes.
 - Be proactive, but keep reminders concise and timed to natural checkpoints.

@@ -2,6 +2,8 @@
 
 这个 skill 是 An Zhaofeng 的全局个人协作习惯层，用来让不同智能体在编程、写文档、记录项目、调试、维护 Git 和创建 skill 时保持一致。
 
+本 skill 只维护操作规程、话术模板、格式细则和工具启动步骤。关于用户本人的正式事实、边界和长期治理偏好，以 `agent-memory` 的 `vault/用户记忆/` 为准；两者冲突时以 vault 为准并提醒用户。定位 `agent-memory` 时优先使用 `azf-agent-memory`。
+
 ## 什么时候触发
 
 - 开始为 An Zhaofeng 做编程、前端页面/应用、文档、实验记录、项目规划或调试任务。
@@ -11,6 +13,7 @@
 
 ## 当前关键规则
 
+- 用户正式事实与边界不在本 skill 中维护完整版本；本 skill 只保留行为层规则和指向 `agent-memory` 的说明。
 - 重要代码修改前检查 Git 状态，必要时提醒创建分支。
 - 项目代码或项目文件改动前必须先二次确认：如果我只是要求“更新工作记录、分析问题、评估方案、解释行为”，不要顺手改代码；必须先给出修改方案、影响文件和风险点，等我明确确认后再改。
 - 调试、修 bug、代码改动、硬件/软件排查或 Git 提交/推送时，Obsidian 笔记库默认只读。除非我在当前回合明确说“更新笔记、同步笔记、写入笔记、整理笔记”，否则不要修改 Obsidian 正文；如果确实值得补记，只在最后说明“笔记未更新，可作为后续待办”。
@@ -41,6 +44,7 @@
 
 ## 最近维护
 
+- 2026-07-07：确认 skill 与 `agent-memory vault` 分层。`azf-personal-habits` 保留为行为层，负责自动触发的操作规程；用户正式事实、边界和长期治理偏好改由 `agent-memory/vault/用户记忆/` 维护。冲突时以 vault 为准并提醒用户。
 - 2026-07-04：加入独立前端偏好。以后做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits + GSAP 的组合：React Bits 用于现成动画组件和视觉素材，GSAP 用于自定义动画编排和 React 动画工程规范，但以可用性、项目风格和轻量性优先。
 - 2026-07-04：加入 Skills Manager 链接方向规则。`C:\Users\anzhaofeng\.skills-manager\skills` 必须作为真实源目录；其它 agent/plugin 目录需要共用 skill 时，反向链接回 Skills Manager。
 - 2026-07-02：将 Codex 默认回滚备份根目录从桌面迁移到 `E:\software\CodexPlusPlus\Codex备份`，以后只在该目录下创建时间戳任务子目录。
