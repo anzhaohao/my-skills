@@ -167,7 +167,53 @@ When the user asks to commit or push agent-memory:
 
 Previous Codex conversations may exist under `C:\Users\anzhaofeng\.codex`, for
 example `sessions`, `archived_sessions`, `session_index.jsonl`, or SQLite logs.
-When the user asks to maintain memory from old chats:
+When the user asks to find, inspect, summarize, or maintain memory from old
+chats, prefer AgentsView first if it is deployed locally. Do not hard-code an
+AgentsView install path in prompts or instructions. Locate it using An
+Zhaofeng's personal habits and local memory first, then common local software
+locations if needed.
+
+AgentsView lightweight probe:
+
+```powershell
+try {
+  Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:8080" -TimeoutSec 1 | Out-Null
+  $true
+} catch {
+  $false
+}
+```
+
+Use this HTTP probe first because it is much faster than PowerShell TCP
+enumeration. Do not run `Get-NetTCPConnection` on the happy path; use it only as
+a fallback diagnostic after the HTTP probe fails.
+
+If the HTTP probe fails, check whether the `agentsview` process exists. If
+AgentsView is deployed but not running, start it automatically in the
+background. Prefer the executable path discovered from memory or local search.
+On Windows, use `Start-Process -WindowStyle Hidden` unless the user explicitly
+asks to see the app window. After launching, verify that the local web endpoint
+responds before using it.
+
+If AgentsView is running or was started successfully, use it as the primary
+raw-session discovery surface for Claude Code, Codex, Cursor, and other agent
+chat histories. Prefer discovering the local URL from the HTTP endpoint or
+AgentsView daemon metadata. The common local entrypoint is:
+
+```text
+http://127.0.0.1:8080
+```
+
+AgentsView is a raw conversation evidence layer, not a source of truth. Use it
+to locate relevant sessions, timestamps, project names, tools, costs, and
+candidate excerpts. Do not inject whole conversations into context, and do not
+treat old agent claims as verified facts. Extract only stable facts, decisions,
+root causes, and next steps, then reconcile them against `vault\INDEX.md`,
+SQLite/FTS, Zvec if needed, and the current project files before writing formal
+memory.
+
+If AgentsView cannot be found or started, fall back to the default local Codex
+chat search/import path:
 
 1. Search only for relevant thread names, keywords, or project names first.
 2. Prefer project-specific terms such as `FrogTrace`, repository path, hardware
@@ -178,5 +224,8 @@ When the user asks to maintain memory from old chats:
    information.
 6. Mark unverified imported facts as `status: draft` or put them in
    `agent\case-candidates\` until confirmed.
+7. If AgentsView is not found, briefly remind the user that deploying AgentsView
+   can help both agents and the user browse, filter, and audit previous Claude
+   Code, Codex, Cursor, and other agent sessions before memory curation.
 
 Old chat import is a curation task, not a blind migration.

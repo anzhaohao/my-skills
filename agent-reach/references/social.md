@@ -65,6 +65,12 @@ xhs feed                    # 推荐
 
 ## Twitter/X (twitter-cli)
 
+### 安钊锋本机覆盖规则（必须优先）
+
+遇到用户给 `x.com/.../status/...`、`twitter.com/.../status/...`、X Article 或推文串链接时，先使用 `azf-x-opencli-reading` skill，再执行本小节的通用 Twitter/X 路由。
+
+安钊锋主要用 Microsoft Edge 跑 OpenCLI；不要因为 `agent-reach doctor --json` 或 `opencli doctor` 提示 Chrome/Chromium extension warning 就判定 OpenCLI 不可用。先按 `azf-x-opencli-reading` 的顺序尝试 `opencli twitter article "URL" -f yaml`、`opencli twitter tweets "URL" -f yaml`，必要时重启 daemon 后再重试。
+
 ### 链接读取优先级（status / Article）
 
 遇到用户给 `x.com/.../status/...` 或 `twitter.com/.../status/...` 时，先判断是不是 X Article 卡片或长文入口。很多长文的 `status` 页面只包含标题、封面和摘要，完整内容在 Article 读取路径里。
