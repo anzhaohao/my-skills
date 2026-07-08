@@ -83,14 +83,28 @@ At creation time:
 
 Name it like `项目名总笔记.md`. It should answer "where are we now?" before anything else.
 
-Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、当前主线`, `# 三、目前待解决的问题`. Keep subsection headings short.
+Use numbered section headings in total notes. Because the filename already carries the document title, do not add a duplicate body title; start top-level content sections at `#`. Prefer Chinese numerals, for example `# 一、现在先看这里`, `# 二、当前主线` / `# 二、主线与当前状态`, `# 三、目前待解决的问题 / 需求`. Keep subsection headings short.
 
 Preferred total-note dashboard flow for active projects:
 
 1. `现在先看这里`: current status and immediate handoff.
-2. `当前主线`: the few active threads that explain the project state.
+2. `主线与当前状态`: the few active threads that explain the project state, preferably rendered by a lightweight Obsidian Bases view.
 3. `目前待解决的问题`: unresolved issue index and issue detail cards.
 4. `未归类调试记录 / 小 bug 收件箱`: automatically or manually list records that have not yet been attached to a mainline note.
+
+Canonical total-note Templater template on the current machine:
+
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\项目总笔记模板.md
+```
+
+Treat that Templater file as the source of truth for generating new total notes. The explanatory reference note is currently:
+
+```text
+E:\software\Obsidian\安钊锋的外置大脑\02-Brain Cells\2_人工智能相关\VibeCoding工作流\模板-项目总笔记.md
+```
+
+If An Zhaofeng manually adjusts the `当前阶段` callout formatting in the canonical template or a project total note, learn that layout and do not force it back into a paragraph or another schema.
 
 Move longer navigation material out of the total note:
 
@@ -102,7 +116,7 @@ When reorganizing an existing total note, keep the section content intact, move 
 
 Use this shape. Keep it dashboard-like: the total note is for "where are we now", not for full process history.
 
-```markdown
+````markdown
 ---
 创建时间: YYYY-MM-DDTHH:mm
 修改时间: YYYY-MM-DDTHH:mm
@@ -122,31 +136,30 @@ aliases:
 
 # 二、当前主线
 
-## 1. 主线名称
+![[项目名主线索引.base]]
 
-- **入口：** [[【主线】主线名称]]
-- **当前状态：** 用一句话说明这条主线现在到哪了。
+<!-- 可选：如果项目需要解释主线分组、从属关系或当前判断，继续写在 base 下面；base 只做索引，不替代解释。 -->
 
-### 1.1 从上面主线引出的独立问题
+# 三、目前待解决的问题 / 需求
 
-- **入口：** [[【主线】从属问题主线]]
-- **从属关系：** 这是上面主线过程中发现的问题，但仍保留为独立主线笔记。
-- **当前状态：** 用一句话说明当前理解。
-
-# 三、目前待解决的问题
-
-> [!note] 阅读方式
-> 上表只放索引，避免太挤；具体理解放在下面的问题卡片里。
-
-| 事项 | 等级 | 问题 | 状态 |
+| 事项 | 等级 | 问题名称 | 状态 |
 |---|---|---|---|
-| Q1 | 🚨 核心 |  | 🔥 待处理 |
+<!-- AZF:ISSUE_TABLE_END -->
 
-## 问题理解
+```button
+name 新增问题/需求
+type cursor template
+action 新增项目问题或需求
+color blue
+```
 
-> [!todo] Q1
-> - **理解：**  
-> - **主线入口：** [[【主线】主线名称]]
+等级可选：🚨 核心 / ⭐ 重要 / 🌱 后续
+
+## 问题/需求理解
+
+<!-- AZF:ISSUE_CALLOUTS_END -->
+
+> [!note] Q 之间的关系（如果有多条 Q 属于同一族，在这里解释一次，主线里只链接不复述）
 
 # 四、未归类调试记录 / 小 bug 收件箱
 
@@ -154,7 +167,7 @@ aliases:
 > 新建小 bug 或临时调试记录时，先判断它能否接入已有主线。能接入时，直接写 `归类状态: 已归类`，并补上 `关联主线`；暂时没有合适主线时，才写 `归类状态: 未归类`，让它进入这里。每次整理结束时，需要向用户说明本次记录的归类判断。
 
 ![[项目名未归类调试记录.base]]
-```
+````
 
 If a note is renamed, add aliases for old names instead of rewriting every old record.
 
@@ -162,32 +175,48 @@ Total-note rules:
 
 - The mainline display title in the total note may be more direct than the filename. Do not rename the mainline file just to improve the dashboard title.
 - A mainline derived from another mainline can be shown as an indented `### 1.1 ...` block, but it should remain an independent mainline note when it has its own reusable problem logic.
-- In `当前主线`, do not use tables. Use short Markdown bullets with bold field labels, such as `- **入口：** ...` and `- **当前状态：** ...`; add `- **从属关系：** ...` only for subordinate mainlines.
-- Do not include `下一步` in the mainline list by default. The total note should stay clean; next actions belong in records or direct user planning unless the user explicitly asks for them.
+- In `主线与当前状态` / `当前主线`, put a lightweight `.base` view directly under the section heading as a compact index. The mainline base should show only `创建日期`, `主线` (from `file.name`, not a duplicated frontmatter property), and `当前状态`, sorted from old to new by `创建时间 ASC`.
+- The mainline base is an index, not a replacement for An Zhaofeng's hand-written mainline explanation. If the total note already has grouped mainline descriptions, dependencies, or current judgments, keep them below the base instead of deleting them.
+- Do not include `下一步` in the mainline base by default. The total note should stay clean; next actions belong in records or direct user planning unless the user explicitly asks for them.
+
+Canonical mainline-base template on the current machine:
+
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\项目主线索引Base模板.base
+```
+
+When creating a project mainline base, copy this file into the project's `0_总览/`, rename it like `项目名主线索引.base`, then replace `项目名` inside the filter. If the vault or Templater folder has moved, ask An Zhaofeng to confirm the current locations before recreating it.
 
 ## Unresolved Issues Table
 
-Every total note should maintain a `目前待解决的问题` section near the top, usually after `当前主线` and before `未归类调试记录 / 小 bug 收件箱`.
+Every total note should maintain a `目前待解决的问题 / 需求` section near the top, usually after `主线与当前状态` and before `未归类调试记录 / 小 bug 收件箱`.
 
-Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row. Prefer a `问题理解` section below the table; it should explain the problem in plain words and link only to the mainline entrance.
+Use a compact index table to avoid cramped Markdown. Do not put long judgments, evidence, and next steps into the same table row. Prefer a `问题/需求理解` section below the table; it should explain the problem in plain words and link only to the mainline entrance. For old notes, `问题理解` is still accepted as a legacy heading.
 
-```markdown
-# 四、目前待解决的问题
+````markdown
+# 三、目前待解决的问题 / 需求
 
-| 事项 | 等级 | 问题 | 状态 |
+| 事项 | 等级 | 问题名称 | 状态 |
 |---|---|---|---|
-| Q1 | 🚨 核心 |  | 🔥 待处理 |
+<!-- AZF:ISSUE_TABLE_END -->
 
-## 问题理解
-
-> [!todo] Q1
-> - **理解：**  
-> - **主线入口：** [[【主线】主线名称]]
+```button
+name 新增问题/需求
+type cursor template
+action 新增项目问题或需求
+color blue
 ```
+
+等级可选：🚨 核心 / ⭐ 重要 / 🌱 后续
+
+## 问题/需求理解
+
+<!-- AZF:ISSUE_CALLOUTS_END -->
+````
 
 Rules:
 
-- In issue detail cards and status cards, prefer list syntax inside the callout: `> - **字段：** 内容`. This renders as a cleaner card with stable alignment, especially for `理解` and `主线入口`.
+- In issue detail cards and status cards, prefer list syntax inside the callout: `> - **字段：** 内容`. This renders as a cleaner card with stable alignment, especially for `描述` and `主线入口`.
 - Do not include an `入口` column in the issue index table. Put links and evidence in the issue detail card.
 - Use clear item markers in the form `Q1`, `Q2`, `Q3` so unresolved issues are easy to cite in conversation and commits.
 - Keep priority visually distinctive with icon labels instead of bare `P0` / `P1`.
@@ -195,12 +224,33 @@ Rules:
 - `🚨 核心`: blocks the next experiment, debugging step, or core conclusion.
 - `⭐ 重要`: important but can wait until the current core path is handled.
 - `🌱 后续`: known limitation, cleanup, or future improvement.
-- Keep the status set small, but make the icons visually obvious. Preferred status values are only: `🔥 待处理`, `⚙️ 进行中`, `✅ 已解决`, `💤 暂缓`.
-- Put details such as "待排查", "待补充", or "待设计" in the issue card, not in the status column.
+- For the total-note issue table, status has only two values: `未创建主线` and `已有主线`. Default new entries to `未创建主线`.
+- Keep detailed progress states such as "待排查", "待补充", "待设计", "进行中", or "已解决" out of this table; write them in the issue card, mainline note, or debug record instead.
 - Link each issue primarily to the mainline note that carries the relationship. Do not put debug/work/experiment records from `2_调试记录/` in a Q issue card; attach those process records to the relevant mainline note instead.
 - When new progress arrives, update this table first if it changes an active issue.
-- If an issue needs more than one short phrase of explanation, put the detail in the `问题理解` card, not in the table.
-- Do not let solved problems disappear without trace; mark them `✅ 已解决` or move the details to the relevant debug/mainline note if the table is getting too long.
+- If an issue needs more than one short phrase of explanation, put the detail in the `问题/需求理解` card, not in the table.
+- Do not let old problems disappear without trace. If they no longer need to stay in the active table, archive the detail in the relevant mainline/debug note before removing the row.
+
+Canonical Templater command on the current machine:
+
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\新增项目问题或需求.md
+```
+
+Use this command to append a new issue or requirement to a total note. It should show only three prompts: problem name, problem description, and priority level (choice list: `🚨 核心`, `⭐ 重要`, `🌱 后续`). It must automatically create the next `Q` id, append one row before `<!-- AZF:ISSUE_TABLE_END -->`, append a matching callout under `问题/需求理解` (or legacy `问题理解`) before `<!-- AZF:ISSUE_CALLOUTS_END -->` when the anchor exists, and default the table status to `未创建主线`.
+
+When the Buttons plugin is available, put this button directly under the issue table and before the priority reference line:
+
+```button
+name 新增问题/需求
+type cursor template
+action 新增项目问题或需求
+color blue
+```
+
+Use `type cursor template` without `templater true`. In Buttons, `templater true` means "preprocess the button fields with Templater before running"; it is not needed for a Templater template file and can cause `Failed to initialize Templater processor`. The command template modifies the active total note itself and returns empty output, so the button should not visibly insert template text into the note.
+
+When a Q later gains a real mainline, update its issue callout `主线入口` to the mainline link and change the table status to `已有主线`. The Templater command may sync existing table statuses by reading whether each callout has a non-placeholder wiki link in `主线入口`.
 
 ## Small Bug Inbox And Mainline Attachment
 
@@ -220,8 +270,8 @@ Use this rule especially when the user asks to update a work record, debug recor
 
 1. Update the total note's Q issue table/card only as the dashboard entry: short problem understanding, mainline entrance, and status. Link only mainline notes by default; never link concrete debug/work/experiment records from `2_调试记录/`.
 2. Create or update the concrete debug/work record under `2_调试记录/`, including frontmatter `归类状态: 已归类` and `关联主线`.
-3. Append the record to the relevant mainline note's `过程脉络`, then rewrite the relevant Step in plain language if the new record changes the thread.
-4. If the progress is a prerequisite for another mainline, add a short cross-link in `辅助说明与相关入口`; do not rely on the Q card alone to carry that relationship. Keep concrete debug-record links in mainline `过程脉络`, not in the Q card.
+3. Append the record to the relevant mainline note's `推进记录`, then rewrite the relevant progress entry in plain language if the new record changes the thread.
+4. If the progress is a prerequisite for another mainline, add a short cross-link in `相关入口` or the relevant progress entry; do not rely on the Q card alone to carry that relationship. Keep concrete debug-record links in mainline `推进记录`, not in the Q card.
 5. End the user-facing response by reporting the sync coverage, for example: `已更新总笔记 Q3、调试记录、[[根据中心波长自动选择光谱仪]] 主线` or `只更新了 Q3，主线未改，因为...`.
 
 Avoid the common mistake: updating only `FrogTrace项目总笔记.md` 的 Q 入口 while leaving the corresponding `1_主线笔记/` page stale. For example, a change such as "analysis wavelength range is automatically derived from spectrometer wavelengths and pixel window" may appear in Q3, but if it is a prerequisite for "根据中心波长自动选择光谱仪", it must also be appended to that mainline as process context.
@@ -241,7 +291,7 @@ Default rule:
   - 主线名称
 ```
 
-Then update the relevant mainline note's `过程脉络` or `关键证据` section with a link to the record.
+Then update the relevant mainline note's `推进记录` section with a link to the record.
 
 4. If no existing mainline is a good fit, add frontmatter like this:
 
@@ -264,65 +314,40 @@ When Obsidian Bases is available, create a `.base` file for the inbox and embed 
 
 ## Mainline Notes
 
-Use mainline notes when raw records are too isolated to show relationships. A mainline note should summarize one thread, not duplicate every detail.
+Use mainline notes when raw records are too isolated to show relationships. A mainline note should summarize one thread, not duplicate every detail. An Zhaofeng prefers a concise linear mainline: use date-based progress entries instead of Step diary structure.
 
-Suggested structure:
+Canonical local Templater template on the current machine:
 
-```markdown
----
-项目: 项目名
-类型: 主线笔记
-状态: in-progress
----
-
-# 一句话说明
-
-# 辅助说明与相关入口
-
-先用几句话写清楚这条主线的问题语义、背景、为什么它需要单独成线。这里可以写“背景是”“具体来说就是”，并放一条最重要的高亮判断。
-
-> [!NOTE] 关系说明
-> - 这条主线解决什么。
-> - 它和相邻主线的边界是什么。
-
-- 相邻主线：[[【主线】相邻主线]]
-- 相关硬件：[[硬件卡片]]
-- 参考方案：[[【方案】方案名称v0]]、[[【方案】方案名称v1]]
-- 代码修改：[[YYYYMMDD_主题代码修改]]
-
-# 过程脉络
-
-## Step 1：实际发生的一段推进（YYYY-MM-DD）
-
-写这一步实际发生了什么，以及它让这条主线的理解发生了什么变化。只有真实发生过或正在发生的推进才写进 Step；不要提前铺满未来空步骤。
-
-- <mark style="background:#fff88f">用一句话写出这一步带来的关键判断。</mark>
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\项目主线笔记模板-日期推进记录.md
 ```
 
+Treat that file as the source of truth for detailed mainline-note bodies. When creating a new mainline note for An Zhaofeng:
+
+1. Prefer using the Obsidian Templater template above.
+2. If writing the note directly outside Obsidian, read that template file first and mirror its structure instead of relying on an embedded copy in this skill.
+3. If the vault has moved, the template path is missing, or the work is happening on a new computer, stop and ask An Zhaofeng to confirm:
+   - the current Obsidian vault root;
+   - the Templater template folder;
+   - the canonical mainline-note template file name.
+4. Do not silently recreate this template in a guessed location.
+
 Good mainline topics include "光谱仪连接与采集", "波长映射与频率插值", "FROG迹图反演与结果保存", or the equivalent threads for another project.
-
-`过程脉络` is a chronological/process section written as `Step 1`, `Step 2`, `Step 3`. Each step should explain why that step exists, what it changed in the understanding, and which concrete record or plan carries the detail. Do not use the old four-part debug style (`为什么做` / `这次想确认` / `得到的判断` / `对本主线的影响`) inside mainline notes.
-
-Mainline note body sections should normally start at `#` level, because the filename already acts as the document title. Use `# 辅助说明与相关入口` as a separate top-level chapter after `# 一句话说明` when it helps keep entrances visible.
-
-If a reader needs context notes before reading the process, place them near the beginning in `# 辅助说明与相关入口`. Typical entries are `相邻主线`, `相关硬件`, `参考方案`, `代码修改`, `GUI说明`, and `源码理解`. Keep neighboring mainlines, hardware cards, and方案 notes in this entrance section unless they are the subject of an actual process step.
-
-For newly created or lightly developed mainlines, prefer this layout:
-
-1. Put problem semantics, background, "具体来说就是", and the key highlighted judgment in `# 辅助说明与相关入口`.
-2. Put the callout after the plain explanation, using it to summarize relationships or boundaries rather than replacing the explanation.
-3. Put ordinary entrance links after the explanation/callout so the reader first understands the problem and then chooses where to jump.
-4. Use `# 过程脉络` only for work that has actually happened or is actively being performed.
-5. Do not pre-create many empty future Steps. If An Zhaofeng explicitly asks to leave not-yet-done Steps blank, keep at most one broad next-action Step, such as `## Step 1：制定 GUI 与流程方案并修改代码（YYYY-MM-DD）`, instead of splitting it into multiple empty `Step 2/3/4/5`.
 
 Mainline-writing rules:
 
 - Start mainline filenames with `【主线】` unless the user says otherwise. Do not force rename older files without asking.
+- Mainline frontmatter should include `当前状态: 一句话状态` for the total note's mainline base. Do not add a separate `主线` frontmatter property; the base's `主线` column should read the note name via `file.name`. Keep `状态` only as a coarse legacy/compatibility field when it already exists.
 - Mainlines should sound like a clear handoff for a future beginner: "具体来说就是..." is better than formal abstract wording.
-- `过程脉络` may include方案 links when the step is about制定方案, but do not pretend a方案 note is a调试记录.
-- After each debugging or implementation step, write what that step taught us, not only that the step happened.
-- Step titles should describe a natural chunk of progress. If design and implementation are one continuous work chunk, combine them in one Step title rather than forcing artificial substeps.
-- Keep `当前理解`, `当前卡点`, and `下一步` out of mainline notes by default; fold useful parts into `过程脉络`.
+- Use `# 推进记录` with date headings such as `## YYYY-MM-DD：一句话结论`; do not use `Step 1/2/3` as the mainline structure.
+- Each progress entry should bind the progress, the plan used for this progress, and the debug record for this progress. If every debug run has a different plan, put `本次方案` under the matching progress entry instead of collecting all方案 links at the bottom.
+- Keep `# 相关入口` for stable cross-progress context only: total note, neighboring mainlines, hardware cards, project-understanding notes, and long-lived references. Do not dump every per-run方案 there.
+- Do not include code status in mainline notes. Branch, commit, working tree, gitGraph, commands, logs, and verification output belong in the matching debug record Step.
+- Use three progress sizes: (1) one or two sentences with no evidence -> write a progress entry and mark `调试记录: 无单独记录`; (2) one paragraph plus explanatory screenshot -> write a progress entry plus a folded callout; (3) evidence screenshot, real-device result, CSV/log/command output, detours, or a point that needs future audit -> create a debug record and link it.
+- For folded mainline callouts, use them only for explanatory screenshots or light context. If the screenshot is evidence of real-device behavior, an error, an experiment result, or a conclusion that may be challenged later, create a debug record instead.
+- For explanatory folded callouts in mainline notes, preserve An Zhaofeng's original reasoning chain instead of flattening it into an agent summary. Preferred shape: title the callout as the question/reason, e.g. `> [!note]- 为什么要校准 Zolix 波长轴`; start with the date/context; place screenshots immediately after the claim they support; use short bullet groups such as `当时的操作是：` and `原因和代码依据见：`; keep background links under those bullets; end with the decision or consequence. Do not turn this kind of callout into a table unless it is truly comparing multiple items, and do not delete screenshots that explain why a later decision happened.
+- After each debugging or implementation progress entry, write what it taught the mainline, not only that the work happened.
+- Keep `当前理解`, `当前卡点`, and detailed `下一步` out of mainline notes by default; fold useful parts into `当前状态` or the specific progress entry.
 - Use highlighted `<mark style="background:#fff88f">...</mark>` sparingly for the one judgment a future reader must not miss.
 - A mainline derived from another mainline can remain independent. Show the hierarchy in the total note; keep the mainline note itself focused on its own problem.
 
@@ -330,11 +355,29 @@ Mainline-writing rules:
 
 Use `2_调试记录` for things that happened while working: code debugging, hardware tests, bug reviews, log reading, real-device validation, Git-backed changes, and progress handoff.
 
-There is only one debug-record body format for FrogTrace-style records: the timeline debug process format below. Do not create separate debug-record templates such as `实机验证记录`, `代码修改记录`, test-sheet records, or standalone Git-card records. If a note is a debug/process record, use the same timeline structure regardless of whether the work is code-only, hardware-only, real-device validation, or mixed code + hardware.
+There is only one debug-record body format for FrogTrace-style records: the Templater timeline debug process template below. Do not create separate debug-record templates such as `实机验证记录`, `代码修改记录`, test-sheet records, or standalone Git-card records. If a note is a debug/process record, use the same timeline structure regardless of whether the work is code-only, hardware-only, real-device validation, or mixed code + hardware.
+
+Canonical local Templater template on the current machine:
+
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\项目调试记录模板-Git在Step中.md
+```
+
+This skill should treat that file as the source of truth for the detailed debug-record body. Do not keep copying the full template into the skill. When creating a new debug record for An Zhaofeng:
+
+1. Prefer using the Obsidian Templater template above.
+2. If writing the note directly outside Obsidian, read that template file first and mirror its structure instead of relying on an embedded copy in this skill.
+3. If the vault has moved, the template path is missing, or the work is happening on a new computer, stop and ask An Zhaofeng to confirm:
+   - the current Obsidian vault root;
+   - the Templater template folder;
+   - the canonical debug-record template file name.
+4. Do not silently recreate this template in a guessed location. If urgent work must continue before the path is confirmed, write a minimal debug record and clearly mark that template-location confirmation is pending.
 
 - Existing experiment-record Markdown files should be moved under `2_调试记录/实验记录/` when the user wants a simpler structure.
 - Do not rewrite old experiment records unless the user asks. If a later conclusion changes the interpretation, add a new note or a `后续更正` section only when appropriate.
 - Keep chronological evidence in records; keep relationship summaries in mainline notes.
+- If a note is named, linked, or used as a debug record and it contains code changes, branch work, verification commands, SDK probing, calibration-file adoption, or future audit evidence, treat it as a real debug record: place it under `2_调试记录/` and set frontmatter `类型: 调试记录`. Do not leave it under `5_补充资料/` with `类型: 补充资料` merely because it began as supporting material.
+- When cleaning a mainline entry that links to a debug record, inspect the linked debug record before finishing. If the work involved Git, confirm that branch/commit/worktree/verification information exists in the chronological Step where the code or branch change happened. The mainline may omit Git details, but the debug record must not.
 - If a debug/work/experiment record is tied to code in a Git repository, include code version information inside the relevant chronological Step. Do not put the Git version only in a project progress file, code-sync note, or commit message.
 
 Git-bound debug records must state:
@@ -351,91 +394,22 @@ For modern FrogTrace-style records, use top-level `#` headings because the filen
 
 ### Timeline Debug Process Record
 
-```markdown
----
-创建时间: YYYY-MM-DDTHH:mm
-修改时间: YYYY-MM-DDTHH:mm
-项目: 项目名
-类型: 调试记录
-记录类型: 代码调试 / 硬件调试 / 代码与硬件联合调试 / 实机验证 / 结果复测
-调试日期: YYYY-MM-DD
-状态: 已记录 / 进行中 / 待复测
-归类状态: 未归类 / 已归类
-关联主线:
-  - 主线名
----
-
-# 一、调试目标
-
-用几句话说明这次到底在解决什么问题。先写外行也能看懂的现象和目标，不要一上来写代码细节。
-
-# 二、调试过程
-
-## Step 1：先发生了什么
-
-操作：
-
-现象：
-
-判断：
-
-证据入口：
-
-## Step 2：接着怎么排查或修改
-
-操作：
-
-涉及文件：
-
-现象：
-
-处理：
-
-验证：
-
-判断：
-
-## Step 3：如果发生了代码提交或分支变化，把 Git 放在这里
-
-操作：
-
-涉及文件：
-
-验证：
-
-Git 信息：
+Use the canonical Templater file for the exact body. The conceptual shape is:
 
 ```text
-代码仓库：
-当前分支：
-远端分支：
-起点提交：
-当前/记录提交：
-推送状态：
-工作区状态：
-验证命令：
-Git 图命令：
-```
-
-Git 可视化：
-
-```mermaid
-gitGraph
-   commit id: "base"
-   branch "feature-or-current"
-   checkout "feature-or-current"
-   commit id: "current HEAD"
-```
-
-判断：
-
+frontmatter
+# 一、调试目标
+# 二、调试过程
+## Step 1：...
+  操作 / 现象 / 证据入口 / 判断
+  Git 信息（only when this Step involves code, branch, commit, push, rollback, or verification tied to a code version）
+## Step 2：...
+## Step 3：...
 # 三、调试结论
-
-1. 已经确认什么。
-2. 已经修掉什么。
-3. 还没有彻底解决什么。
-4. 下一次应该从哪里继续。
+# 四、同步判断
 ```
+
+Keep Git cards and Git visualization inside the Step where the code change, branch change, commit, push, rollback, or code-version verification happened. This is intentional: it makes the note easier for agents and An Zhaofeng to resume from the exact chronological point where Git mattered.
 
 Timeline debug process rules:
 
@@ -462,48 +436,31 @@ Use supplement notes for GUI guides, dependency notes, old plans, code-reading i
 
 ### Hardware Information Notes
 
-Hardware notes should stay fact-first. They are reference cards, not debug records.
+Hardware notes should stay fact-first. They are reference cards, not debug records. Use generic hardware templates, not spectrometer-only templates, so the same workflow can cover spectrometers, motors, cameras, controllers, lasers, acquisition cards, power supplies, sensors, and future equipment.
 
-For a hardware type or model index card, the core content is the index. When there are multiple physical devices, prefer an Obsidian Bases `.base` table filtered by `项目`, `类型`, and `设备类型`. Show useful columns such as device card, serial number, status, and modified time. Do not filter the index by a code-specific field such as `FrogTrace类型` unless the user explicitly wants that.
+Canonical local Templater templates on the current machine:
 
-Recommended type/model card shape:
-
-```markdown
-# 光谱仪索引
-
-![[设备索引.base]]
-
-# 型号通用信息
-
-| 项目 | 记录 |
-|---|---|
-| 设备类型 |  |
-| FrogTrace 类型 | `...` |
-| 波长范围来源 |  |
-
-# 可选补充
-
-- 关联记录：
+```text
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\硬件类型索引卡模板.md
+E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.1 Templater\具体硬件设备卡模板.md
 ```
 
-For a concrete physical device card, the core content is `# 硬件信息` plus a two-column table. Put serial number, current status, wavelength range, pixel count, source file, connection/cable facts, and data source there first. Photos, connection method, warnings, and related records are optional supplements after the hardware table.
+Treat these files as the source of truth for detailed hardware-card bodies. When creating hardware cards:
 
-Recommended concrete-device card shape:
+1. Prefer using the Templater template above.
+2. If writing the note directly outside Obsidian, read the matching template file first and mirror its structure instead of relying on an embedded copy in this skill.
+3. If the vault has moved, the template path is missing, or the work is happening on a new computer, stop and ask An Zhaofeng to confirm:
+   - the current Obsidian vault root;
+   - the Templater template folder;
+   - the canonical hardware template file names.
+4. Do not silently recreate these templates in a guessed location.
 
-```markdown
-# 硬件信息
+Use two hardware-card levels:
 
-| 项目 | 记录 |
-|---|---|
-| 设备类型 |  |
-| FrogTrace 类型 | `...` |
-| S/N | `...` |
-| 当前状态 |  |
+- Type/model index card: one card for a hardware category or model. Its core is the device index. When there are multiple physical devices, prefer an Obsidian Bases `.base` table filtered by `项目`, `类型`, and `设备类型`. Show useful columns such as device card, serial number, status, and modified time. Do not filter the index by a code-specific field such as `FrogTrace类型` unless the user explicitly wants that.
+- Concrete physical device card: one card for one actual device. Its core is `# 硬件信息` plus a two-column fact table: device type, model, project role, project code interface, device ID/SN/asset/USB/COM/IP/MAC, current status, connection method, driver/SDK/software, official specs, measured specs, and data source.
 
-# 可选补充
-
-- 关联记录：
-```
+Both templates use `# 类型专属参数` as the extension area. Keep only the rows that matter to the device type, such as wavelength/pixels for spectrometers, travel/step size for motors, resolution/frame rate for cameras, channels/protocols for controllers, or voltage/current for power supplies. Delete irrelevant rows instead of preserving empty noise.
 
 Avoid using `当前结论`, `YYYY-MM-DD 记录`, or `下一步` as the main section structure of hardware cards. If the content is process history, put it in `2_调试记录/` and link it from the hardware card only when it helps identify the device.
 
