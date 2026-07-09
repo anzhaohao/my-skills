@@ -21,6 +21,7 @@
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
 - 多步骤任务要留下可接手的进度线索。
+- 创建或修改任何 Markdown/Obsidian 文档时，必须先读取并应用 `azf-personal-habits`，再叠加其它相关 skill，例如 `azf-obsidian-work-record`、`azf-hardware-skill`、`azf-server-deploy` 或论文精读类 skill；不能因为任务表面上是硬件、服务器、密钥、代码或部署，就跳过本 skill。
 - 创建 Markdown 文档时，默认不要在正文重复写文件标题。
 - 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - 创建或修改 Obsidian 笔记属性时，只允许文件最开头有一个 YAML frontmatter；第一行必须是纯 `---`，不能有 UTF-8 BOM 或隐藏字符。`创建时间`、`修改时间`、`项目`、`类型`、`状态`、`aliases`、`tags` 等字段必须合并在同一个属性块里，不能在正文再补一个属性块。
@@ -46,6 +47,7 @@
 
 ## 最近维护
 
+- 2026-07-09：加入 Markdown/Obsidian 文档创建与修改的流程改进规则。本次漏用原因是任务表面上被归类为服务器、SSH、Zed 和 Key 管理，导致只叠加了领域 skill，而没有先把“正在创建 Markdown/Obsidian 文档”作为更高优先级触发条件；以后凡是创建或修改 `.md`、Obsidian 笔记、项目记录、Key 索引等文档，必须先读取 `azf-personal-habits` 作为格式和流程基线，再叠加其它领域 skill。
 - 2026-07-08：补充笔记写作语气偏好：创建和总结 Obsidian / Markdown 笔记时，优先让未来的我快速看懂，不要为了显得专业而堆术语；先写清楚人话含义，再补必要技术细节，可以保留一点温度。
 - 2026-07-08：补充 Obsidian 旧笔记整理偏好：整理已有主线、调试记录或 callout 时，要保留原文的观察、证据截图、依据链接和后续判断顺序；结构化不等于压缩成泛化摘要。
 - 2026-07-07：确认 skill 与 `agent-memory vault` 分层。`azf-personal-habits` 保留为行为层，负责自动触发的操作规程；用户正式事实、边界和长期治理偏好改由 `agent-memory/vault/用户记忆/` 维护。冲突时以 vault 为准并提醒用户。

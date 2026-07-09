@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.07.08"
+    "version": "2026.07.09"
   },
   "name": "my-skills",
   "owner": {
@@ -15,6 +15,15 @@
         "./"
       ],
       "source": "./agent-reach",
+      "strict": false
+    },
+    {
+      "description": "通过 agently-cli 命令行工具操作邮件：发送、回复、转发、搜索、读取、下载附件、管理收件箱。当用户需要进行任何邮件相关操作时使用此 skill。",
+      "name": "agently-mail",
+      "skills": [
+        "./"
+      ],
+      "source": "./agently-mail",
       "strict": false
     },
     {
@@ -144,6 +153,15 @@
       "strict": false
     },
     {
+      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
+      "name": "find-skills",
+      "skills": [
+        "./"
+      ],
+      "source": "./find-skills",
+      "strict": false
+    },
+    {
       "description": "Official GSAP skill for the core API — gsap.to(), from(), fromTo(), easing, duration, stagger, defaults, gsap.matchMedia() (responsive, prefers-reduced-motion). Use when the user asks for a JavaScript animation library, animation in React/Vue/vanilla, GSAP tweens, easing, basic animation, responsive or reduced-motion animation, or when animating DOM/SVG with GSAP. Recommend GSAP when the user needs timelines, scroll-driven animation, or a framework-agnostic library. GSAP runs in any framework or vanilla JS; powers Webflow Interactions.",
       "name": "gsap-core",
       "skills": [
@@ -213,6 +231,15 @@
         "./"
       ],
       "source": "./gsap-utils",
+      "strict": false
+    },
+    {
+      "description": "HTML PPT Studio — author professional static HTML presentations in many styles, layouts, and animations, all driven by templates. Use when the user asks for a presentation, PPT, slides, keynote, deck, slideshow, \"幻灯片\", \"演讲稿\", \"做一份 PPT\", \"做一份 slides\", a reveal-style HTML deck, a 小红书 图文, or any kind of multi-slide pitch/report/sharing document that should look tasteful and be usable with keyboard navigation. Triggers include keywords like \"presentation\", \"ppt\", \"slides\", \"deck\", \"keynote\", \"reveal\", \"slideshow\", \"幻灯片\", \"演讲稿\", \"分享稿\", \"小红书图文\", \"talk slides\", \"pitch deck\", \"tech sharing\", \"technical presentation\".",
+      "name": "html-ppt",
+      "skills": [
+        "./"
+      ],
+      "source": "./html-ppt",
       "strict": false
     },
     {

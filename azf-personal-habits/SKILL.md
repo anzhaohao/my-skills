@@ -11,6 +11,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 ## Core Rules
 
 - Prefer reading this skill first when a task is for An Zhaofeng and personal workflow preferences may matter.
+- For any task that creates or modifies Markdown/Obsidian documents, always read and apply this `azf-personal-habits` skill first, then layer any other relevant skill such as `azf-obsidian-work-record`, `azf-hardware-skill`, `azf-server-deploy`, or paper-reading skills. Do not skip this skill just because the task's visible subject is hardware, server, key management, code, deployment, or another domain.
 - User facts and boundaries have their formal version in `agent-memory` under `vault/用户记忆/`; this skill only maintains operational procedures. If they conflict, follow the vault and remind An Zhaofeng. Locate `agent-memory` through `azf-agent-memory` first.
 - Before doing anything to a project, first state the proposed plan. If any important requirement, target path, scope, risk, or expected output is uncertain, ask An Zhaofeng for confirmation. Wait for explicit confirmation before running commands, editing files, or making irreversible project changes, unless the user has already clearly authorized immediate execution.
 - Before changing project code or project artifacts, explicitly distinguish whether the user asked for analysis/recording only or also authorized implementation. If the user only asks to update a work record, analyze a problem, evaluate a scheme, or explain behavior, do not modify project code "while you are there". First provide a short implementation plan, list affected files and risks, and wait for An Zhaofeng's second confirmation before editing code. Treat this as mandatory for all code changes, even small obvious fixes.
@@ -65,6 +66,7 @@ When An Zhaofeng asks for a backup but does not name a location:
 
 When creating a `.md` document file for the user:
 
+- Load order rule: before creating or modifying any Markdown/Obsidian document, read this skill first and treat it as the formatting and workflow baseline; only after that should task-specific skills add their domain structure or evidence rules.
 - Do not duplicate the document title as a first `# ...` heading in the body by default.
 - Let the filename, Obsidian note title, or surrounding context carry the title.
 - Start the body directly with the substantive content, metadata block, summary, or first necessary section.
