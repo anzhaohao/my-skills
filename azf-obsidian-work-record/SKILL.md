@@ -256,6 +256,17 @@ When a Q later gains a real mainline, update its issue callout `主线入口` to
 
 Small bugs should not each become their own mainline note by default, but every bug/debug record must be findable from a common entrance.
 
+### Explicit Standalone Record Override
+
+When An Zhaofeng explicitly asks for an "独立记录", "独立调试记录", "单独记录", "不要归类", or otherwise says the note should remain separate, that user instruction overrides the default automatic mainline-attachment rule.
+
+In that case:
+
+1. Do not set `归类状态: 已归类` merely because a related mainline exists.
+2. Default to `归类状态: 未归类` and leave `关联主线` empty, unless An Zhaofeng gives a specific frontmatter value or asks for a lightweight reference link.
+3. Do not append the record to a mainline note's `推进记录` unless he explicitly asks to link it into that mainline.
+4. In the user-facing closeout, say that the record was kept independent by request, instead of reporting it as already classified.
+
 ## Q Issue Card And Mainline Sync
 
 The total note's `Q1` / `Q2` / `Q3` issue cards are status entrances, not the final place for process history. When a new record, code change, verification result, GUI finding, or design decision changes an active Q issue and also belongs to an existing mainline, update both layers in the same sync pass.
