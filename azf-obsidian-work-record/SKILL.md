@@ -258,14 +258,16 @@ Small bugs should not each become their own mainline note by default, but every 
 
 ### Explicit Standalone Record Override
 
-When An Zhaofeng explicitly asks for an "独立记录", "独立调试记录", "单独记录", "不要归类", or otherwise says the note should remain separate, that user instruction overrides the default automatic mainline-attachment rule.
+Treat "independent note/file" and "unclassified record" as different concepts. A record can be a standalone Markdown note and still be classified if a mainline already carries or references it.
 
-In that case:
+Only default a new record to `归类状态: 未归类` when An Zhaofeng explicitly says "独立记录", "独立调试记录", "单独记录", "不要归类", or gives an equally direct instruction that the record must not be attached to a mainline.
 
-1. Do not set `归类状态: 已归类` merely because a related mainline exists.
-2. Default to `归类状态: 未归类` and leave `关联主线` empty, unless An Zhaofeng gives a specific frontmatter value or asks for a lightweight reference link.
-3. Do not append the record to a mainline note's `推进记录` unless he explicitly asks to link it into that mainline.
-4. In the user-facing closeout, say that the record was kept independent by request, instead of reporting it as already classified.
+Otherwise keep the normal mainline-attachment rule:
+
+1. If a relevant mainline exists and this record is already referenced there, set `归类状态: 已归类` and fill `关联主线`.
+2. If the current note-sync task includes adding the record reference to a relevant mainline, set `归类状态: 已归类` and fill `关联主线`.
+3. If no suitable mainline exists and the user did not ask to create one, set `归类状态: 未归类`.
+4. In the user-facing closeout, report whether the record was kept unclassified by explicit request or classified because it is connected to a mainline.
 
 ## Q Issue Card And Mainline Sync
 
