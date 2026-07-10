@@ -1,110 +1,96 @@
 ---
 name: azf-paper-zh-reading-translator
-description: Translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext reading note. Use when creating or revising `中文全文.md`, preserving paper structure, formulas, citations, figure/table references, and original images stored under the paper workspace `附件/图片` directory.
+description: Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, and hedging. This is translation only, not summary or deep reading.
 ---
 
-# AZF Paper Chinese Fulltext Translator
+# Core Boundary
 
-## Overview
+The output is a faithful Chinese translation of the paper. It is not a summary, explanation, review, tutorial, or deep-reading note.
 
-Create the main Chinese reading document for one paper workspace. The output is `中文全文.md`: a fluent Chinese fulltext version of the paper for actual reading in Obsidian, with original figures embedded near the corresponding translated content.
+Never replace source sentences with a shorter overview. Never add background knowledge, evaluation, research inspiration, mechanism explanation, or conclusions that are absent from the source. Put those materials in the separate `【精读】...md` note.
 
-This skill combines two ideas:
+# Required Inputs
 
-- From `academic-zh-translator`: translate by meaning and rewrite into natural Chinese, avoiding translationese.
-- From manuscript-translation workflows: maintain a working glossary and run consistency checks for terms, figure/table references, formulas, and omissions.
-
-## Paper Workspace Assumptions
-
-Expect, when available:
+Prefer this workspace structure:
 
 ```text
-论文文件夹/
-  中文全文.md
-  附件/
-    原文/
-      原文.pdf
-      MinerU英文全文.md
-    图片/
-      Fig-01.png
-      Fig-02.png
-      Table-01.png
+论文工作区/
+├── 阅读工作台/
+│   └── 【中译】完整中文题名.md
+├── 附件/
+│   ├── 原文/
+│   │   ├── 原文.pdf
+│   │   └── MinerU英文全文.md
+│   └── 图片/
+└── figure_extraction_manifest.json
 ```
 
-Do not require metadata from the filename. Use the source Markdown and available workspace files. If an image is missing, leave a short `> [!warning]` note at the expected position instead of inventing an image.
+Before translation, confirm that MinerU layout order has passed review. If the parser has uncertain text order, missing formulas, or damaged captions, stop acceptance and mark the exact location instead of guessing.
 
-## Output Contract
+# Translation Contract
 
-`中文全文.md` must be a reading document, not a database card. Keep YAML minimal:
+- Translate in the source section and argument order.
+- Account for every meaningful source sentence.
+- Preserve negation, conditions, comparisons, causality, probability, limitations, uncertainty, and hedging.
+- Preserve formulas, variables, equation numbers, citations, figure/table labels, values, units, footnotes, and captions.
+- Long English sentences may be split for natural Chinese, but no source information may disappear.
+- Keep a technical English term on first mention when it improves searchability: `中文术语 (English term)`.
+- Do not output large bilingual blocks. The English source remains in `附件/原文/MinerU英文全文.md`.
+- Do not insert “核心理解”“方法解读”“对我的启发”“通俗解释”等精读内容。
+
+# Output Contract
+
+Use minimal YAML:
 
 ```yaml
 ---
-type: paper-zh-fulltext
-title_en: "Original English Paper Title"
+类型: 论文中文全文
+英文题名: "Original English Title"
+翻译状态: 已逐句忠实翻译
 ---
 ```
 
-Do not add author, year, DOI, Zotero key, citekey, paths, status, tags, or processing metadata to this note. Those belong in the overview note or Bases-oriented metadata notes.
+After YAML, begin directly with translated paper sections. Do not repeat the document title in the body.
 
-After YAML, start directly with translated paper sections. Do not add a repeated paper title unless the user asks for it.
+Embed reviewed original figures near their source position and translate captions without changing labels or numeric content.
 
-## Translation Style
+# Sentence-Accounting Workflow
 
-Translate for sustained reading:
+1. Inspect headings, paragraphs, lists, captions, tables, formulas, references, and parser artifacts.
+2. Build a working glossary for repeated terms and abbreviations.
+3. Divide the source into stable sentence-level translation units.
+4. Translate every unit. Maintain a checklist of source unit IDs and translated unit IDs.
+5. Reassemble the Chinese note in the original section order without exposing unit IDs in the final prose.
+6. Compare the source and translation section by section for omissions and unsupported additions.
+7. Generate `translation-audit.json` with:
 
-- Use fluent modern Chinese, not word-by-word alignment.
-- Preserve the paper's argument, evidence, hedging, citations, formulas, variables, numbering, and section order.
-- Split or reorder long English sentences when Chinese readability requires it.
-- Keep key English terms on first mention as `中文术语 (English term)`; then use the Chinese term consistently.
-- Keep interface names, model names, datasets, equations, commands, file names, and official abbreviations in English when translation would reduce recognizability.
-- Do not include large bilingual blocks. The English source lives in `附件/原文/MinerU英文全文.md`.
-
-## Structure Rules
-
-Map the source paper into readable Chinese sections:
-
-```markdown
-# 摘要
-
-...
-
-# 引言
-
-...
-
-![[附件/图片/Fig-01.png]]
-
-图 1. 中文图注……
-
-# 方法
-
-...
+```json
+{
+  "mode": "faithful_sentence_by_sentence",
+  "status": "pass",
+  "source_sha256": "...",
+  "source_sentence_count": 0,
+  "accounted_sentence_count": 0,
+  "omitted_source_sentences": [],
+  "added_explanatory_passages": []
+}
 ```
 
-Use `#` for main paper sections and `##` for subsections unless the existing document has a clear deeper hierarchy. Translate headings into Chinese while preserving conventional names such as `Abstract`, `Methods`, or `References` only when useful.
+The audit may be `pass` only when source and accounted counts match and both exception lists are empty.
 
-## Image And Table Rules
+# Final Review
 
-- Embed original figures from `附件/图片` at the nearest corresponding location in the translated text.
-- Use Obsidian embeds: `![[附件/图片/Fig-01.png]]`.
-- Translate captions into Chinese below the image; preserve original labels such as `Fig. 1`, `Table 2`, or `Extended Data Fig. 3`.
-- If tables are available as Markdown, translate table titles, headers, and notes while preserving numeric values and units.
-- If a table is available only as an image, embed it and translate the caption/notes below.
+Check all of the following before delivery:
 
-## Workflow
+- no source section or meaningful sentence omitted;
+- no summary substituted for original prose;
+- no explanation or interpretation added;
+- formulas, variables, numbering, citations, values, and units preserved;
+- figure/table references and captions preserved;
+- terminology consistent;
+- uncertain parser regions explicitly marked rather than invented;
+- `translation-audit.json` matches the current source hash.
 
-1. Inspect the source Markdown structure, image links, captions, formulas, references, and unusual parser artifacts.
-2. Build a small working glossary for recurrent technical terms, materials, methods, variables, and abbreviations.
-3. Translate section by section. Internally use three passes: first Chinese rewrite, translationese/terminology review, final Chinese rewrite. Output only the final Chinese unless the user asks for drafts.
-4. Reinsert images and table assets using the workspace-relative `附件/图片/...` paths.
-5. Run a final consistency check:
-   - no major section omitted
-   - formulas and variables preserved
-   - figure/table references still match
-   - citations and reference numbers preserved
-   - terminology consistent
-   - no unsupported explanation added
+# Editing Safety
 
-## Editing Safety
-
-When modifying an existing `中文全文.md`, preserve user-written edits outside the requested regeneration scope. If a full regeneration would overwrite substantial manual edits, report that and ask before replacing the file.
+Existing translations and user edits are user-owned. Never overwrite an existing `【中译】...md` without an explicit reviewed replacement and a recoverable backup. Use the literature workflow CLI to validate and import the finished translation artifact.

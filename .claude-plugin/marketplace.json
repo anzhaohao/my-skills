@@ -72,6 +72,15 @@
       "strict": false
     },
     {
+      "description": "An Zhaofeng's local-first, two-round literature workflow for Zotero-backed paper ingestion, local Docker MinerU parsing, layout review, reviewed high-resolution figures, faithful sentence-accounted Chinese translation, separate deep-reading notes, quality gates, and a movable central Obsidian concept library. Use when processing, migrating, validating, or continuing papers under the personal Obsidian literature workspace. Always locate and confirm note paths before any write-enabled round.",
+      "name": "azf-literature-reading-workflow",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-literature-reading-workflow",
+      "strict": false
+    },
+    {
       "description": "An Zhaofeng's Obsidian project work-record system. Use when Codex needs to create a new Obsidian project record from scratch, reorganize an existing project, or maintain notes under 01-Project, especially total notes, mainline notes, debugging records, experiment records, hardware/software facts, project-understanding notes, material screenshots, or requests such as \"帮我记录这个项目\", \"新开一个项目\", \"整理项目笔记\", \"建立总笔记\", \"同步调试记录\", \"根据图片更新实验记录\", \"新项目也按这个方式记录\".",
       "name": "azf-obsidian-work-record",
       "skills": [
@@ -81,7 +90,7 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's Obsidian paper sentence-by-sentence deep reading workflow. Use when the user asks to 精读文献, 逐句精读论文, 生成论文精读笔记, read a paper paragraph by paragraph, create beginner-friendly paper notes in Obsidian, build core glossary notes in 扫盲班, or preserve PDF++ sentence-level selection links.",
+      "description": "An Zhaofeng's two-round Obsidian paper sentence-by-sentence deep reading workflow. Use when the user asks to 精读文献, 逐句精读论文, 生成论文精读笔记, read a paper paragraph by paragraph, create beginner-friendly paper notes in Obsidian, build core glossary notes in the movable central 扫盲班, or preserve PDF++ sentence-level selection links. Always locate and confirm note paths before writing.",
       "name": "azf-paper-sentence-deep-reading",
       "skills": [
         "./"
@@ -90,7 +99,7 @@
       "strict": false
     },
     {
-      "description": "Translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext reading note. Use when creating or revising `中文全文.md`, preserving paper structure, formulas, citations, figure/table references, and original images stored under the paper workspace `附件/图片` directory.",
+      "description": "Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, and hedging. This is translation only, not summary or deep reading.",
       "name": "azf-paper-zh-reading-translator",
       "skills": [
         "./"

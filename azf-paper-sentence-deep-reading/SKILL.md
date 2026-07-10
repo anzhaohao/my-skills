@@ -1,18 +1,27 @@
 ---
 name: azf-paper-sentence-deep-reading
-description: An Zhaofeng's Obsidian paper sentence-by-sentence deep reading workflow. Use when the user asks to 精读文献, 逐句精读论文, 生成论文精读笔记, read a paper paragraph by paragraph, create beginner-friendly paper notes in Obsidian, build core glossary notes in 扫盲班, or preserve PDF++ sentence-level selection links.
+description: An Zhaofeng's two-round Obsidian paper sentence-by-sentence deep reading workflow. Use when the user asks to 精读文献, 逐句精读论文, 生成论文精读笔记, read a paper paragraph by paragraph, create beginner-friendly paper notes in Obsidian, build core glossary notes in the movable central 扫盲班, or preserve PDF++ sentence-level selection links. Always locate and confirm note paths before writing.
 ---
 
 # Workflow
 
 Use this skill to turn a paper section, especially an abstract, into Obsidian sentence-by-sentence deep-reading notes for a beginner. Preserve the user's preferred layout and PDF++ source anchors.
 
-## Start
+## Mandatory Two-Round Start
 
-1. Confirm the paper root folder and the `逐句精读` folder path. If `逐句精读` does not exist, create it after confirmation.
-2. Confirm the PDF file and the source paragraph/section. If the user says "摘要", treat the full abstract as one natural paragraph.
-3. Confirm or infer the glossary folder as `扫盲班`. Create only core terms required to understand the current paragraph.
-4. If scope or source text is ambiguous, ask before editing. If the user already approved generation, proceed.
+1. In Round 1, invoke the location resolver bundled with `azf-literature-reading-workflow`:
+
+```powershell
+& 'C:/Users/anzhaofeng/.skills-manager/skills/azf-literature-reading-workflow/scripts/run_workflow.ps1' locate
+```
+
+2. Show the resolved `vault_root`, `paper_root`, `concept_library_root`, and `template_path`, then stop. Do not create or modify reading notes or glossary cards in Round 1.
+3. After the user explicitly confirms the locations, run `confirm-locations`. Use only the confirmed manifest for Round 2.
+4. Confirm the target paper workspace and the `逐句精读` folder under the confirmed `paper_root`. If `逐句精读` does not exist, create it only in Round 2.
+5. Confirm the PDF and source paragraph/section. If the user says "摘要", treat the full abstract as one natural paragraph.
+6. Resolve glossary cards only as `<concept_library_root>/概念卡`. Never infer a folder merely because its name contains `扫盲班`.
+7. If a confirmed path moved, disappeared, became ambiguous, or falls outside the confirmed vault, stop and return to Round 1.
+8. If scope or source text is ambiguous, ask before editing.
 
 ## Note Scope
 
@@ -129,7 +138,7 @@ Only trust rows where `matches` is `true`. If a row fails, inspect the nearby PD
 
 ## Glossary Notes
 
-Create glossary notes only for core terms needed for the current paragraph. Put them in `扫盲班`.
+Create glossary notes only for core terms needed for the current paragraph. Put them in the confirmed `<concept_library_root>/概念卡` directory.
 
 Each glossary note should include:
 
@@ -151,5 +160,5 @@ Before final response, verify:
 - No page-only PDF links remain inside sentence cards.
 - The callout is not nested.
 - `摘要` has been treated as one natural paragraph when applicable.
-- Core glossary notes exist in `扫盲班` and are linked from the reading note.
+- Core glossary notes exist in the confirmed `<concept_library_root>/概念卡` and are linked from the reading note.
 - The final answer names the changed files and any links the user should click-test in Obsidian.

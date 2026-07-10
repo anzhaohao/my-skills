@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF 文献阅读工作流"
+  short_description: "本地 Zotero、MinerU、忠实中译、精读和中央概念库工作流"
+  default_prompt: "按本地优先和可回滚规则处理一篇论文：确认 Zotero 来源，运行 MinerU 和版面检查，生成逐句忠实中译及审计，再生成独立精读并维护中央概念库。"

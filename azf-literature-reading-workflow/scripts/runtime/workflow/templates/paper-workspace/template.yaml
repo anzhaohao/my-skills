@@ -1,0 +1,10 @@
+version: "1.0.0"
+name: "paper-workspace-starter"
+notes:
+  - "总览.md"
+  - "【中译】{完整中文标题}.md"
+  - "【精读】{完整中文标题}.md"
+  - "图表解读.md"
+  - "问答复习.md"
+generated_manual_boundary: "Generated content must be bounded or whole-file owned; human note sections are preserved."
+

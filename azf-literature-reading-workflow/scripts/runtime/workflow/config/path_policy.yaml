@@ -1,0 +1,12 @@
+allowed_roots:
+  - "E:/software/Obsidian/安钊锋的外置大脑"
+local_only: true
+deny_patterns:
+  - "http://"
+  - "https://"
+  - "s3://"
+  - "gs://"
+  - "az://"
+multi_paper_requires_dry_run: true
+protect_existing_notes: true
+
