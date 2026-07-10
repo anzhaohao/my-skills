@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.07.09"
+    "version": "2026.07.10"
   },
   "name": "my-skills",
   "owner": {
@@ -87,6 +87,15 @@
         "./"
       ],
       "source": "./azf-paper-sentence-deep-reading",
+      "strict": false
+    },
+    {
+      "description": "Translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext reading note. Use when creating or revising `中文全文.md`, preserving paper structure, formulas, citations, figure/table references, and original images stored under the paper workspace `附件/图片` directory.",
+      "name": "azf-paper-zh-reading-translator",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-paper-zh-reading-translator",
       "strict": false
     },
     {
@@ -365,6 +374,15 @@
         "./"
       ],
       "source": "./paper-obsidian-review",
+      "strict": false
+    },
+    {
+      "description": "Extract clean high-resolution figures/images from academic PDFs for PPT, Obsidian notes, paper reading, or image collection. Use when Codex needs to use MinerU output to locate figures, run local Docker MinerU, crop high-DPI rendered PDF pages, collect MinerU images, manually crop PDF regions, or handle PDFs where direct image extraction produces fragmented masks, alpha layers, separated color layers, vector overlays, or incomplete images.",
+      "name": "pdf-figure-render-extractor",
+      "skills": [
+        "./"
+      ],
+      "source": "./pdf-figure-render-extractor",
       "strict": false
     },
     {

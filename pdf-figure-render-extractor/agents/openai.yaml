@@ -1,0 +1,7 @@
+interface:
+  display_name: "PDF Figure Render Extractor"
+  short_description: "Use MinerU regions to crop clean high-resolution PDF figures."
+  default_prompt: "Use $pdf-figure-render-extractor to extract clean high-resolution figures from this academic PDF."
+
+policy:
+  allow_implicit_invocation: true

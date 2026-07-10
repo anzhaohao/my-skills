@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF Paper Chinese Fulltext"
+  short_description: "Paper Markdown to Chinese fulltext notes"
+  default_prompt: "Use $azf-paper-zh-reading-translator to turn this English paper Markdown into an Obsidian Chinese fulltext note with figures."
