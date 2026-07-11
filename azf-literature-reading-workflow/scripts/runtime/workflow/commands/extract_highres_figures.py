@@ -20,9 +20,9 @@ from workflow.services.source_anchor_registry import SourceAnchorRegistry
 
 
 def _write_accepted_assets(workspace: PaperWorkspace, manifest: list[dict]) -> None:
-    manifest_path = workspace.root_path / "figure_extraction_manifest.json"
+    manifest_path = workspace.figure_manifest_path
     write_figure_manifest(manifest_path, manifest)
-    registry = SourceAnchorRegistry(workspace.root_path / "source-anchors.json")
+    registry = SourceAnchorRegistry(workspace.source_anchor_path)
     for item in manifest:
         if item.get("crop_status") != "success" or not item.get("accepted_as_highres_figure", True):
             continue
@@ -67,7 +67,7 @@ def run(args) -> int:
         report.blocking_issues = [issue for issue in report.blocking_issues if "figure" not in issue.lower()]
         report.add_note("Only manually reviewed paper figures/tables were retained; no preview or MinerU candidate images were saved in the vault.")
         save_quality_report(workspace.quality_path, report)
-        print(json.dumps({"status": "pass", "manifest": str(workspace.root_path / 'figure_extraction_manifest.json'), "assets": manifest}, ensure_ascii=False, indent=2))
+        print(json.dumps({"status": "pass", "manifest": str(workspace.figure_manifest_path), "assets": manifest}, ensure_ascii=False, indent=2))
         return 0
 
     mineru_output = Path(args.mineru_output).resolve() if args.mineru_output else find_cached_mineru_auto_dir(workspace.root_path)

@@ -22,6 +22,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
 - Before risky or broad changes, remind the user to create a branch.
+- Obsidian vault Git exception: for `E:\software\Obsidian\安钊锋的外置大脑` and its `anzhaohao/obsidian` backup repository, keep work on `main` by default. Never create a new branch or switch away from the current branch unless An Zhaofeng explicitly approves that branch creation or branch switch in the current turn. This exception overrides the general branch recommendation for this vault. Use scoped commits, pushes, tags, and external rollback backups instead. If the vault is unexpectedly on a non-`main` branch, report it and ask before switching; do not switch automatically.
 - When Codex creates branches, makes commits, merges, rebases, tags, or otherwise manages Git history for An Zhaofeng, generate or update a lightweight Git visualization/handoff record by default.
 - After each small completed milestone, remind the user to make a local commit.
 - At important checkpoints, remind the user to push to GitHub.
@@ -99,6 +100,17 @@ Avoid this unless requested:
 ...
 ```
 
+## Obsidian Attachment Placement Habit
+
+When creating, editing, or reorganizing an Obsidian Markdown note in An Zhaofeng's vault, use two different attachment locations based on file type:
+
+- Image files use the vault's existing global mirrored attachment system. Store image formats such as `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`, `.bmp`, `.tif`, and `.tiff` under the corresponding mirrored path in `Attachments/<note-folder-path>/<note-filename.md>/`. Do not create a local `附件/` folder merely for images.
+- Non-image, non-Markdown attachments must stay beside the note rather than in the global `Attachments` mirror. For formats such as `.pdf`, `.pptx`, `.docx`, `.xlsx`, `.csv`, `.zip`, `.mp4`, `.txt`, and similar files, create or reuse an `附件/` folder in the note's current folder and store them there. Example: `.../2026-03-28_组会/附件/组会汇报.pdf`.
+- Markdown files remain in the note folder itself and are not treated as attachments.
+- If a note contains both images and other attachments, split them accordingly: images go to the global mirror; PDFs, slide decks, documents, videos, archives, and other non-image files go to the local `附件/` folder.
+- When moving notes, use Obsidian-aware moves so links and the mirrored image path update safely. If Obsidian automatically puts a non-image file into the global mirror, move that file back to the note folder's local `附件/` directory and verify the link.
+- Do not reorganize pre-existing attachments merely because this rule is loaded. Apply it to new writes and to attachment moves explicitly requested in the current task.
+
 ## Visual Note And Excalidraw Habit
 
 When creating diagrams, visual notes, paper idea maps, project maps, or Excalidraw files for An Zhaofeng:
@@ -174,6 +186,10 @@ For code changes, follow this rhythm:
 7. Remind the user to commit, push, or tag at the right checkpoint.
 
 ## Branch Guidance
+
+### Obsidian Vault Exception
+
+For `E:\software\Obsidian\安钊锋的外置大脑` / `anzhaohao/obsidian`, do not apply the normal "branch-worthy" recommendation automatically. Keep the repository on `main`. Creating a branch or switching branches requires An Zhaofeng's explicit approval in the current turn. Without that approval, protect broad vault edits with a clean Git checkpoint, a scoped commit, a push, an optional tag, and the configured external backup location instead.
 
 Recommend a branch when:
 

@@ -119,6 +119,29 @@ def _discover_named_directories(vault_root: Path, name: str) -> list[Path]:
     return sorted({path.resolve() for path in vault_root.rglob(name) if path.is_dir()})
 
 
+def _discover_concept_name_candidates(vault_root: Path) -> list[Path]:
+    keywords = ["扫盲班"]
+    excluded_names = {INDEX_FOLDER, CARD_FOLDER}
+    excluded_parts = {"Attachments", "0_论文精读"}
+    candidates: set[Path] = set()
+    for path in vault_root.rglob("*"):
+        if not path.is_dir() or path.name in excluded_names:
+            continue
+        relative_parts = set(path.relative_to(vault_root).parts)
+        if relative_parts & excluded_parts:
+            continue
+        if any(keyword in path.name for keyword in keywords):
+            candidates.add(path.resolve())
+
+    # If both a container and its child match (for example 99_???/1_???),
+    # keep the leaf folder that is more likely to contain the cards.
+    leaves = []
+    for candidate in sorted(candidates):
+        if not any(other != candidate and other.is_relative_to(candidate) for other in candidates):
+            leaves.append(candidate)
+    return leaves
+
+
 def _discover_named_files(vault_root: Path, name: str) -> list[Path]:
     return sorted({path.resolve() for path in vault_root.rglob(name) if path.is_file()})
 
@@ -255,7 +278,9 @@ def resolve_locations(
         marked, structural = _discover_concept_libraries(vault)
         if marked:
             return marked, "role-marker-discovery"
-        return structural, "structure-discovery"
+        if structural:
+            return structural, "structure-discovery"
+        return _discover_concept_name_candidates(vault), "name-discovery"
 
     resolved_paper = _select_role(
         role="paper_root",

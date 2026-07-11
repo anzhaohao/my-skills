@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from workflow.models.paper import PaperWorkspace
+
 
 FORBIDDEN_CACHE_DIRS = (
     "_figure_skill_output",
@@ -14,6 +16,7 @@ FORBIDDEN_CACHE_DIRS = (
 
 def validate_workspace_cleanliness(workspace_root: Path) -> list[str]:
     root = workspace_root.resolve()
+    workspace = PaperWorkspace.from_root(root)
     issues: list[str] = []
     for relative in FORBIDDEN_CACHE_DIRS:
         path = root / Path(relative)
@@ -28,7 +31,7 @@ def validate_workspace_cleanliness(workspace_root: Path) -> list[str]:
         for pattern in ("Page-*-preview.png", "page_*.png", "*preview*.png"):
             for preview in figure_dir.glob(pattern):
                 issues.append(f"preview image retained in final figure folder: {preview}")
-    manifest_path = root / "figure_extraction_manifest.json"
+    manifest_path = workspace.figure_manifest_path
     if manifest_path.exists():
         try:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))

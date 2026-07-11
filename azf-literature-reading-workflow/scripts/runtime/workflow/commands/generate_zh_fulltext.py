@@ -52,7 +52,7 @@ def run(args) -> int:
             shutil.copy2(out_path, backup_path)
         if translated != out_path.resolve():
             out_path.write_text(content.rstrip() + "\n", encoding="utf-8")
-        audit_target = workspace.root_path / "translation-audit.json"
+        audit_target = workspace.translation_audit_path
         if audit != audit_target.resolve():
             shutil.copy2(audit, audit_target)
 

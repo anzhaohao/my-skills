@@ -11,7 +11,7 @@ description: An Zhaofeng's local-first, two-round literature workflow for Zotero
 - Do not silently fall back to a cloud parser.
 - Require a reviewed dry-run for multi-paper writes.
 - Do not overwrite human notes or accepted translations without backup and explicit confirmation.
-- Run commands that update one paper's `quality-report.json` sequentially.
+- Run commands that update one paper's `附件/状态/quality-report.json` sequentially.
 
 # Mandatory Two-Round Location Protocol
 
@@ -58,6 +58,15 @@ C:\Users\anzhaofeng\.config\azf-literature-reading-workflow\location-manifest.js
 
 Do not store mutable machine paths inside the Skill directory. Agent-memory may provide historical candidates but is not the execution source of truth.
 
+
+# Obsidian Property and State-File Contract
+
+- `阅读工作台/总览.md` must start at byte 0 with exactly one YAML frontmatter block and use Chinese property names.
+- Do not create a `工作区` property.
+- Do not create nested `处理状态`; use flat booleans: `已导入`, `已解析`, `已检查版面`, `已裁剪图表`, `已中译`, `已精读`.
+- `原文PDF`, `MinerU英文全文`, `质量报告`, and `来源锚点` must be quoted Obsidian wikilinks with aliases, e.g. `"[[02-Brain Cells/0_论文精读/.../附件/原文/原文.pdf|原文.pdf]]"`.
+- Workflow JSON state files belong under `附件/状态/` inside each paper workspace, not in the workspace root.
+
 # Bundled Runtime
 
 The complete Python workflow runtime, configuration, templates, contracts tests, and CLI are bundled under `scripts/runtime/`.
@@ -74,7 +83,7 @@ Use `scripts/run_workflow.ps1` from any working directory. It must not depend on
 6. Run local Docker MinerU by default. Reuse `--mode existing` or `--mode reuse` only when the user explicitly identifies existing output and the audit confirms source identity, section order, formulas, captions, and figure mapping.
 7. Run layout sanity review before accepting translation or deep reading.
 8. Extract high-resolution figures. Only reviewed paper figures and tables may enter `附件/图片/`.
-9. Use `azf-paper-zh-reading-translator` to produce the Chinese fulltext and `translation-audit.json`.
+9. Use `azf-paper-zh-reading-translator` to produce the Chinese fulltext and `附件/状态/translation-audit.json`.
 10. Import the translation with `generate-zh-fulltext --translated-note ... --translation-audit ...`. The CLI validates; it does not invent a translation.
 11. Generate the separate `【精读】...md` note. Interpretation, explanation, evidence-chain analysis, and research inspiration belong here, never in the translation.
 12. Update or create reusable concepts only under the confirmed `concept_library_root/概念卡`.

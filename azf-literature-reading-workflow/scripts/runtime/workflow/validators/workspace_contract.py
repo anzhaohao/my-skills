@@ -10,8 +10,10 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
     issues: list[str] = []
     required_dirs = [
         workspace.reading_workspace_path,
+        workspace.attachment_path,
         workspace.source_path,
         workspace.figure_path,
+        workspace.state_path,
     ]
     required_files = [
         workspace.overview_note,
@@ -27,9 +29,18 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
         text = workspace.overview_note.read_text(encoding="utf-8", errors="replace")
         if "类型: 论文总览" not in text and "type: paper-overview" not in text:
             issues.append("overview missing paper-overview type marker")
-        for marker in ["## 导航", "## 待办与备注"]:
+        for marker in ["## 导航", "## 下一步"]:
             if marker not in text:
                 issues.append(f"overview missing marker: {marker}")
+        frontmatter = text.split("---", 2)[1] if text.startswith("---") and text.count("---") >= 2 else ""
+        if "工作区:" in frontmatter:
+            issues.append("overview must not contain 工作区 property")
+        if "处理状态:" in frontmatter:
+            issues.append("overview must not contain nested 处理状态 property")
+        if '原文PDF: "[[' not in frontmatter:
+            issues.append("overview 原文PDF property must be an Obsidian wikilink")
+        if 'MinerU英文全文: "[[' not in frontmatter:
+            issues.append("overview MinerU英文全文 property must be an Obsidian wikilink")
     return issues
 
 

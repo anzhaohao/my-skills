@@ -5,15 +5,31 @@ from pathlib import Path
 from workflow.models.paper import PaperSource, PaperWorkspace
 
 
+def _vault_relative(path: Path) -> str:
+    resolved = path.resolve()
+    for parent in [resolved.parent, *resolved.parents]:
+        if (parent / ".obsidian").is_dir():
+            return resolved.relative_to(parent).as_posix()
+    return path.as_posix()
+
+
+def _wikilink(path: Path, alias: str) -> str:
+    return f"[[{_vault_relative(path)}|{alias}]]"
+
+
 def render_overview(source: PaperSource, workspace: PaperWorkspace) -> str:
     title_en = source.title_en or workspace.workspace_name
-    title_zh = source.title_zh or "中文题名待定"
-    authors = ", ".join(source.authors) if source.authors else "待补充"
-    year = source.year or "待补充"
+    title_zh = source.title_zh or "未命名论文"
+    authors = ", ".join(source.authors) if source.authors else "未知"
+    year = source.year or "未知"
     doi = source.doi or ""
     citekey = source.citekey or ""
     zotero_key = source.zotero_key or ""
-    return f'''---
+    pdf_link = _wikilink(workspace.source_path / "原文.pdf", "原文.pdf")
+    mineru_link = _wikilink(workspace.source_path / "MinerU英文全文.md", "MinerU英文全文.md")
+    quality_link = _wikilink(workspace.quality_path, "quality-report.json")
+    anchors_link = _wikilink(workspace.source_anchor_path, "source-anchors.json")
+    return f"""---
 类型: 论文总览
 英文题名: "{title_en}"
 中文题名: "{title_zh}"
@@ -23,55 +39,36 @@ def render_overview(source: PaperSource, workspace: PaperWorkspace) -> str:
 DOI: "{doi}"
 引用键: "{citekey}"
 Zotero条目键: "{zotero_key}"
-工作区: "{workspace.root_path.as_posix()}"
-原文PDF: "../附件/原文/原文.pdf"
-MinerU英文全文: "../附件/原文/MinerU英文全文.md"
-质量报告: "../quality-report.json"
-来源锚点: "../source-anchors.json"
-处理状态:
-  已导入: true
-  已解析: false
-  已检查版面: false
-  已裁剪图表: false
-  已中译: false
-  已精读: false
+原文PDF: "{pdf_link}"
+MinerU英文全文: "{mineru_link}"
+质量报告: "{quality_link}"
+来源锚点: "{anchors_link}"
+已导入: true
+已解析: false
+已检查版面: false
+已裁剪图表: false
+已中译: false
+已精读: false
 ---
-
 # {title_zh}
 
-## 文献信息
-
-- 英文题名：{title_en}
-- 作者：{authors}
-- 年份：{year}
-- 期刊：{source.venue or '待补充'}
-- DOI：{doi or '待补充'}
-- Zotero：{zotero_key or '待补充'}
-
-## 一句话理解
-
-待阅读后补充。
-
-## 为什么读
-
-待补充：这篇文献和当前研究问题、方法或概念障碍的关系。
+> {title_en}
 
 ## 导航
+- 阅读工作台: {workspace.reading_workspace_path}
+- 原文材料: {pdf_link} / {mineru_link}
+- 质量报告: {quality_link}
+- 来源锚点: {anchors_link}
 
-- [[【中译】{title_zh}]]
-- [[【精读】{title_zh}]]
-- [[图表解读]]
-- [[问答复习]]
-- [原文 PDF](../附件/原文/原文.pdf)
-- [MinerU 英文全文](../附件/原文/MinerU英文全文.md)
+## 进度
+- 已导入: ?
+- 已解析: ?
+- 已检查版面: ?
+- 已中译: ?
+- 已精读: ?
 
-## 待办与备注
-
-- [ ] 核对 Zotero 元数据
-- [ ] 核对 MinerU 双栏排版
-- [ ] 核对高清图片裁剪
-'''
-
-
-def reading_note_path(workspace: PaperWorkspace, title_zh: str, kind: str) -> Path:
-    return workspace.reading_workspace_path / f"【{kind}】{title_zh}.md"
+## 下一步
+1. 运行 MinerU 解析并检查版面。
+2. 生成中文全文与来源锚点。
+3. 开始逐句深读卡片。
+"""

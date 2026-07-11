@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from workflow.models.paper import PaperWorkspace
+
 from workflow.validators.translation_fidelity import validate_workspace_translation
 
 
@@ -10,7 +12,7 @@ def inspect_workspace(workspace: Path) -> dict:
     workspace = workspace.expanduser().resolve()
     source_pdf = workspace / "附件" / "原文" / "原文.pdf"
     mineru_markdown = workspace / "附件" / "原文" / "MinerU英文全文.md"
-    quality_path = workspace / "quality-report.json"
+    quality_path = PaperWorkspace.from_root(workspace).quality_path
     quality = {}
     if quality_path.is_file():
         quality = json.loads(quality_path.read_text(encoding="utf-8-sig"))

@@ -34,8 +34,7 @@ SQLite and optional Zvec semantic indexes.
 ## Naming And Repository Rules
 
 - The project name is `agent-memory`.
-- Keep `codex_memory_*`, `CODEX_MEMORY_*`, and `mcncarl/codex-memory` only for
-  inherited script/API names, environment variables, or the upstream repository.
+- Use `agent_memory_*`, `AGENT_MEMORY_*`, and `memoryctl` for current runtime commands. Keep `mcncarl/codex-memory` only as the upstream repository name, and keep old `codex_memory_*` names only inside historical records.
 - Do not call the whole project `codex-memory`.
 - The backup remote is `anzhaohao/agent-memory`.
 - The long-term backup branch is `main`.
@@ -64,7 +63,7 @@ PowerShell keyword search:
 ```powershell
 . "E:\software\Obsidian\agent-memory\Load-AgentMemoryEnv.ps1"
 Set-Location "E:\software\Obsidian\agent-memory\source"
-& "E:\software\Anaconda\envs\agent-memory\python.exe" .\scripts\codex_memory_index.py --search "<query>" --limit 5 --include-open-loops
+& "E:\software\Anaconda\envs\agent-memory\python.exe" .\scripts\agent_memory_index.py --search "<query>" --limit 5 --include-open-loops
 ```
 
 Semantic search for fuzzy memories:
@@ -72,7 +71,7 @@ Semantic search for fuzzy memories:
 ```powershell
 . "E:\software\Obsidian\agent-memory\Load-AgentMemoryEnv.ps1"
 Set-Location "E:\software\Obsidian\agent-memory\source"
-& "E:\software\Anaconda\envs\agent-memory\python.exe" .\scripts\codex_memory_zvec_index.py --search "<natural language query>" --limit 5
+& "E:\software\Anaconda\envs\agent-memory\python.exe" .\scripts\agent_memory_zvec_index.py --search "<natural language query>" --limit 5
 ```
 
 For FrogTrace, start with queries such as:

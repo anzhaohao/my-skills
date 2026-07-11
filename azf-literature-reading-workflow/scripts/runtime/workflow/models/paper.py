@@ -32,8 +32,10 @@ class PaperWorkspace:
     workspace_name: str
     root_path: Path
     reading_workspace_path: Path
+    attachment_path: Path
     source_path: Path
     figure_path: Path
+    state_path: Path
     overview_note: Path
     quality_path: Path
     state: str = "created"
@@ -42,17 +44,45 @@ class PaperWorkspace:
     def from_root(cls, root_path: Path) -> "PaperWorkspace":
         root = root_path.resolve()
         reading = root / "阅读工作台"
-        source = root / "附件" / "原文"
-        figures = root / "附件" / "图片"
+        attachments = root / "附件"
+        source = attachments / "原文"
+        figures = attachments / "图片"
+        state = attachments / "状态"
         return cls(
             workspace_name=root.name,
             root_path=root,
             reading_workspace_path=reading,
+            attachment_path=attachments,
             source_path=source,
             figure_path=figures,
+            state_path=state,
             overview_note=reading / "总览.md",
-            quality_path=root / "quality-report.json",
+            quality_path=state / "quality-report.json",
         )
+
+    @property
+    def source_anchor_path(self) -> Path:
+        return self.state_path / "source-anchors.json"
+
+    @property
+    def figure_manifest_path(self) -> Path:
+        return self.state_path / "figure_extraction_manifest.json"
+
+    @property
+    def translation_audit_path(self) -> Path:
+        return self.state_path / "translation-audit.json"
+
+    @property
+    def metadata_verification_path(self) -> Path:
+        return self.state_path / "metadata-verification.json"
+
+    @property
+    def mineru_reuse_audit_path(self) -> Path:
+        return self.state_path / "mineru-reuse-audit.json"
+
+    @property
+    def source_review_status_path(self) -> Path:
+        return self.state_path / "source-review-status.json"
 
 
 @dataclass(slots=True)
@@ -71,4 +101,3 @@ class ReadingArtifact:
     path: Path
     generated: bool = True
     source_anchor_ids: list[str] = field(default_factory=list)
-

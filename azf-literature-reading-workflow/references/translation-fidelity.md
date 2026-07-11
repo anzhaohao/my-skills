@@ -17,7 +17,7 @@
 
 # 翻译审计
 
-正式接受一篇中译前，需要生成 `translation-audit.json`：
+正式接受一篇中译前，需要生成 `附件/状态/translation-audit.json`：
 
 ```json
 {

@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from workflow.models.paper import PaperWorkspace
+
 REQUIRED_MODE = "faithful_sentence_by_sentence"
 FORBIDDEN_PLACEHOLDER_MARKERS = [
     "节级中译阅读初版",
@@ -77,4 +79,4 @@ def validate_workspace_translation(workspace: Path) -> list[str]:
         return [f"Chinese translation note missing: {workspace}"]
     if len(notes) > 1:
         return [f"multiple Chinese translation notes require review: {workspace}"]
-    return validate_translation_artifact(source, notes[0], workspace / "translation-audit.json")
+    return validate_translation_artifact(source, notes[0], PaperWorkspace.from_root(workspace).translation_audit_path)

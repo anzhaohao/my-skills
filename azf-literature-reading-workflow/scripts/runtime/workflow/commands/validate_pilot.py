@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from workflow.services.cache_paths import cleanup_legacy_workspace_transients, cleanup_workspace_cache
+from workflow.models.paper import PaperWorkspace
 from workflow.validators.source_anchors import validate_source_anchor_file
 from workflow.validators.workspace_cleanliness import validate_workspace_cleanliness
 from workflow.validators.workspace_contract import validate_workspace_contract
@@ -17,12 +18,13 @@ def run(args) -> int:
     for workspace in workspaces:
         issues = []
         cleanup_removed: list[str] = []
-        quality = workspace / "quality-report.json"
+        paper = PaperWorkspace.from_root(workspace)
+        quality = paper.quality_path
         quality_data = None
         if quality.exists():
             quality_data = json.loads(quality.read_text(encoding="utf-8-sig"))
         issues.extend(validate_workspace_contract(workspace))
-        issues.extend(validate_source_anchor_file(workspace / "source-anchors.json"))
+        issues.extend(validate_source_anchor_file(paper.source_anchor_path))
         issues.extend(validate_workspace_cleanliness(workspace))
         issues.extend(validate_workspace_translation(workspace))
         if not quality.exists():

@@ -19,7 +19,7 @@ def create_or_update_workspace(
 ) -> tuple[PaperWorkspace, DryRunPlan]:
     workspace = PaperWorkspace.from_root(workspace_root)
     plan = DryRunPlan(dry_run=dry_run)
-    for folder in [workspace.root_path, workspace.reading_workspace_path, workspace.source_path, workspace.figure_path]:
+    for folder in [workspace.root_path, workspace.reading_workspace_path, workspace.attachment_path, workspace.source_path, workspace.figure_path, workspace.state_path]:
         plan.add_change("mkdir", folder, "paper workspace contract folder")
         if not dry_run:
             folder.mkdir(parents=True, exist_ok=True)
