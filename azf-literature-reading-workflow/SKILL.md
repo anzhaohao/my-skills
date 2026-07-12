@@ -1,4 +1,4 @@
----
+﻿---
 name: azf-literature-reading-workflow
 description: An Zhaofeng's local-first, two-round literature workflow for Zotero-backed paper ingestion, local Docker MinerU parsing, layout review, reviewed high-resolution figures, faithful sentence-accounted Chinese translation, separate deep-reading notes, quality gates, and a movable central Obsidian concept library. Use when processing, migrating, validating, or continuing papers under the personal Obsidian literature workspace. Always locate and confirm note paths before any write-enabled round.
 ---
@@ -61,9 +61,9 @@ Do not store mutable machine paths inside the Skill directory. Agent-memory may 
 
 # Obsidian Property and State-File Contract
 
-- `阅读工作台/总览.md` must start at byte 0 with exactly one YAML frontmatter block and use Chinese property names.
-- Do not create a `工作区` property.
-- Do not create nested `处理状态`; use flat booleans: `已导入`, `已解析`, `已检查版面`, `已裁剪图表`, `已中译`, `已精读`.
+- `阅读工作台/总览.md` must start at byte 0 with exactly one YAML frontmatter block and use Chinese property names. Paper notes must not create the legacy standalone `类型` property; use public `笔记类型` plus paper-specific `论文笔记类型`.
+- Do not create a legacy `类型` property or a `工作区` property.
+- Overview must use `笔记类型: 索引`, `笔记状态`, and `论文笔记类型: 论文总览`. Do not create nested `处理状态`; use flat booleans: `已导入`, `已解析`, `已检查版面`, `已裁剪图表`, `已中译`, `已精读`.
 - `原文PDF`, `MinerU英文全文`, `质量报告`, and `来源锚点` must be quoted Obsidian wikilinks with aliases, e.g. `"[[02-Brain Cells/0_论文精读/.../附件/原文/原文.pdf|原文.pdf]]"`.
 - Workflow JSON state files belong under `附件/状态/` inside each paper workspace, not in the workspace root.
 

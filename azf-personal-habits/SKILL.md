@@ -1,4 +1,4 @@
----
+﻿---
 name: azf-personal-habits
 description: >-
   An Zhaofeng's global personal working habits for any intelligent agent. Use at the start of tasks for An Zhaofeng, especially programming, writing Markdown documents, project planning, debugging, research workflows, long-running handoffs, Git/GitHub version control, rollback-sensitive changes, skill creation or maintenance, or any task where personal preferences affect execution. Prioritize these habits: proactive Git branch/commit/push/tag/rollback reminders during coding, progress handoff files for multi-step projects, concise checkpointing, maintaining Chinese README files when creating or updating skills, and no duplicate title inside Markdown document body content when creating .md files.
@@ -12,17 +12,17 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 
 - Prefer reading this skill first when a task is for An Zhaofeng and personal workflow preferences may matter.
 - For any task that creates or modifies Markdown/Obsidian documents, always read and apply this `azf-personal-habits` skill first, then layer any other relevant skill such as `azf-obsidian-work-record`, `azf-hardware-skill`, `azf-server-deploy`, or paper-reading skills. Do not skip this skill just because the task's visible subject is hardware, server, key management, code, deployment, or another domain.
-- User facts and boundaries have their formal version in `agent-memory` under `vault/用户记忆/`; this skill only maintains operational procedures. If they conflict, follow the vault and remind An Zhaofeng. Locate `agent-memory` through `azf-agent-memory` first.
+- User facts and boundaries have their formal version in `agent-memory` under `vault/鐢ㄦ埛璁板繂/`; this skill only maintains operational procedures. If they conflict, follow the vault and remind An Zhaofeng. Locate `agent-memory` through `azf-agent-memory` first.
 - Before doing anything to a project, first state the proposed plan. If any important requirement, target path, scope, risk, or expected output is uncertain, ask An Zhaofeng for confirmation. Wait for explicit confirmation before running commands, editing files, or making irreversible project changes, unless the user has already clearly authorized immediate execution.
 - Before changing project code or project artifacts, explicitly distinguish whether the user asked for analysis/recording only or also authorized implementation. If the user only asks to update a work record, analyze a problem, evaluate a scheme, or explain behavior, do not modify project code "while you are there". First provide a short implementation plan, list affected files and risks, and wait for An Zhaofeng's second confirmation before editing code. Treat this as mandatory for all code changes, even small obvious fixes.
 - Be proactive, but keep reminders concise and timed to natural checkpoints.
 - For multi-step work, keep a visible next-step trail so a new chat/model can resume quickly.
 - When creating Markdown documents, do not write the document title again inside the body content unless the user explicitly asks for an in-document heading. If there is no body title, start the remaining section hierarchy at `#` instead of `##`.
-- When creating or editing Obsidian Markdown notes with properties, write exactly one YAML frontmatter block at the very start of the file. The first bytes must be plain `---` with no UTF-8 BOM or hidden character before it; never create a second `--- ... ---` metadata block below the first one. Merge `创建时间` / `修改时间` and business fields such as `项目`, `类型`, `状态`, `aliases`, and `tags` into that single block.
+- When creating or editing Obsidian Markdown notes with properties, write exactly one YAML frontmatter block at the very start of the file. The first bytes must be plain `---` with no UTF-8 BOM or hidden character before it; never create a second `--- ... ---` metadata block below the first one. Merge `鍒涘缓鏃堕棿` / `淇敼鏃堕棿` and business fields such as `椤圭洰`, `绫诲瀷`, `鐘舵€乣, `aliases`, and `tags` into that single block.
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
 - Before risky or broad changes, remind the user to create a branch.
-- Obsidian vault Git exception: for `E:\software\Obsidian\安钊锋的外置大脑` and its `anzhaohao/obsidian` backup repository, keep work on `main` by default. Never create a new branch or switch away from the current branch unless An Zhaofeng explicitly approves that branch creation or branch switch in the current turn. This exception overrides the general branch recommendation for this vault. Use scoped commits, pushes, tags, and external rollback backups instead. If the vault is unexpectedly on a non-`main` branch, report it and ask before switching; do not switch automatically.
+- Obsidian vault Git exception: for `E:\software\Obsidian\瀹夐拪閿嬬殑澶栫疆澶ц剳` and its `anzhaohao/obsidian` backup repository, keep work on `main` by default. Never create a new branch or switch away from the current branch unless An Zhaofeng explicitly approves that branch creation or branch switch in the current turn. This exception overrides the general branch recommendation for this vault. Use scoped commits, pushes, tags, and external rollback backups instead. If the vault is unexpectedly on a non-`main` branch, report it and ask before switching; do not switch automatically.
 - When Codex creates branches, makes commits, merges, rebases, tags, or otherwise manages Git history for An Zhaofeng, generate or update a lightweight Git visualization/handoff record by default.
 - After each small completed milestone, remind the user to make a local commit.
 - At important checkpoints, remind the user to push to GitHub.
@@ -31,15 +31,15 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - Maintain or update a progress handoff file for multi-step projects so a new chat/model can resume quickly.
 - During debugging, bug fixes, project code changes, hardware/software investigation, or Git commit/push workflows, do not modify Obsidian notes unless An Zhaofeng explicitly asks in the current turn to update/sync/write/organize notes. Bound Obsidian notes may be read for context, but the note vault is read-only by default during code work. If note updates would be useful but were not requested, mention them as a pending optional follow-up in the final response instead of editing the vault.
 - If An Zhaofeng explicitly asks to update Obsidian notes, first state the affected note files and whether the change is append-only or structural. For broad, structural, or formatting-sensitive note changes, create a rollback backup before writing, then report exactly what changed and why.
-- Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. If the user does not specify a backup location, default to the Codex backup root `E:\software\CodexPlusPlus\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that task folder. This keeps rollback points centralized and easy to find.
+- Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. Rollback backups must never be written into the source repository, source workspace, source folder, or beside the original file (for example never create `*.bak-*` next to files being edited). If the user does not specify a backup location, default to the Codex backup root `E:\software\CodexPlusPlus\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that task folder. This keeps rollback points centralized and easy to find. If a previous backup was accidentally created inside the source tree, report it and ask before moving or deleting it.
 - When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
-- Do not make notes sound more professional than needed. Optimize first for "future An Zhaofeng can understand this at a glance": write the plain meaning, then the technical detail. It is better to say "这一步确认 GUI 真的打开了这台设备" than to only say "完成设备身份闭环验证". Add a small amount of warmth when appropriate, such as acknowledging why a detour was confusing or why a conclusion matters, while keeping the note concise.
+- Do not make notes sound more professional than needed. Optimize first for "future An Zhaofeng can understand this at a glance": write the plain meaning, then the technical detail. It is better to say "杩欎竴姝ョ‘璁?GUI 鐪熺殑鎵撳紑浜嗚繖鍙拌澶? than to only say "瀹屾垚璁惧韬唤闂幆楠岃瘉". Add a small amount of warmth when appropriate, such as acknowledging why a detour was confusing or why a conclusion matters, while keeping the note concise.
 - When reorganizing An Zhaofeng's existing Obsidian notes, preserve the user's original reasoning chain before improving structure. Do not flatten an explanatory paragraph, screenshot sequence, or folded callout into a generic agent summary when the original order explains why a later decision was made.
 - When installing agent skills, use `C:\Users\anzhaofeng\.skills-manager\skills` as the unified local install directory by default. This directory is the canonical source of local skills and must contain real skill directories, not links that point outward into another agent or plugin directory. When another agent or plugin needs the same skill, create the link in that agent/plugin directory pointing back to Skills Manager. If Skills Manager is not installed on a new computer or that directory is unavailable, remind An Zhaofeng to install Skills Manager first. If the task is urgent, install the skill into the current agent's default skills directory instead and say that it is a temporary fallback.
 - When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. Examples: `azf-hardware-skill`, `azf-server-deploy`, `azf-obsidian-work-record`.
 - Treat skills with the `azf-` prefix as An Zhaofeng's own custom skills. When a task can match both a generic/system skill and an `azf-` custom skill, read and follow the relevant `azf-` skill first, then use generic skills only as supporting implementation tools.
 - If An Zhaofeng explicitly names or provides a custom skill for a task, prioritize that skill even when another installed skill has a similar description. State which custom skill is being used and follow its output, QA, and workflow requirements.
-- When An Zhaofeng says "精读", "逐句精读", "论文精读", or asks to generate paper deep-reading notes, default to the `azf-paper-sentence-deep-reading` skill. If he explicitly says "不需要跳转", do not force PDF++ selection links; keep the paragraph-per-note structure, break-ice preview, sentence cards, and glossary workflow, and use page/paragraph/sentence positioning instead.
+- When An Zhaofeng says "绮捐", "閫愬彞绮捐", "璁烘枃绮捐", or asks to generate paper deep-reading notes, default to the `azf-paper-sentence-deep-reading` skill. If he explicitly says "涓嶉渶瑕佽烦杞?, do not force PDF++ selection links; keep the paragraph-per-note structure, break-ice preview, sentence cards, and glossary workflow, and use page/paragraph/sentence positioning instead.
 - When creating, supplementing, or optimizing any skill, maintain the README file in that skill folder at the same time. The README should be written in Chinese for An Zhaofeng, summarize what the skill does, when it should trigger, important stored facts or preferences, and the latest meaningful maintenance note.
 - For hardware, server assets, or equipment facts, prefer `azf-hardware-skill`. For server Docker deployment paths, compose layout, reverse proxy, backup, and service-operation conventions, prefer `azf-server-deploy`.
 
@@ -57,8 +57,8 @@ When An Zhaofeng asks to build a frontend, website, app, dashboard, landing page
 
 When An Zhaofeng asks for a backup but does not name a location:
 
-1. Use `E:\software\CodexPlusPlus\Codex备份` as the default top-level backup folder.
-2. Create one task-specific second-level folder named with timestamp and purpose, for example `20260530_190000_FrogTrace笔记整理前备份`.
+1. Use `E:\software\CodexPlusPlus\Codex澶囦唤` as the default top-level backup folder.
+2. Create one task-specific second-level folder named with timestamp and purpose, for example `20260530_190000_FrogTrace绗旇鏁寸悊鍓嶅浠絗.
 3. Put all files for that rollback point inside this second-level folder, preserving useful directory structure when possible.
 4. Tell An Zhaofeng the exact backup path before making edits.
 5. Avoid scattering backup files directly on the Desktop or other project folders.
@@ -71,8 +71,8 @@ When creating a `.md` document file for the user:
 - Do not duplicate the document title as a first `# ...` heading in the body by default.
 - Let the filename, Obsidian note title, or surrounding context carry the title.
 - Start the body directly with the substantive content, metadata block, summary, or first necessary section.
-- For Obsidian notes with properties, the metadata block must be the only frontmatter block and must start at byte 0 with plain `---`. Save files as UTF-8 without BOM. Do not paste or generate `---` (`U+FEFF` before the delimiter), because Obsidian plugins such as `Update time on edit` may fail to recognize the existing properties and create a duplicate `创建时间` / `修改时间` block.
-- If adding AI-generated metadata to an existing note, inspect the current top frontmatter first and merge new fields into it. Keep `创建时间`, `修改时间`, `项目`, `类型`, `状态`, `aliases`, `tags`, and similar fields together in the single top block; do not insert another YAML block into the body.
+- For Obsidian notes with properties, the metadata block must be the only frontmatter block and must start at byte 0 with plain `---`. Save files as UTF-8 without BOM. Do not paste or generate `---` (`U+FEFF` before the delimiter), because Obsidian plugins such as `Update time on edit` may fail to recognize the existing properties and create a duplicate `鍒涘缓鏃堕棿` / `淇敼鏃堕棿` block.
+- If adding AI-generated metadata to an existing note, inspect the current top frontmatter first and merge new fields into it. Keep `鍒涘缓鏃堕棿`, `淇敼鏃堕棿`, `椤圭洰`, `绫诲瀷`, `鐘舵€乣, `aliases`, `tags`, and similar fields together in the single top block; do not insert another YAML block into the body.
 - If the Markdown body has no explicit document title, use `#` for the first-level content sections, `##` for subsections, and `###` only below that. Do not start ordinary sections at `##` unless a body title already occupies `#`.
 - Add a body title only when the user explicitly requests it, the template requires it, or the document would be ambiguous without it.
 
@@ -85,7 +85,7 @@ tags:
   - frogtrace
 ---
 
-# 背景
+# 鑳屾櫙
 
 ...
 ```
@@ -93,9 +93,9 @@ tags:
 Avoid this unless requested:
 
 ```markdown
-# FrogTrace 调试记录
+# FrogTrace 璋冭瘯璁板綍
 
-## 背景
+## 鑳屾櫙
 
 ...
 ```
@@ -104,11 +104,11 @@ Avoid this unless requested:
 
 When creating, editing, or reorganizing an Obsidian Markdown note in An Zhaofeng's vault, use two different attachment locations based on file type:
 
-- Image files use the vault's existing global mirrored attachment system. Store image formats such as `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`, `.bmp`, `.tif`, and `.tiff` under the corresponding mirrored path in `Attachments/<note-folder-path>/<note-filename.md>/`. Do not create a local `附件/` folder merely for images.
-- Non-image, non-Markdown attachments must stay beside the note rather than in the global `Attachments` mirror. For formats such as `.pdf`, `.pptx`, `.docx`, `.xlsx`, `.csv`, `.zip`, `.mp4`, `.txt`, and similar files, create or reuse an `附件/` folder in the note's current folder and store them there. Example: `.../2026-03-28_组会/附件/组会汇报.pdf`.
+- Image files use the vault's existing global mirrored attachment system. Store image formats such as `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`, `.bmp`, `.tif`, and `.tiff` under the corresponding mirrored path in `Attachments/<note-folder-path>/<note-filename.md>/`. Do not create a local `闄勪欢/` folder merely for images.
+- Non-image, non-Markdown attachments must stay beside the note rather than in the global `Attachments` mirror. For formats such as `.pdf`, `.pptx`, `.docx`, `.xlsx`, `.csv`, `.zip`, `.mp4`, `.txt`, and similar files, create or reuse an `闄勪欢/` folder in the note's current folder and store them there. Example: `.../2026-03-28_缁勪細/闄勪欢/缁勪細姹囨姤.pdf`.
 - Markdown files remain in the note folder itself and are not treated as attachments.
-- If a note contains both images and other attachments, split them accordingly: images go to the global mirror; PDFs, slide decks, documents, videos, archives, and other non-image files go to the local `附件/` folder.
-- When moving notes, use Obsidian-aware moves so links and the mirrored image path update safely. If Obsidian automatically puts a non-image file into the global mirror, move that file back to the note folder's local `附件/` directory and verify the link.
+- If a note contains both images and other attachments, split them accordingly: images go to the global mirror; PDFs, slide decks, documents, videos, archives, and other non-image files go to the local `闄勪欢/` folder.
+- When moving notes, use Obsidian-aware moves so links and the mirrored image path update safely. If Obsidian automatically puts a non-image file into the global mirror, move that file back to the note folder's local `闄勪欢/` directory and verify the link.
 - Do not reorganize pre-existing attachments merely because this rule is loaded. Apply it to new writes and to attachment moves explicitly requested in the current task.
 
 ## Visual Note And Excalidraw Habit
@@ -123,7 +123,7 @@ When creating diagrams, visual notes, paper idea maps, project maps, or Excalidr
 
 ## Skill Maintenance Habit
 
-When creating, updating, or optimizing a skill under `C:\Users\anzhaofeng\.skills-manager\skills`:
+When creating, installing, updating, or optimizing a personal skill, use `C:\Users\anzhaofeng\.skills-manager\skills` as An Zhaofeng's default skill root. Do not install or scaffold personal skills under `.agent`, `.agents`, `.codex/skills`, a project-local folder, or an Obsidian vault folder unless An Zhaofeng explicitly requests that alternate location in the current turn. For existing skills found in the wrong root, report the mismatch before moving anything. When working under `C:\Users\anzhaofeng\.skills-manager\skills`:
 
 1. Update the skill's `SKILL.md` with only the instructions needed for agents.
 2. Update or create the skill folder's `README.md` in Chinese so An Zhaofeng can quickly understand it.
@@ -134,11 +134,7 @@ When creating, updating, or optimizing a skill under `C:\Users\anzhaofeng\.skill
 
 Preferred Chinese README content:
 
-- 这个 skill 解决什么问题。
-- 什么时候应该触发。
-- 当前保存的关键事实、偏好或规则。
-- 最近一次维护日期和维护内容。
-
+- 杩欎釜 skill 瑙ｅ喅浠€涔堥棶棰樸€?- 浠€涔堟椂鍊欏簲璇ヨЕ鍙戙€?- 褰撳墠淇濆瓨鐨勫叧閿簨瀹炪€佸亸濂芥垨瑙勫垯銆?- 鏈€杩戜竴娆＄淮鎶ゆ棩鏈熷拰缁存姢鍐呭銆?
 ## Git Reminder Timing
 
 Use short reminders at natural points, not noisy repetition.
@@ -189,7 +185,7 @@ For code changes, follow this rhythm:
 
 ### Obsidian Vault Exception
 
-For `E:\software\Obsidian\安钊锋的外置大脑` / `anzhaohao/obsidian`, do not apply the normal "branch-worthy" recommendation automatically. Keep the repository on `main`. Creating a branch or switching branches requires An Zhaofeng's explicit approval in the current turn. Without that approval, protect broad vault edits with a clean Git checkpoint, a scoped commit, a push, an optional tag, and the configured external backup location instead.
+For `E:\software\Obsidian\瀹夐拪閿嬬殑澶栫疆澶ц剳` / `anzhaohao/obsidian`, do not apply the normal "branch-worthy" recommendation automatically. Keep the repository on `main`. Creating a branch or switching branches requires An Zhaofeng's explicit approval in the current turn. Without that approval, protect broad vault edits with a clean Git checkpoint, a scoped commit, a push, an optional tag, and the configured external backup location instead.
 
 Recommend a branch when:
 
@@ -244,19 +240,19 @@ Visualization:
 
 Prefer writing this into the project's progress handoff file, such as `FROGTRACE_PROGRESS.md`, `PROJECT_PROGRESS.md`, or an Obsidian debugging/progress note. If the project already has a dedicated Git/branch note, use that. For projects with several active branches, also create or update a small Markdown file named like `GIT_BRANCH_MAP.md`, `BRANCH_MAP.md`, or the project's established equivalent.
 
-For An Zhaofeng's preferred visual output, use a Mermaid `gitGraph` diagram when the branch story is simple enough to keep accurate. Keep commit labels short and readable, group commits by meaningful branch line, and mark the current local position directly in the graph, for example with `当前HEAD`, `HEAD`, or `当前本地HEAD`. If the working tree has uncommitted changes, state under the graph that the real working position is `HEAD + 未提交修改`, and list the modified files.
+For An Zhaofeng's preferred visual output, use a Mermaid `gitGraph` diagram when the branch story is simple enough to keep accurate. Keep commit labels short and readable, group commits by meaningful branch line, and mark the current local position directly in the graph, for example with `褰撳墠HEAD`, `HEAD`, or `褰撳墠鏈湴HEAD`. If the working tree has uncommitted changes, state under the graph that the real working position is `HEAD + 鏈彁浜や慨鏀筦, and list the modified files.
 
 Preferred Mermaid style:
 
 ```text
 ```mermaid
 gitGraph
-   commit id: "855e07a 初始快照"
-   commit id: "55411d7 main基线"
+   commit id: "855e07a 鍒濆蹇収"
+   commit id: "55411d7 main鍩虹嚎"
    branch "feature-branch"
    checkout "feature-branch"
-   commit id: "abc1234 功能起点"
-   commit id: "def5678 当前HEAD"
+   commit id: "abc1234 鍔熻兘璧风偣"
+   commit id: "def5678 褰撳墠HEAD"
 ```
 ```
 
@@ -273,11 +269,11 @@ Recommend commits after small verified chunks, for example:
 
 ```text
 git add <files>
-git commit -m "记录 Zolix 调试进度交接"
-git commit -m "添加 Zolix 最小直连探针脚本"
-git commit -m "修复 Zolix DLL 依赖目录加载"
-git commit -m "补充 Zolix SDK 错误码日志"
-git commit -m "添加光谱仪 S/N 输入项"
+git commit -m "璁板綍 Zolix 璋冭瘯杩涘害浜ゆ帴"
+git commit -m "娣诲姞 Zolix 鏈€灏忕洿杩炴帰閽堣剼鏈?
+git commit -m "淇 Zolix DLL 渚濊禆鐩綍鍔犺浇"
+git commit -m "琛ュ厖 Zolix SDK 閿欒鐮佹棩蹇?
+git commit -m "娣诲姞鍏夎氨浠?S/N 杈撳叆椤?
 ```
 
 Keep commits focused. Do not bundle unrelated refactors, generated data, logs, and code changes together.
@@ -287,15 +283,15 @@ Prefer Chinese commit messages for An Zhaofeng's projects unless the user explic
 Good Chinese commit style:
 
 ```text
-git commit -m "修复 Tkinter 延迟回调访问异常变量导致崩溃"
-git commit -m "更新 FROG 调试进度：确认驱动缺失是连接失败根因"
-git commit -m "保留硬件初始化错误提示的小修并移除调试性改动"
+git commit -m "淇 Tkinter 寤惰繜鍥炶皟璁块棶寮傚父鍙橀噺瀵艰嚧宕╂簝"
+git commit -m "鏇存柊 FROG 璋冭瘯杩涘害锛氱‘璁ら┍鍔ㄧ己澶辨槸杩炴帴澶辫触鏍瑰洜"
+git commit -m "淇濈暀纭欢鍒濆鍖栭敊璇彁绀虹殑灏忎慨骞剁Щ闄よ皟璇曟€ф敼鍔?
 ```
 
 When a change has multiple important parts, use a Chinese subject plus a detailed body:
 
 ```text
-git commit -m "修复硬件初始化错误提示崩溃" -m "将 except 中的异常先转换为 error_msg，再通过 lambda 默认参数传入 Tkinter after 回调，避免 Python 清理异常变量后触发 NameError。"
+git commit -m "淇纭欢鍒濆鍖栭敊璇彁绀哄穿婧? -m "灏?except 涓殑寮傚父鍏堣浆鎹负 error_msg锛屽啀閫氳繃 lambda 榛樿鍙傛暟浼犲叆 Tkinter after 鍥炶皟锛岄伩鍏?Python 娓呯悊寮傚父鍙橀噺鍚庤Е鍙?NameError銆?
 ```
 
 ## Push And Tag Guidance
@@ -396,3 +392,4 @@ Prefer `.gitignore` before first commit.
 - If the user is actively coding manually, remind them at checkpoint moments.
 - If Codex is making the changes, state the Git checkpoint recommendation in progress updates and final answers.
 - When the task is only conceptual and no files are changed, no Git reminder is needed unless version control is directly relevant.
+

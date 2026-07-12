@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pathlib import Path
 
@@ -17,6 +17,13 @@ def _wikilink(path: Path, alias: str) -> str:
     return f"[[{_vault_relative(path)}|{alias}]]"
 
 
+def _yaml_list(values: list[str]) -> str:
+    cleaned = [value for value in values if value]
+    if not cleaned:
+        return "[]"
+    return "\n" + "\n".join(f"  - {value}" for value in cleaned)
+
+
 def render_overview(source: PaperSource, workspace: PaperWorkspace) -> str:
     title_en = source.title_en or workspace.workspace_name
     title_zh = source.title_zh or "未命名论文"
@@ -25,12 +32,15 @@ def render_overview(source: PaperSource, workspace: PaperWorkspace) -> str:
     doi = source.doi or ""
     citekey = source.citekey or ""
     zotero_key = source.zotero_key or ""
+    aliases = _yaml_list([title_zh, title_en, citekey])
     pdf_link = _wikilink(workspace.source_path / "原文.pdf", "原文.pdf")
     mineru_link = _wikilink(workspace.source_path / "MinerU英文全文.md", "MinerU英文全文.md")
     quality_link = _wikilink(workspace.quality_path, "quality-report.json")
     anchors_link = _wikilink(workspace.source_anchor_path, "source-anchors.json")
     return f"""---
-类型: 论文总览
+笔记类型: 索引
+笔记状态: 待整理
+论文笔记类型: 论文总览
 英文题名: "{title_en}"
 中文题名: "{title_zh}"
 作者: "{authors}"
@@ -49,6 +59,9 @@ MinerU英文全文: "{mineru_link}"
 已裁剪图表: false
 已中译: false
 已精读: false
+aliases: {aliases}
+tags:
+  - 论文精读
 ---
 # {title_zh}
 
@@ -61,11 +74,12 @@ MinerU英文全文: "{mineru_link}"
 - 来源锚点: {anchors_link}
 
 ## 进度
-- 已导入: ?
-- 已解析: ?
-- 已检查版面: ?
-- 已中译: ?
-- 已精读: ?
+- 已导入: ✅
+- 已解析: ⏳
+- 已检查版面: ⏳
+- 已裁剪图表: ⏳
+- 已中译: ⏳
+- 已精读: ⏳
 
 ## 下一步
 1. 运行 MinerU 解析并检查版面。

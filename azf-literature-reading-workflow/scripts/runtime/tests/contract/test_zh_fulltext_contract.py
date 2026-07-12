@@ -1,4 +1,4 @@
-import hashlib
+﻿import hashlib
 import json
 from pathlib import Path
 
@@ -13,7 +13,9 @@ def test_zh_fulltext_placeholder_does_not_pretend_to_translate(tmp_path: Path) -
     assert "尚未生成中文全文" in content
     assert "解析来源节选" not in content
     assert "阅读导入" not in content
-    assert "类型: 论文中文全文" in content
+    assert "类型: 论文中文全文" not in content
+    assert "笔记类型: 知识" in content
+    assert "论文笔记类型: 中文全文" in content
     assert "英文题名:" in content
 
 
@@ -21,7 +23,7 @@ def test_translation_audit_requires_complete_sentence_accounting(tmp_path: Path)
     source = tmp_path / "MinerU英文全文.md"
     source.write_text("First sentence. Second sentence.", encoding="utf-8")
     note = tmp_path / "【中译】测试.md"
-    note.write_text("---\n类型: 论文中文全文\n---\n\n# 摘要\n\n" + "这是忠实翻译。" * 80, encoding="utf-8")
+    note.write_text("---\n笔记类型: 知识\n笔记状态: 可用\n论文笔记类型: 中文全文\n---\n\n# 摘要\n\n" + "这是忠实翻译。" * 80, encoding="utf-8")
     audit = tmp_path / "translation-audit.json"
     audit.write_text(json.dumps({
         "mode": "faithful_sentence_by_sentence",

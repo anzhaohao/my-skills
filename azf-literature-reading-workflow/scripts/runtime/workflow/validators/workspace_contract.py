@@ -1,8 +1,16 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pathlib import Path
 
 from workflow.models.paper import PaperWorkspace
+
+
+def _frontmatter(text: str) -> str:
+    return text.split("---", 2)[1] if text.startswith("---") and text.count("---") >= 2 else ""
+
+
+def _has_property(frontmatter: str, key: str) -> bool:
+    return any(line.startswith(f"{key}:") for line in frontmatter.splitlines())
 
 
 def validate_workspace_contract(workspace_root: Path) -> list[str]:
@@ -27,15 +35,21 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
             issues.append(f"missing file: {file_path}")
     if workspace.overview_note.exists():
         text = workspace.overview_note.read_text(encoding="utf-8", errors="replace")
-        if "类型: 论文总览" not in text and "type: paper-overview" not in text:
-            issues.append("overview missing paper-overview type marker")
+        frontmatter = _frontmatter(text)
+        if "笔记类型: 索引" not in frontmatter:
+            issues.append("overview 笔记类型 must be 索引")
+        if "论文笔记类型: 论文总览" not in frontmatter:
+            issues.append("overview 论文笔记类型 must be 论文总览")
+        if "笔记状态:" not in frontmatter:
+            issues.append("overview missing 笔记状态")
+        if _has_property(frontmatter, "类型"):
+            issues.append("overview must not contain legacy 类型 property")
         for marker in ["## 导航", "## 下一步"]:
             if marker not in text:
                 issues.append(f"overview missing marker: {marker}")
-        frontmatter = text.split("---", 2)[1] if text.startswith("---") and text.count("---") >= 2 else ""
-        if "工作区:" in frontmatter:
+        if _has_property(frontmatter, "工作区"):
             issues.append("overview must not contain 工作区 property")
-        if "处理状态:" in frontmatter:
+        if _has_property(frontmatter, "处理状态"):
             issues.append("overview must not contain nested 处理状态 property")
         if '原文PDF: "[[' not in frontmatter:
             issues.append("overview 原文PDF property must be an Obsidian wikilink")

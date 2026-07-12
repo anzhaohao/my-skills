@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pathlib import Path
 
@@ -11,6 +11,19 @@ from workflow.services.overview_note import render_overview
 from workflow.services.source_files import ensure_source_pdf
 
 
+def _frontmatter(*, note_type: str, note_status: str = "待整理", extra: dict[str, str] | None = None) -> str:
+    lines = [
+        "---",
+        "笔记类型: 知识",
+        f"笔记状态: {note_status}",
+        f"论文笔记类型: {note_type}",
+    ]
+    for key, value in (extra or {}).items():
+        lines.append(f'{key}: "{value}"')
+    lines.extend(["tags:", "  - 论文精读", "---", ""])
+    return "\n".join(lines)
+
+
 def create_or_update_workspace(
     workspace_root: Path,
     pdf_path: Path,
@@ -19,7 +32,14 @@ def create_or_update_workspace(
 ) -> tuple[PaperWorkspace, DryRunPlan]:
     workspace = PaperWorkspace.from_root(workspace_root)
     plan = DryRunPlan(dry_run=dry_run)
-    for folder in [workspace.root_path, workspace.reading_workspace_path, workspace.attachment_path, workspace.source_path, workspace.figure_path, workspace.state_path]:
+    for folder in [
+        workspace.root_path,
+        workspace.reading_workspace_path,
+        workspace.attachment_path,
+        workspace.source_path,
+        workspace.figure_path,
+        workspace.state_path,
+    ]:
         plan.add_change("mkdir", folder, "paper workspace contract folder")
         if not dry_run:
             folder.mkdir(parents=True, exist_ok=True)
@@ -35,11 +55,20 @@ def create_or_update_workspace(
         write_if_missing(workspace.overview_note, overview)
 
     title_zh = source.title_zh or "中文题名待定"
+    title_en = source.title_en or ""
     placeholders = {
-        workspace.reading_workspace_path / f"【中译】{title_zh}.md": "---\n类型: 论文中文全文\n英文题名: \"" + (source.title_en or "") + "\"\n翻译状态: 待逐句忠实翻译\n---\n\n> [!warning] 尚未生成中文全文\n> 必须按原文逐句忠实翻译，不得用摘要、精读或解释代替翻译。\n",
-        workspace.reading_workspace_path / f"【精读】{title_zh}.md": "# 核心理解\n\n待补充。\n\n# 方法与证据链\n\n待补充。\n\n# 关键图表\n\n待补充。\n\n# 概念障碍\n\n待补充。\n\n# 对我的启发\n\n待补充。\n\n# 待核对\n\n- [ ] 核对来源锚点\n" + manual_tail_template(),
-        workspace.reading_workspace_path / "图表解读.md": "# 图表解读\n\n等待高清图裁剪后补充。\n",
-        workspace.reading_workspace_path / "问答复习.md": "# 问答复习\n\n等待精读后生成。\n",
+        workspace.reading_workspace_path / f"【中译】{title_zh}.md": _frontmatter(
+            note_type="中文全文",
+            extra={"英文题名": title_en, "翻译状态": "待逐句忠实翻译"},
+        )
+        + "\n> [!warning] 尚未生成中文全文\n> 必须按原文逐句忠实翻译，不得用摘要、精读或解释代替翻译。\n",
+        workspace.reading_workspace_path / f"【精读】{title_zh}.md": _frontmatter(note_type="精读笔记")
+        + "\n# 核心理解\n\n待补充。\n\n# 方法与证据链\n\n待补充。\n\n# 关键图表\n\n待补充。\n\n# 概念障碍\n\n待补充。\n\n# 对我的启发\n\n待补充。\n\n# 待核对\n\n- [ ] 核对来源锚点\n"
+        + manual_tail_template(),
+        workspace.reading_workspace_path / "图表解读.md": _frontmatter(note_type="图表解读")
+        + "\n# 图表解读\n\n等待高清图裁剪后补充。\n",
+        workspace.reading_workspace_path / "问答复习.md": _frontmatter(note_type="问答复习")
+        + "\n# 问答复习\n\n等待精读后生成。\n",
     }
     for path, note_content in placeholders.items():
         plan.add_change("write-if-missing", path, "starter reading workspace note", path.exists())
@@ -51,7 +80,7 @@ def create_or_update_workspace(
         report.metadata_status = "pass" if source.zotero_key and (source.doi or source.citekey) else "warning"
         report.pdf_status = "pass"
         report.preservation_status = "pass"
-        report.add_note("Workspace scaffolded without overwriting existing notes; generated YAML property names are Chinese.")
+        report.add_note("Workspace scaffolded without overwriting existing notes; generated YAML property names follow the Obsidian controlled vocabulary.")
         save_quality_report(workspace.quality_path, report)
 
     return workspace, plan

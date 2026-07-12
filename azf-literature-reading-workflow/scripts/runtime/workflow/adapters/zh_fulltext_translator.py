@@ -1,12 +1,16 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 
 def build_translation_pending_note(title_en: str) -> str:
     """Create a clearly non-accepted placeholder without pretending to translate."""
     return f"""---
-类型: 论文中文全文
+笔记类型: 知识
+笔记状态: 待整理
+论文笔记类型: 中文全文
 英文题名: "{title_en}"
 翻译状态: 待逐句忠实翻译
+tags:
+  - 论文精读
 ---
 
 > [!warning] 尚未生成中文全文
