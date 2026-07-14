@@ -4,6 +4,7 @@
   "tests/contract/test_paper_workspace_contract.py::test_workspace_contract_detects_required_files",
   "tests/contract/test_template_starter_contract.py::test_template_yaml_is_major_version_compatible",
   "tests/contract/test_workspace_cleanliness_contract.py::test_cache_is_external_and_cleanup_removes_legacy_transients",
+  "tests/contract/test_zh_fulltext_contract.py::test_frontmatter_localization_drops_legacy_type_and_keeps_pdf_link",
   "tests/contract/test_zh_fulltext_contract.py::test_translation_audit_requires_complete_sentence_accounting",
   "tests/contract/test_zh_fulltext_contract.py::test_workspace_translation_requires_audit",
   "tests/contract/test_zh_fulltext_contract.py::test_zh_fulltext_placeholder_does_not_pretend_to_translate",

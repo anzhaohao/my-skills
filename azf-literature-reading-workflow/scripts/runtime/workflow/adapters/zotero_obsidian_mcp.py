@@ -17,9 +17,11 @@ def paper_source_from_pdf(
     doi: str | None = None,
     citekey: str | None = None,
     zotero_key: str | None = None,
+    zotero_pdf_attachment_key: str | None = None,
 ) -> PaperSource:
     return PaperSource(
         zotero_key=zotero_key,
+        zotero_pdf_attachment_key=zotero_pdf_attachment_key,
         citekey=citekey,
         title_en=title_en or infer_title_from_pdf(pdf_path),
         title_zh=title_zh,

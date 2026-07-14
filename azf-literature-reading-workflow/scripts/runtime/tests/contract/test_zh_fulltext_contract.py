@@ -1,8 +1,10 @@
-﻿import hashlib
+import hashlib
 import json
 from pathlib import Path
 
 from workflow.services.zh_fulltext import build_zh_fulltext
+from workflow.services.markdown_properties import localize_frontmatter_keys
+from workflow.services.zotero_links import ensure_frontmatter_property
 from workflow.validators.translation_fidelity import validate_translation_artifact, validate_workspace_translation
 
 
@@ -46,3 +48,21 @@ def test_workspace_translation_requires_audit(tmp_path: Path) -> None:
     note.write_text("这是翻译。" * 80, encoding="utf-8")
     issues = validate_workspace_translation(tmp_path)
     assert any("translation audit missing" in issue for issue in issues)
+
+
+def test_frontmatter_localization_drops_legacy_type_and_keeps_pdf_link() -> None:
+    content = localize_frontmatter_keys(
+        """---
+type: 论文中文全文
+workspace: old
+zotero_pdf_link: zotero://open-pdf/library/items/PDF12345
+---
+
+# 正文
+"""
+    )
+    content = ensure_frontmatter_property(content, "Zotero PDF链接", "zotero://open-pdf/library/items/PDF12345")
+    assert "类型:" not in content
+    assert "工作区:" not in content
+    assert "workspace:" not in content
+    assert 'Zotero PDF链接: "zotero://open-pdf/library/items/PDF12345"' in content

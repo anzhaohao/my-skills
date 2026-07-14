@@ -87,6 +87,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--doi")
     p.add_argument("--citekey")
     p.add_argument("--zotero-key")
+    p.add_argument("--zotero-pdf-key", "--zotero-pdf-attachment-key", dest="zotero_pdf_key", help="Zotero PDF attachment item key for zotero://open-pdf links")
     p.add_argument("--dry-run", action=argparse.BooleanOptionalAction, default=True)
     p.set_defaults(func=ingest_paper.run)
 

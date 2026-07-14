@@ -38,7 +38,10 @@ class SourceCard:
 
     @property
     def overview_link(self) -> str:
-        return f"[[02-Brain Cells/0_论文精读/{self.paper_name}/阅读工作台/总览]]"
+        reading = self.paper_root / "阅读工作台"
+        candidates = sorted(reading.glob("【总览】*.md"))
+        overview_stem = candidates[0].stem if candidates else "总览"
+        return f"[[02-Brain Cells/0_论文精读/1_单篇论文/{self.paper_name}/阅读工作台/{overview_stem}]]"
 
 
 @dataclass(slots=True)

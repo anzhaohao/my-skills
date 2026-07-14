@@ -1,4 +1,4 @@
-﻿---
+---
 name: azf-literature-reading-workflow
 description: An Zhaofeng's local-first, two-round literature workflow for Zotero-backed paper ingestion, local Docker MinerU parsing, layout review, reviewed high-resolution figures, faithful sentence-accounted Chinese translation, separate deep-reading notes, quality gates, and a movable central Obsidian concept library. Use when processing, migrating, validating, or continuing papers under the personal Obsidian literature workspace. Always locate and confirm note paths before any write-enabled round.
 ---
@@ -61,10 +61,13 @@ Do not store mutable machine paths inside the Skill directory. Agent-memory may 
 
 # Obsidian Property and State-File Contract
 
-- `阅读工作台/总览.md` must start at byte 0 with exactly one YAML frontmatter block and use Chinese property names. Paper notes must not create the legacy standalone `类型` property; use public `笔记类型` plus paper-specific `论文笔记类型`.
+- Paper note filenames must carry the visible title as `【角色】{中文题名}.md`, for example `【总览】中文题名.md`, `【中译】中文题名.md`, `【精读】中文题名.md`, `【图表】中文题名.md`, and `【问答】中文题名.md`.
+- Note bodies must not repeat the document title as an internal H1; content sections are promoted one level, so overview sections use `# 导航`, `# 进度`, `# 下一步`.
+- `阅读工作台/【总览】{中文题名}.md` must start at byte 0 with exactly one YAML frontmatter block and use Chinese property names. Paper notes must not create the legacy standalone `类型` property; use public `笔记类型` plus paper-specific `论文笔记类型`.
 - Do not create a legacy `类型` property or a `工作区` property.
-- Overview must use `笔记类型: 索引`, `笔记状态`, and `论文笔记类型: 论文总览`. Do not create nested `处理状态`; use flat booleans: `已导入`, `已解析`, `已检查版面`, `已裁剪图表`, `已中译`, `已精读`.
+- Overview must use `笔记类型: 索引`, `笔记状态`, and `论文笔记类型: 论文总览`; it must be named `【总览】{中文题名}.md`. Do not create nested `处理状态`; use flat booleans: `已导入`, `已解析`, `已检查版面`, `已裁剪图表`, `已中译`, `已精读`.
 - `原文PDF`, `MinerU英文全文`, `质量报告`, and `来源锚点` must be quoted Obsidian wikilinks with aliases, e.g. `"[[02-Brain Cells/0_论文精读/.../附件/原文/原文.pdf|原文.pdf]]"`.
+- Zotero return links must use only `Zotero PDF链接: "zotero://open-pdf/library/items/{PDF_ATTACHMENT_KEY}"`. Do not create `Zotero条目链接`; the overview navigation should expose only an `打开PDF` link back to the Zotero PDF.
 - Workflow JSON state files belong under `附件/状态/` inside each paper workspace, not in the workspace root.
 
 # Bundled Runtime
@@ -77,7 +80,7 @@ Use `scripts/run_workflow.ps1` from any working directory. It must not depend on
 
 1. Complete Round 1 and stop for path confirmation.
 2. Complete Round 2, then run `doctor --strict`; local Docker MinerU is the default. If the user explicitly states that existing MinerU output should be reused, run `doctor --strict --reuse-existing`, audit the existing output against the source PDF, and only then use reuse mode.
-3. Resolve the exact Zotero parent item and stored PDF attachment. Confirm title, authors, year, venue, DOI, citekey, and Zotero key.
+3. Resolve the exact Zotero parent item and stored PDF attachment. Confirm title, authors, year, venue, DOI, citekey, Zotero key, and the PDF attachment key used by `--zotero-pdf-key`.
 4. Name the workspace `{English identification anchor} - {Chinese short title}` under the confirmed `paper_root`.
 5. Run `ingest-paper --dry-run`, review the plan, then apply with the confirmed location manifest.
 6. Run local Docker MinerU by default. Reuse `--mode existing` or `--mode reuse` only when the user explicitly identifies existing output and the audit confirms source identity, section order, formulas, captions, and figure mapping.
@@ -142,3 +145,4 @@ Do not report completion until:
 - central links and Base filters match the confirmed vault-relative path;
 - no human note was overwritten;
 - changed files and rollback locations are reported.
+

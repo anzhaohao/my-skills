@@ -1,10 +1,14 @@
-version: "1.0.0"
+version: "1.1.0"
 name: "paper-workspace-starter"
 notes:
-  - "总览.md"
-  - "【中译】{完整中文标题}.md"
-  - "【精读】{完整中文标题}.md"
-  - "图表解读.md"
-  - "问答复习.md"
-generated_manual_boundary: "Generated content must be bounded or whole-file owned; human note sections are preserved."
-
+  - "【总览】{中文题名}.md"
+  - "【中译】{中文题名}.md"
+  - "【精读】{中文题名}.md"
+  - "【图表】{中文题名}.md"
+  - "【问答】{中文题名}.md"
+attachments:
+  - "附件/原文/原文.pdf"
+  - "附件/原文/MinerU英文全文.md"
+  - "附件/图片/"
+  - "附件/状态/"
+generated_manual_boundary: "Generated content must be bounded or whole-file owned; human note sections are preserved. Note filenames carry the title; note bodies omit duplicate title headings."

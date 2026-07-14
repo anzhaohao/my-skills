@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 
 def build_translation_pending_note(title_en: str) -> str:

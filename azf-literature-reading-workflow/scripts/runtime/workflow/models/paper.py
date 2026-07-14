@@ -1,12 +1,36 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
+
+INVALID_FILENAME_CHARS = '<>:"/\\|?*'
+
+
+def safe_note_title(title: str | None, *, fallback: str = "未命名论文", max_length: int = 90) -> str:
+    value = (title or "").strip() or fallback
+    value = re.sub(r"\s+", " ", value)
+    value = "".join("－" if char in INVALID_FILENAME_CHARS else char for char in value)
+    value = value.strip(" .") or fallback
+    return value[:max_length].rstrip(" .") or fallback
+
+
+def reading_note_filename(role: str, title_zh: str | None) -> str:
+    return f"【{role}】{safe_note_title(title_zh)}.md"
+
+
+def _discover_overview_note(reading_path: Path) -> Path:
+    if reading_path.is_dir():
+        candidates = sorted(reading_path.glob("【总览】*.md"))
+        if candidates:
+            return candidates[0]
+    return reading_path / "总览.md"
 
 
 @dataclass(slots=True)
 class PaperSource:
     zotero_key: str | None = None
+    zotero_pdf_attachment_key: str | None = None
     citekey: str | None = None
     title_en: str = ""
     title_zh: str | None = None
@@ -56,9 +80,19 @@ class PaperWorkspace:
             source_path=source,
             figure_path=figures,
             state_path=state,
-            overview_note=reading / "总览.md",
+            overview_note=_discover_overview_note(reading),
             quality_path=state / "quality-report.json",
         )
+
+    def reading_note_path(self, role: str, title_zh: str | None) -> Path:
+        return self.reading_workspace_path / reading_note_filename(role, title_zh)
+
+    def overview_note_for_title(self, title_zh: str | None) -> Path:
+        return self.reading_note_path("总览", title_zh)
+
+    @property
+    def legacy_overview_note(self) -> Path:
+        return self.reading_workspace_path / "总览.md"
 
     @property
     def source_anchor_path(self) -> Path:

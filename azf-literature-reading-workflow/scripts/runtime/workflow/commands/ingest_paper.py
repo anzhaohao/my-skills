@@ -20,6 +20,7 @@ def run(args) -> int:
         doi=args.doi,
         citekey=args.citekey,
         zotero_key=args.zotero_key,
+        zotero_pdf_attachment_key=args.zotero_pdf_key,
     )
     paper_workspace, plan = create_or_update_workspace(workspace, pdf_path, source, dry_run=args.dry_run)
     payload = {"workspace": str(paper_workspace.root_path), "plan": plan.to_dict()}
