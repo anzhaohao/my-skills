@@ -1,0 +1,7 @@
+interface:
+  display_name: "AZF 论文周报"
+  short_description: "安全编排论文周报、期刊分区、本地或云模型与受控重建"
+  default_prompt: "Use $azf-paper-weekly to validate the production configuration, local journal ranking source, and safely generate or explicitly rebuild an ISO-week report."
+
+policy:
+  allow_implicit_invocation: true

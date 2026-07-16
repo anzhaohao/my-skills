@@ -10,9 +10,13 @@
 - 任务涉及 Git 分支、提交、推送、回滚、备份或交接记录。
 - 创建、补充、优化任何 skill。
 - 创建 Markdown 文档、Obsidian 项目记录、Excalidraw 图或论文思路图。
+- 使用 agent-reach/OpenCLI 进行 Twitter、Reddit、小红书、Facebook、Instagram 等依赖浏览器登录态的搜索或页面读取。
 
 ## 当前关键规则
 
+- OpenCLI 浏览器搜索属于 P0 稳定性路径。搜索开始时必须先显示“正在检查 Edge 与 Browser Bridge”，运行 `scripts/opencli_guard.py preflight --json`，确认连接后再显示“OpenCLI 已连接，开始搜索”。这里显示的是执行状态，不公开模型内部思维链。
+- Edge 关闭时由预检脚本最小化启动 Default profile；扩展仍未连接时只重启一次 daemon。仍失败就快速切换 agent-reach 的备用后端，禁止直接进入约 20 秒的无界等待，也禁止借 Codex IAB/browser-use 修复 OpenCLI。
+- OpenCLI 原始输出必须限量。优先通过 `scripts/opencli_guard.py run` 调用，默认限制结果条目和输出字符数，避免 quoted tweet、长文或嵌套正文挤满上下文并造成任务看似“截断”。
 - 用户正式事实与边界不在本 skill 中维护完整版本；本 skill 只保留行为层规则和指向 `agent-memory` 的说明。
 - 重要代码修改前检查 Git 状态，必要时提醒创建分支。
 - Obsidian 笔记库 `E:\software\Obsidian\安钊锋的外置大脑` 及其 `anzhaohao/obsidian` 备份仓库是分支例外：默认始终使用 `main`。除非我在当前回合明确同意创建或切换分支，否则任何 Agent 都不得为该笔记库新建分支、切换分支或自动执行 branch-worthy 流程；需要回滚保护时改用提交、推送、tag 和外部备份。如果发现笔记库意外位于非 `main` 分支，只能先报告并询问，不能自行切换。
@@ -48,6 +52,8 @@
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-07-16：把 OpenCLI 浏览器连接提升为 P0 搜索门禁。新增 `scripts/opencli_guard.py`，搜索前自动检查 daemon、最小化启动 Edge、轮询 Browser Bridge、必要时重启一次 daemon；同时增加有界输出执行模式，避免插件未连接等待和超长网页正文造成任务截断。
 
 - 2026-07-11：加入 Obsidian 附件按文件类型分流规则。图片继续进入全局 `Attachments` 镜像目录；PDF、PPTX、DOCX、XLSX、视频、压缩包等其他非 Markdown 附件放在当前笔记目录下的本地 `附件/` 文件夹。
 

@@ -33,6 +33,21 @@ Use this skill as An Zhaofeng's durable hardware and server inventory. Keep fact
   - Tencent Meeting: `E:\software\TencentMeeting`
 - When asked to open a local GUI application, check `E:\software` early instead of only searching `C:\Program Files` or Start Menu entries.
 
+### 本机 AI 推理工作站
+
+- 记录日期：2026-07-16。
+- CPU：Intel Core i9-14900HX，24 核 32 线程。
+- 内存：31.7 GiB DDR5；模型切换前实测空闲约 17.2 GiB。
+- GPU：NVIDIA GeForce RTX 4060 Laptop GPU，8188 MiB 显存。
+- NVIDIA 驱动：610.74。
+- Ollama：0.32.0，安装于 `E:\software\Ollama\Ollama`，模型根目录 `E:\software\Ollama\models`。
+- 适配结论：4B–9B Q4 模型适合全显存日常生产；14B 以上需要 CPU/内存混合卸载，不宜作为无人值守默认。
+- 当前论文周报生产模型：`qwen3.5:9b`，9.65B、Q4_K_M、官方模型文件约 6.6GB、Apache 2.0。
+- `qwen3.5:9b` 本机实测：模型本体 `5,641,055,763` 字节全部驻留 GPU；4096 上下文；含运行缓冲后 NVIDIA 显存约占 7826/8188 MiB；冷加载约 24.6 秒；提示词处理最高约 95.4 token/s，生成约 29.8–30.2 token/s；关闭思考后的真实论文结构化评估约 13.7 秒。
+- 旧 `qwen2.5:14b-instruct` 用户实测：62% GPU + 38% CPU，上下文 4096，约 10.05 token/s，提示词约 70.45 token/s；2026-07-16 完成生产切换后已从 Ollama 删除，释放 8.371 GiB。
+- 可选模型策略：`qwen3.5:4b` 适合快速初筛；`qwen3.6:35b-a3b` 仅适合关闭其他高内存程序后的人工实验，32GB 内存下不用于无人值守任务；云端旗舰模型用于困难论文和最终复核。
+- 论文摘要生产设置：OpenAI-compatible `base_url=http://127.0.0.1:11434/v1`，`reasoning_effort=none`，请求超时 180 秒，最大输出 1024 token。4096 上下文由 Ollama 当前显存自适应默认值提供。
+
 ## Known Lab Instruments
 
 ### FrogTrace Zolix SGM1700 近红外光纤光谱仪

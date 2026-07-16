@@ -28,6 +28,21 @@
   - 腾讯会议：`E:\software\TencentMeeting`
 - 后续打开本机 GUI 软件时，应优先检查 `E:\software`，不要只查 `C:\Program Files` 或开始菜单。
 
+## 本机 AI 推理工作站
+
+- 记录日期：2026-07-16。
+- CPU：Intel Core i9-14900HX，24 核 32 线程。
+- 内存：31.7 GiB DDR5；模型切换前实测空闲约 17.2 GiB。
+- GPU：NVIDIA GeForce RTX 4060 Laptop GPU，8188 MiB 显存。
+- NVIDIA 驱动：610.74。
+- Ollama：0.32.0，安装于 `E:\software\Ollama\Ollama`，模型根目录 `E:\software\Ollama\models`。
+- 适配结论：4B–9B Q4 模型适合全显存日常生产；14B 以上需要 CPU/内存混合卸载，不宜作为无人值守默认。
+- 当前论文周报生产模型：`qwen3.5:9b`，9.65B、Q4_K_M、官方模型文件约 6.6GB、Apache 2.0。
+- `qwen3.5:9b` 本机实测：模型本体 `5,641,055,763` 字节全部驻留 GPU；4096 上下文；含运行缓冲后 NVIDIA 显存约占 7826/8188 MiB；冷加载约 24.6 秒；提示词处理最高约 95.4 token/s，生成约 29.8–30.2 token/s；关闭思考后的真实论文结构化评估约 13.7 秒。
+- 旧 `qwen2.5:14b-instruct` 用户实测：62% GPU + 38% CPU，上下文 4096，约 10.05 token/s，提示词约 70.45 token/s；2026-07-16 完成生产切换后已从 Ollama 删除，释放 8.371 GiB。
+- 可选模型策略：`qwen3.5:4b` 适合快速初筛；`qwen3.6:35b-a3b` 仅适合关闭其他高内存程序后的人工实验，32GB 内存下不用于无人值守任务；云端旗舰模型用于困难论文和最终复核。
+- 论文摘要生产设置：OpenAI-compatible `base_url=http://127.0.0.1:11434/v1`，`reasoning_effort=none`，请求超时 180 秒，最大输出 1024 token。4096 上下文由 Ollama 当前显存自适应默认值提供。
+
 ## 当前已记录硬件
 
 ### FrogTrace Zolix SGM1700 近红外光纤光谱仪
@@ -94,6 +109,7 @@
 - n8n 记录：2026-05-31 已部署到 `/anzhaofeng/n8n`，公网入口暂为 `http://103.56.112.21:5678/`
 
 ## 最近维护
+- 2026-07-16：新增本机 AI 推理工作站硬件与 Ollama 模型适配记录；确认 `qwen3.5:9b` 全模型显存驻留、4096 上下文和约 30 token/s 生成速度，作为论文周报新默认模型；删除旧 `qwen2.5:14b-instruct` 并释放 8.371 GiB。
 - 2026-07-02：补充 Zolix SGM1700 `SGM26002` / `26002` 退换流程说明：新照片日期为 `2026年06月16日`，旧 Obsidian 附件同 S/N 日期为 `2026年05月25日`；按退换/重贴/重新流转说明记录。
 - 2026-07-02：补充退换后 `SGM26002` 的温控实机结果：dfield SDK 可枚举该设备，已生成 -10 C 降温和约 9 分钟稳定性 CSV；从记录第一点 `25.0 C` 算起约 `15.2 s` 首次达到 `-10 C` 以下，稳定段约 `-10.4 C` 到 `-10.1 C`。
 - 2026-06-02：补充 FrogTrace 三类光谱仪的波长范围来源和自动选型依据：Zolix 使用固定官方 `898.7-1705.1 nm`；Ocean/FX 应连接后分别从 SeaBreeze `wavelengths()` 和 Ideaoptics `GetWavelength()` 读取真实波长轴，历史采集窗口不当作完整硬件范围。
