@@ -30,11 +30,12 @@ SQLite and optional Zvec semantic indexes.
 - Python: `E:\software\Anaconda\envs\agent-memory\python.exe`
 - Basic check: `E:\software\Obsidian\agent-memory\Run-AgentMemoryCheck-Conda.ps1`
 - Vector index: `E:\software\Obsidian\agent-memory\Run-AgentMemoryVectorIndex.ps1`
+- Doctor: `E:\software\Obsidian\agent-memory\source\scripts\agent_memory_doctor.py`
 
 ## Naming And Repository Rules
 
 - The project name is `agent-memory`.
-- Use `agent_memory_*`, `AGENT_MEMORY_*`, and `memoryctl` for current runtime commands. Keep `mcncarl/codex-memory` only as the upstream repository name, and keep old `codex_memory_*` names only inside historical records.
+- Use `agent_memory_*`, `AGENT_MEMORY_*`, and `memoryctl` for current runtime commands. The current upstream is `mcncarl/agent-memory-vault`; keep `mcncarl/codex-memory` and old `codex_memory_*` names only inside historical records.
 - Do not call the whole project `codex-memory`.
 - The backup remote is `anzhaohao/agent-memory`.
 - The long-term backup branch is `main`.
@@ -126,6 +127,21 @@ After writing or changing memory, rebuild and check:
 ```powershell
 powershell -ExecutionPolicy Bypass -File "E:\software\Obsidian\agent-memory\Run-AgentMemoryCheck-Conda.ps1"
 powershell -ExecutionPolicy Bypass -File "E:\software\Obsidian\agent-memory\Run-AgentMemoryVectorIndex.ps1"
+```
+
+For a read-only infrastructure check, run Doctor v2.2. It checks SQLite/Zvec parity, the configured semantic Python, remote-backup freshness, stale session claims, model/dependency evidence, offline semantic search, and automation freshness:
+
+```powershell
+. "E:\software\Obsidian\agent-memory\Load-AgentMemoryEnv.ps1"
+Set-Location "E:\software\Obsidian\agent-memory\source"
+& $env:AGENT_MEMORY_PYTHON .\scripts\agent_memory_doctor.py
+```
+
+Claims older than 24 hours are treated as abandoned by the Stop hook. Preview them first; only use `--apply` after confirming they are stale:
+
+```powershell
+& $env:AGENT_MEMORY_PYTHON .\scripts\memoryctl --actor human claims-expire --older-than-hours 24
+& $env:AGENT_MEMORY_PYTHON .\scripts\memoryctl --actor human claims-expire --older-than-hours 24 --apply
 ```
 
 When changing agent-memory prompts, workflow notes, source scripts, or repository
