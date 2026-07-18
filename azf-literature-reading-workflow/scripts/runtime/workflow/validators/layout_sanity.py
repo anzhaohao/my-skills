@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 def simple_layout_sanity(markdown_path: Path) -> tuple[str, list[str]]:
@@ -14,6 +15,7 @@ def simple_layout_sanity(markdown_path: Path) -> tuple[str, list[str]]:
     if text.count("\n") < 20:
         notes.append("parsed text has too few line breaks; section order may be collapsed")
         return "suspect", notes
-    if "references" not in text.lower() and "参考文献" not in text:
+    compact = re.sub(r"\s+", "", text)
+    if "references" not in text.lower() and "参考文献" not in compact:
         notes.append("references section not detected; verify parse completeness")
     return "pass" if not notes else "suspect", notes

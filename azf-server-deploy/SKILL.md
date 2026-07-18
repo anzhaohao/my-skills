@@ -5,13 +5,13 @@ description: >-
   inspecting, backing up, or troubleshooting Docker, Docker Compose, reverse
   proxies, databases, self-hosted services, n8n, webhooks, or server-side
   automation on An Zhaofeng's servers. Prefer the default service root
-  /anzhaofeng/<service-name> unless an existing server convention clearly says
+  /anzhaofeng/{service-name} unless an existing server convention clearly says
   otherwise.
 ---
 
 # AZF Server Deploy
 
-Use this skill for An Zhaofeng's server operation and Docker deployment conventions. Hardware facts belong in `azf-hardware-skill`; this skill records how services should be arranged and maintained.
+Use this skill for An Zhaofeng's server operation and Docker deployment conventions. Stable server hardware facts belong in the Obsidian asset card `新云数据香港CN2云服务器`; this skill records how services should be arranged and maintained.
 
 ## Default Docker Location
 

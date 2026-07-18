@@ -2,6 +2,8 @@
 
 这个 skill 用来记录 An Zhaofeng 的服务器部署习惯，尤其是 Docker、Docker Compose、n8n、自托管服务、反向代理、备份和服务目录结构。
 
+服务器硬件与系统事实保存在 Obsidian 资产卡 `[[新云数据香港CN2云服务器]]`；本 Skill 只维护部署和运维约定。
+
 ## 什么时候使用
 
 - 在服务器上部署 Docker 服务时。

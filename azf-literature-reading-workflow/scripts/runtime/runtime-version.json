@@ -1,7 +1,7 @@
 {
   "name": "azf-literature-workflow-runtime",
   "source_commit": "dedf415c651c8f30ff54fb8482be197d180cdf0f",
-  "packaged_at": "2026-07-14T17:14:28",
+  "packaged_at": "2026-07-17T17:04:40",
   "source_project_name": "20260709-确定读文献工作流的方案",
   "entrypoint": "python -X utf8 -m workflow.cli"
 }

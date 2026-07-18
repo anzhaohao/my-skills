@@ -19,6 +19,7 @@ def run(args) -> int:
         paper_root=args.paper_root,
         concept_library_root=args.concept_library_root,
         template_path=args.template_path,
+        artifact_root=args.artifact_root,
         registry_path=registry,
     )
     manifest_path = write_pending_manifest(resolution, manifest, registry)

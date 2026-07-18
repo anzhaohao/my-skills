@@ -56,6 +56,7 @@ def test_frontmatter_localization_drops_legacy_type_and_keeps_pdf_link() -> None
 type: 论文中文全文
 workspace: old
 zotero_pdf_link: zotero://open-pdf/library/items/PDF12345
+translation_note: "[[【中译】测试.md|中译笔记]]"
 ---
 
 # 正文
@@ -66,3 +67,4 @@ zotero_pdf_link: zotero://open-pdf/library/items/PDF12345
     assert "工作区:" not in content
     assert "workspace:" not in content
     assert 'Zotero PDF链接: "zotero://open-pdf/library/items/PDF12345"' in content
+    assert '中文全文: "[[【中译】测试.md|中译笔记]]"' in content

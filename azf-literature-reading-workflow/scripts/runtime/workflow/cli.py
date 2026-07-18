@@ -13,9 +13,11 @@ from workflow.commands import (
     ingest_paper,
     layout_sanity_check,
     locate,
+    migrate_artifacts,
     migrate_concept_cards,
     parse_with_mineru,
     plan_batch,
+    repair_workspace_paths,
     validate_pilot,
 )
 from workflow.services.location_resolution import (
@@ -36,11 +38,12 @@ def _add_location_manifest(parser: argparse.ArgumentParser) -> None:
 
 def _add_common_workspace(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workspace", required=True, help="Paper workspace folder")
+    parser.add_argument("--artifact-id", help="External artifact run ID; defaults to the overview/latest successful run")
     _add_location_manifest(parser)
 
 
 def _requires_confirmed_locations(args: argparse.Namespace) -> bool:
-    if args.command in {"parse-with-mineru", "extract-highres-figures", "validate-pilot"}:
+    if args.command in {"parse-with-mineru", "extract-highres-figures", "layout-sanity-check", "plan-batch", "validate-pilot", "repair-workspace-paths", "migrate-artifacts"}:
         return True
     if args.command in {"ingest-paper", "generate-zh-fulltext", "generate-deep-reading"}:
         return not args.dry_run
@@ -58,6 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--paper-root")
     p.add_argument("--concept-library-root")
     p.add_argument("--template-path")
+    p.add_argument("--artifact-root")
     p.add_argument("--registry", default=str(default_registry_path()))
     p.add_argument("--manifest", default=str(default_manifest_path()))
     p.set_defaults(func=locate.run)
@@ -88,6 +92,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--citekey")
     p.add_argument("--zotero-key")
     p.add_argument("--zotero-pdf-key", "--zotero-pdf-attachment-key", dest="zotero_pdf_key", help="Zotero PDF attachment item key for zotero://open-pdf links")
+    p.add_argument("--artifact-id", help="New external artifact run ID; generated from time and DOI when omitted")
+    p.add_argument("--source-language", choices=["en", "zh"], default="en", help="Language of the source paper")
     p.add_argument("--dry-run", action=argparse.BooleanOptionalAction, default=True)
     p.set_defaults(func=ingest_paper.run)
 
@@ -155,16 +161,34 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--delete-sources", action="store_true", help="Permanently delete validated paper-local 扫盲班 folders")
     p.set_defaults(func=migrate_concept_cards.run)
 
+    p = sub.add_parser("migrate-artifacts", help="Dry-run or migrate legacy in-vault machine artifacts into immutable external runs")
+    p.add_argument("workspaces", nargs="+")
+    _add_location_manifest(p)
+    p.add_argument("--apply", action="store_true")
+    p.add_argument("--backup-root", help="Required external rollback root when --apply is used")
+    p.set_defaults(func=migrate_artifacts.run)
+
     p = sub.add_parser("plan-batch", help="Build a read-only queue for workspaces explicitly declared to have existing MinerU output")
     p.add_argument("workspaces", nargs="+")
+    p.add_argument("--artifact-id")
+    _add_location_manifest(p)
     p.add_argument("--output")
     p.set_defaults(func=plan_batch.run)
 
+    p = sub.add_parser("repair-workspace-paths", help="Dry-run or repair generated JSON paths after a workspace move")
+    p.add_argument("workspaces", nargs="+")
+    p.add_argument("--artifact-id")
+    _add_location_manifest(p)
+    p.add_argument("--apply", action="store_true")
+    p.set_defaults(func=repair_workspace_paths.run)
+
     p = sub.add_parser("validate-pilot", help="Validate pilot workspaces and clean transient caches on pass")
     p.add_argument("workspaces", nargs="+")
+    p.add_argument("--artifact-id")
     _add_location_manifest(p)
     p.add_argument("--output", help="Optional path to save the pilot validation JSON report")
     p.add_argument("--keep-cache", action="store_true", help="Retain external cache for debugging")
+    p.add_argument("--promote", action="store_true", help="Promote this run only when every quality gate passes")
     p.set_defaults(func=validate_pilot.run)
 
     return parser

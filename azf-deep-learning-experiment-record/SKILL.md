@@ -1,145 +1,100 @@
 ---
 name: azf-deep-learning-experiment-record
-description: An Zhaofeng's personal workflow for filling or updating deep-learning experiment records in Markdown or Obsidian from archived experiment artifacts such as configs, manifests, train logs, metrics JSON, figures, predictions, checkpoints, and prior baseline notes. Use when the user asks to 整理实验记录, 填入实验记录, update an Obsidian experiment note, summarize a training run, compare deep-learning experiments, or convert training outputs into a beginner-friendly research log across any project or agent environment.
+description: An Zhaofeng's evidence-analysis workflow for deep-learning runs. Use when Codex needs to inspect configs, manifests, train logs, metrics, figures, predictions, checkpoints, or baselines and turn them into a reliable experiment summary. Use with azf-obsidian-project-record when the result belongs in the Obsidian project vault.
 ---
 
-# Deep Learning Experiment Record
+# Deep Learning Experiment Evidence
 
-## Core Rule
+## Role Boundary
 
-Always resolve the target note before filling it.
+This skill owns evidence reading and experiment interpretation. It does not own the Obsidian project folder, total note, mainline note, debug-record placement, or template body.
 
-- If the user gives an explicit document path, verify it exists or can be created, state the exact target path in the working update, and proceed without asking again.
-- Ask again only when the target path is ambiguous, unsafe, unwritable, or conflicts with multiple existing notes.
-- If no target path is given, ask for the target Markdown/Obsidian file and stop.
-- If multiple likely notes exist, ask which one to fill and stop.
-- If the target already contains a template, preserve its structure unless the user asks for a rewrite.
+- `azf-obsidian-project-record` decides the project folder, note role, classification, and whether project indexes/mainlines should be synchronized.
+- The active Vault Templater template creates the note structure and frontmatter.
+- This skill reads the external run artifacts and fills the generated experiment note with source-grounded facts.
+- Filling an experiment note does not automatically update the total note or mainline. Synchronize those only when An Zhaofeng explicitly asks.
+
+## Storage Boundary
+
+Keep large and reproducibility-critical outputs outside the Obsidian Vault, normally under an external project root:
+
+```text
+D:\Postgraduate_JilinUniversity\02_Project\<project-name>\
+  experiments\
+    <run-id>\
+      manifest.md
+      config\
+      logs\
+      figures\
+      predictions\
+      checkpoints\
+      environment\
+```
+
+The Vault note records the experiment's understanding and links to the external files with `file:///D:/...` links. Do not copy checkpoints, raw logs, or bulky prediction files into the Vault merely to make the note complete.
+
+Every run should have stable Chinese properties `实验编号` and `实验归档路径`. The minimum `manifest.md` should state the purpose, actual command, Git commit, dataset/version/split, configuration entry point, environment, and artifact directory.
 
 ## Workflow
 
-1. Resolve or confirm target note.
-2. Read the target note or template.
-3. Locate experiment evidence:
-   - `manifest.md`
-   - config file such as `.yaml`, `.json`, or `.toml`
-   - training log such as `train_log.csv`
-   - metrics such as `test_metrics.json`
-   - figures such as `loss_curve.png`, prediction plots, confusion matrices, residual plots
-   - checkpoints such as `best.pt`, `last.pt`, `.ckpt`, `.pth`
-   - previous experiment note or metrics only when the user specifies it, the target note names it, or exactly one clearly matching baseline can be identified from project progress or manifests
-4. Fill the note with evidence-grounded content.
-5. Reread the written note and verify key metrics, figure links, and next-step text are present.
+1. Resolve the run and its external `实验归档路径`. If the path is missing or ambiguous, ask; do not invent a run directory.
+2. If the result belongs to `01-Project`, use `azf-obsidian-project-record` to resolve the target experiment/debug role and invoke the current Vault template. The default template root is `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板`; if no matching role is found there, let the project skill inspect the active Templater configuration.
+3. Read evidence in this order when present: `manifest.md`, configuration, dataset summary, training logs, metrics, figures/predictions, checkpoints, environment record, and a user-specified baseline.
+4. Fill only the generated note structure. Preserve existing user-written content and mark missing artifacts explicitly.
+5. Reread the finished note and verify every reported number, external link, figure reference, and conclusion against the source files.
+6. If An Zhaofeng explicitly requests project synchronization, pass the run conclusion and relevant links to `azf-obsidian-project-record`; otherwise leave total/mainline notes unchanged.
 
-## Project Workflow Link
+## Evidence Reading Rules
 
-If the target experiment note belongs to an An Zhaofeng Obsidian project folder, use `azf-obsidian-work-record` for project-level maintenance. After filling the experiment note, check whether the total note, mainline note, or debug progress note should be updated with the latest status, key conclusion, blocker, or next step.
-
-## Beginner-Friendly Writing Style
-
-Write for a beginner who is learning how to judge a deep-learning experiment.
-
-For each artifact, use this pattern:
+For each artifact, use:
 
 ```text
-用途: 这个文件/图用来判断什么
-关键结果: 读到的具体数值或现象
-判断: 这个结果说明什么，是否可信，还有什么不能说明
+用途：这个文件或图用来判断什么
+关键结果：读到的具体数值或现象
+判断：这个结果支持什么，不能支持什么，还缺什么证据
 ```
 
-Prefer plain explanations:
+Use cautious conclusions:
 
-- `train_loss` falls: the model is fitting the training data.
-- `val_loss` also falls: learning likely generalizes to validation data.
-- train and val are close: no obvious overfitting yet.
-- test metrics improve: compare only when data split and config are comparable.
-- one prediction figure is only one case; do not treat it as full generalization.
+- `train_loss`下降只说明模型在拟合训练数据。
+- `val_loss`同步下降才支持验证集上的泛化暂时正常。
+- train/validation 差距扩大支持“可能过拟合”，不能只凭一张图确认。
+- 一张预测图只能说明一个样本或一个局部现象，不能代表整体泛化。
+- 测试指标只能在数据划分、模型、损失、预处理和评价协议可比时比较。
 
-Avoid overclaiming. Use cautious phrases such as “暂未看到明显过拟合”, “单样本图支持这个判断”, and “仍需多样本检查”.
+Only state numbers read from files or command output. Label derived values and assumptions as inference. If a file is absent, write `未生成` or `未找到` and do not silently substitute a screenshot or an old value.
 
-## Standard Note Structure
+## Comparison Gate
 
-If the target note is empty or only a generic template, fill or create these sections:
+Before comparing two runs, verify:
+
+- same dataset version and split;
+- same preprocessing and label definition;
+- same model family and loss;
+- same evaluation protocol;
+- which variable actually changed.
+
+If more than one major setting changed, state that attribution is uncertain. If the baseline is ambiguous, ask which run to compare instead of choosing silently. For several runs, keep a separate comparison overview only when requested; do not turn every single-run note into a leaderboard.
+
+## Obsidian Link Format
+
+Use forward-slash local links and angle brackets:
 
 ```markdown
-# 1. 实验设置与归档入口
-# 2. 实验概览
-# 3. 实验结果
-## 3.1 日志与指标文件
-## 3.2 可视化文件
-## 3.3 模型文件
-# 4. 与上一次实验对比
-# 5. 问题与下一步
-# 6. 一句话总结
+- 实验归档：[run-001](<file:///D:/Postgraduate_JilinUniversity/02_Project/project/experiments/run-001/>)
+- 归档说明：[manifest.md](<file:///D:/Postgraduate_JilinUniversity/02_Project/project/experiments/run-001/manifest.md>)
+- 训练日志：[train_log.csv](<file:///D:/Postgraduate_JilinUniversity/02_Project/project/experiments/run-001/logs/train_log.csv>)
+- Loss 曲线：[loss_curve.png](<file:///D:/Postgraduate_JilinUniversity/02_Project/project/experiments/run-001/figures/loss_curve.png>)
 ```
 
-Preserve existing frontmatter. Update `修改时间` if present. Do not delete user-written notes unless replacing obvious placeholders.
+Use the Vault's active Templater-generated experiment structure rather than copying a historical note body. The template may provide sections such as experiment setup, overview, logs/metrics, visualizations, model files, comparison, problems/next step, and one-line summary; this skill supplies the evidence for those sections.
 
-## Obsidian Formatting Rules
+## Closeout
 
-Use robust Markdown that renders in Obsidian and in plain Markdown.
+Report:
 
-For archive entry blocks, do not rely on tab indentation or naked indented lines. Use bullets:
-
-Do not convert this block into a table unless the user explicitly asks for a table. Prefer the original note-like layout with top-level bullets and short nested bullets.
-
-```markdown
-- 本地归档文件夹：`experiments/EXPERIMENT_ID/`
-- 完整路径：`D:\path\to\experiments\EXPERIMENT_ID\`
-- 打开归档：[EXPERIMENT_ID](<file:///D:/path/to/experiments/EXPERIMENT_ID/>)
-- 归档说明文件：[manifest.md](<file:///D:/path/to/experiments/EXPERIMENT_ID/manifest.md>)
-- 实验配置：[config.yaml](<file:///D:/path/to/experiments/EXPERIMENT_ID/config/config.yaml>)
-```
-
-Use `file:///` links with forward slashes for local file links. Wrap the URL in angle brackets when paths contain spaces or non-ASCII characters.
-
-Embed images with Obsidian-compatible Markdown:
-
-```markdown
-![loss_curve.png](<file:///D:/path/to/loss_curve.png>)
-```
-
-Use tables for metric comparisons:
-
-```markdown
-| 指标 | baseline | current | 判断 |
-|---|---:|---:|---|
-| test_loss | 0.0741 | 0.0562 | 下降，变好 |
-```
-
-## Evidence Rules
-
-Only state numbers that were read from files or command output. If a value is inferred, label it as an inference.
-
-When comparing experiments:
-
-- Check whether the same dataset split, model, loss, and preprocessing were used.
-- Compare with a previous experiment only when the user specifies it, the target note names it, or exactly one clearly matching baseline can be identified from project progress or manifests.
-- If comparison seems useful but the baseline is ambiguous, ask the user which baseline to use instead of choosing silently.
-- If only one variable changed, explicitly name it.
-- If settings differ in multiple ways, warn that attribution is uncertain.
-
-When the run was not archived automatically:
-
-- Explain that `outputs/` is temporary and `experiments/<id>/` is the formal archive.
-- Record any补归档/after-the-fact archive step clearly.
-
-## Cross-Agent Portability
-
-Keep instructions independent of Codex-specific tooling. Any capable agent, including Claude Code, can follow this skill using normal filesystem access.
-
-- Prefer reading local files directly.
-- Prefer structured files over screenshots when available.
-- Do not require a specific shell, Python environment, or IDE.
-- Do not assume a Git repository exists.
-- If editing a live user note, preserve existing content and fill placeholders surgically.
-
-## Final Response
-
-After filling the note, report:
-
-- target note path
-- key sections filled
-- any missing artifacts
-- one recommended next step
-
-Keep the final response short.
+- external `实验归档路径` and `实验编号`;
+- target Vault note, if one was created or updated;
+- artifacts read and artifacts missing;
+- key evidence-grounded conclusion;
+- whether project total/mainline synchronization was performed or intentionally left pending.

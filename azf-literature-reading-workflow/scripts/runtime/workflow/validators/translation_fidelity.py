@@ -72,11 +72,26 @@ def validate_translation_artifact(source_path: Path, note_path: Path, audit_path
     return issues
 
 
-def validate_workspace_translation(workspace: Path) -> list[str]:
-    source = workspace / "附件" / "原文" / "MinerU英文全文.md"
+def validate_workspace_translation(workspace: Path, *, paper: PaperWorkspace | None = None) -> list[str]:
+    paper = paper or PaperWorkspace.from_root(workspace)
+    if paper.source_language == "zh":
+        source = paper.mineru_markdown_path
+        notes = sorted((workspace / "阅读工作台").glob("【原文】*.md"))
+        if not source.is_file():
+            return [f"Chinese source Markdown missing: {source}"]
+        if len(notes) != 1:
+            return [f"Chinese source note count must be one: {workspace}"]
+        text = notes[0].read_text(encoding="utf-8-sig", errors="replace")
+        issues: list[str] = []
+        if source.name not in text:
+            issues.append("Chinese source note must link the MinerU Chinese fulltext")
+        if "翻译状态: 不适用" not in text:
+            issues.append("Chinese source note translation status must be not applicable")
+        return issues
+    source = paper.mineru_markdown_path
     notes = sorted((workspace / "阅读工作台").glob("【中译】*.md"))
     if not notes:
         return [f"Chinese translation note missing: {workspace}"]
     if len(notes) > 1:
         return [f"multiple Chinese translation notes require review: {workspace}"]
-    return validate_translation_artifact(source, notes[0], PaperWorkspace.from_root(workspace).translation_audit_path)
+    return validate_translation_artifact(source, notes[0], paper.translation_audit_path)

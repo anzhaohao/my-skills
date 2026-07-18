@@ -1,4 +1,0 @@
-interface:
-  display_name: "Codex Claude Bridge"
-  short_description: "Call Claude from Codex for read-only reviews"
-  default_prompt: "Use $azf-codex-claude-bridge to ask Claude for a read-only second opinion on the current diff."

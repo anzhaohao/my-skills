@@ -11,12 +11,16 @@
 - 创建、补充、优化任何 skill。
 - 创建 Markdown 文档、Obsidian 项目记录、Excalidraw 图或论文思路图。
 - 使用 agent-reach/OpenCLI 进行 Twitter、Reddit、小红书、Facebook、Instagram 等依赖浏览器登录态的搜索或页面读取。
+- 预览或测试本地 HTML、做响应式验收、截图，或准备调用 Codex 内置浏览器/IAB/browser-use。
 
 ## 当前关键规则
 
 - OpenCLI 浏览器搜索属于 P0 稳定性路径。搜索开始时必须先显示“正在检查 Edge 与 Browser Bridge”，运行 `scripts/opencli_guard.py preflight --json`，确认连接后再显示“OpenCLI 已连接，开始搜索”。这里显示的是执行状态，不公开模型内部思维链。
 - Edge 关闭时由预检脚本最小化启动 Default profile；扩展仍未连接时只重启一次 daemon。仍失败就快速切换 agent-reach 的备用后端，禁止直接进入约 20 秒的无界等待，也禁止借 Codex IAB/browser-use 修复 OpenCLI。
 - OpenCLI 原始输出必须限量。优先通过 `scripts/opencli_guard.py run` 调用，默认限制结果条目和输出字符数，避免 quoted tweet、长文或嵌套正文挤满上下文并造成任务看似“截断”。
+- Codex 内置浏览器/IAB/browser-use 在当前机器上属于 P0 闪退风险路径。默认不得用它做本地 HTML 预览、响应式验收、截图或普通页面读取；优先使用独立 headless Playwright，需要可见界面、现有登录态或扩展时改用 Edge/Chrome。
+- OpenCLI 与 IAB 必须分开处理：OpenCLI 搜索继续执行 Edge/Browser Bridge 预检；独立 headless Playwright 不需要 OpenCLI 预检；OpenCLI 断连时禁止回退到 IAB。
+- 如果我明确要求使用 IAB，Agent 必须在真正创建 browser-use 标签前提醒它可能直接结束 Codex 进程并再次确认。看到 `No ChatGPT browser route`、`Sign in to ChatGPT`、`hidden-browser-use`、`ResizeObserver` 或 PiP 写入失败时停止重试，切换独立浏览器路径。
 - 用户正式事实与边界不在本 skill 中维护完整版本；本 skill 只保留行为层规则和指向 `agent-memory` 的说明。
 - 重要代码修改前检查 Git 状态，必要时提醒创建分支。
 - Obsidian 笔记库 `E:\software\Obsidian\安钊锋的外置大脑` 及其 `anzhaohao/obsidian` 备份仓库是分支例外：默认始终使用 `main`。除非我在当前回合明确同意创建或切换分支，否则任何 Agent 都不得为该笔记库新建分支、切换分支或自动执行 branch-worthy 流程；需要回滚保护时改用提交、推送、tag 和外部备份。如果发现笔记库意外位于非 `main` 分支，只能先报告并询问，不能自行切换。
@@ -26,10 +30,11 @@
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
 - 多步骤任务要留下可接手的进度线索。
-- 创建或修改任何 Markdown/Obsidian 文档时，必须先读取并应用 `azf-personal-habits`，再叠加其它相关 skill，例如 `azf-obsidian-work-record`、`azf-hardware-skill`、`azf-server-deploy` 或论文精读类 skill；不能因为任务表面上是硬件、服务器、密钥、代码或部署，就跳过本 skill。
+- 创建或修改任何 Markdown/Obsidian 文档时，必须先读取并应用 `azf-personal-habits`，再叠加其它相关 skill，例如 `azf-server-deploy` 或论文精读类 skill；硬件事实统一写入 `03-Academic Toolkit/2_资源与档案/仪器设备资产`；不能因为任务表面上是硬件、服务器、密钥、代码或部署，就跳过本 skill。
 - 创建 Markdown 文档时，默认不要在正文重复写文件标题。
 - 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - 创建或修改 Obsidian 笔记属性时，只允许文件最开头有一个 YAML frontmatter；第一行必须是纯 `---`，不能有 UTF-8 BOM 或隐藏字符。`创建时间`、`修改时间`、`项目`、`类型`、`状态`、`aliases`、`tags` 等字段必须合并在同一个属性块里，不能在正文再补一个属性块。
+- Obsidian 库内笔记互相引用时，默认使用不带文件夹路径的短 wikilink，例如 `[[【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]`；不要写成 `[[02-Brain Cells/.../【中译】...md|中译笔记]]`。这样笔记文件夹移动时链接更稳。资源/附件或插件明确要求路径时才保留路径。
 - Obsidian 附件按类型分流：图片使用全局 `Attachments/<笔记目录>/<笔记文件名.md>/` 镜像体系；PDF、PPTX、DOCX、XLSX、视频、压缩包等其他非 Markdown 文件放在当前笔记目录下的本地 `附件/` 文件夹。Markdown 文件仍留在正文目录，不当作附件。
 - 创建或总结 Obsidian / Markdown 笔记时，不要写得过于专业。优先让“未来的我一眼看懂”：先写人话含义，再补必要技术细节；可以有一点温度，比如说明为什么这一步容易误解、这个结论为什么重要，但不要变成长篇抒情。
 - 整理我已有的 Obsidian 笔记时，先保留原文判断链，再做结构化优化；不要把能说明“为什么后来这样决策”的解释段、截图序列或折叠 callout 压平成泛化摘要。
@@ -37,21 +42,30 @@
 - `C:\Users\anzhaofeng\.skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
-- 我说“精读”“逐句精读”“论文精读”时，默认使用 `azf-paper-sentence-deep-reading`。如果我明确说“不需要跳转”，不要强制 PDF++ 链接，保留逐段成文、破冰前瞻、逐句卡片和扫盲班术语结构即可。
+- 我说“精读文献”“精读论文”“论文精读”或要求生成论文精读笔记时，默认以 `azf-literature-reading-workflow` 作为总流程入口。只有我明确说“逐句精读”或“逐段精读”时，才参考 `【已归档】论文逐句精读与PDF++定位工作流.md`；如果我明确说“不需要跳转”，不要强制 PDF++ 链接，改用页码、段落和句子定位。
 - 创建、补充、优化 skill 时，要同步维护该 skill 文件夹下的中文 `README.md`。
+- 通过代码运行的 QuickAdd UserScript 统一放在 `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\3_Plugin Mods\QuickAdd\Scripts`；移动或修改时同步更新 `.obsidian/plugins/quickadd/data.json`，并同步维护该目录下的 `QuickAdd脚本说明.md`，然后重新加载 QuickAdd。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
 
 ## Visual / Excalidraw 习惯
 
 - 实际 Excalidraw 生成规则集中维护在 `excalidraw-diagram`。
-- `azf-project-note-binding`、`azf-obsidian-work-record` 等个人 workflow skill 只决定图属于哪个项目、放到哪里、承担什么记录职责。
+- 项目现有的 Obsidian 工作流只决定图属于哪个项目、放到哪里、承担什么记录职责。
 - 如果多个 skill 都涉及图，先用个人 workflow skill 判断任务边界，再用 `excalidraw-diagram` 执行画图和检查。
 - 使用 Excalidraw MCP 时，如果 `127.0.0.1:3000` 或 `api/elements` 连不上，不要直接绕开 MCP 手写 `.excalidraw.md`；先检查并启动本地 canvas 服务。当前机器的部署目录是 `E:\software\MCP\mcp_excalidraw`，在该目录运行 `npm run canvas`，再访问 `http://127.0.0.1:3000/health` 验证。
 - 记住两层服务不同：`dist/index.js` 是 MCP stdio server，`npm run canvas` 才是 Excalidraw 画布 / REST API 服务。
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-07-18：集中管理 QuickAdd UserScript：脚本迁移到 `05-Junk Drawer/3_Plugin Mods/QuickAdd/Scripts`，配置路径和脚本说明文档必须与每次移动/修改同步更新。
+
+- 2026-07-18：归档逐句精读 Skill；“精读文献”“精读论文”“论文精读”继续进入 `azf-literature-reading-workflow`，明确逐句或逐段时参考论文精读工作流目录下的已归档 PDF++ 定位方法。
+
+- 2026-07-17：加入 Obsidian 库内笔记短 wikilink 规则。笔记到笔记的引用默认只写文件名和别名，例如 `[[【中译】...md|中译笔记]]`，不在前面加文件夹路径；资源和附件链接可按需要保留路径。
+
+- 2026-07-16：加入 Codex IAB P0 闪退保护。当前便携 Gate-off `26.707.12708.0` 在无可用 ChatGPT browser route 时，创建 `hidden-browser-use` WebView 后可于页面加载完成后直接退出；以后本地 HTML 验收默认使用独立 headless Playwright，OpenCLI 与 IAB 的门禁和回退路径严格分离。
 
 - 2026-07-16：把 OpenCLI 浏览器连接提升为 P0 搜索门禁。新增 `scripts/opencli_guard.py`，搜索前自动检查 daemon、最小化启动 Edge、轮询 Browser Bridge、必要时重启一次 daemon；同时增加有界输出执行模式，避免插件未连接等待和超长网页正文造成任务截断。
 
@@ -67,7 +81,7 @@
 - 2026-07-04：加入 Skills Manager 链接方向规则。`C:\Users\anzhaofeng\.skills-manager\skills` 必须作为真实源目录；其它 agent/plugin 目录需要共用 skill 时，反向链接回 Skills Manager。
 - 2026-07-02：将 Codex 默认回滚备份根目录从桌面迁移到 `E:\software\CodexPlusPlus\Codex备份`，以后只在该目录下创建时间戳任务子目录。
 - 2026-06-30：加入 Obsidian frontmatter 防重复规则。以后创建/补充 AI 笔记属性时，必须使用 UTF-8 无 BOM、文件首行纯 `---`、全文件只保留一个顶部 YAML 属性块，避免 `Update time on edit` 误判后重复创建 `创建时间/修改时间`。
-- 2026-06-23：加入论文精读默认路由规则。以后我说“精读”默认指 `azf-paper-sentence-deep-reading`；若明确说“不需要跳转”，则不强制 PDF++ 链接。
+- 2026-06-23：首次加入论文精读默认路由规则；该规则已于 2026-07-17 调整为优先进入总流程 Skill。
 - 2026-06-15：修正代码调试与 Obsidian 同步边界。调试、修 bug、硬件排查和代码修改时，笔记库默认只读；只有我在当前回合明确要求更新/同步/写入/整理笔记，才允许改 Obsidian，并且结构性改动前必须先备份。
 - 2026-06-04：加入“项目代码/项目文件改动前必须二次确认”的硬规则。只要求记录、分析、评估或解释时，不得顺手修改代码；必须先给方案、影响范围和风险，得到明确确认后再改。
 - 2026-06-04：曾加入“每次调试记录也同步一份到 Obsidian 调试记录”的习惯规则；2026-06-15 已废止这个默认自动同步规则，避免代码调试时误改笔记结构。

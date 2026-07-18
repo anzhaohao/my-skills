@@ -41,6 +41,7 @@ class PaperSource:
     collections: list[str] = field(default_factory=list)
     pdf_attachments: list[Path] = field(default_factory=list)
     zotero_link: str | None = None
+    source_language: str = "en"
 
 
 @dataclass(slots=True)
@@ -63,15 +64,22 @@ class PaperWorkspace:
     overview_note: Path
     quality_path: Path
     state: str = "created"
+    artifact_id: str | None = None
 
     @classmethod
-    def from_root(cls, root_path: Path) -> "PaperWorkspace":
+    def from_root(
+        cls,
+        root_path: Path,
+        *,
+        state_path_override: Path | None = None,
+        artifact_id: str | None = None,
+    ) -> "PaperWorkspace":
         root = root_path.resolve()
         reading = root / "阅读工作台"
         attachments = root / "附件"
         source = attachments / "原文"
         figures = attachments / "图片"
-        state = attachments / "状态"
+        state = state_path_override.resolve() if state_path_override else attachments / "状态"
         return cls(
             workspace_name=root.name,
             root_path=root,
@@ -82,10 +90,32 @@ class PaperWorkspace:
             state_path=state,
             overview_note=_discover_overview_note(reading),
             quality_path=state / "quality-report.json",
+            artifact_id=artifact_id,
         )
 
     def reading_note_path(self, role: str, title_zh: str | None) -> Path:
         return self.reading_workspace_path / reading_note_filename(role, title_zh)
+
+    @property
+    def source_language(self) -> str:
+        if self.overview_note.is_file():
+            text = self.overview_note.read_text(encoding="utf-8-sig", errors="replace")
+            for line in text.splitlines():
+                if line.startswith("原文语言:"):
+                    value = line.split(":", 1)[1].strip().strip('"').casefold()
+                    return "zh" if value.startswith("zh") else "en"
+        if (self.source_path / "MinerU中文全文.md").is_file():
+            return "zh"
+        return "en"
+
+    @property
+    def mineru_markdown_path(self) -> Path:
+        filename = "MinerU中文全文.md" if self.source_language == "zh" else "MinerU英文全文.md"
+        return self.source_path / filename
+
+    @property
+    def fulltext_role(self) -> str:
+        return "原文" if self.source_language == "zh" else "中译"
 
     def overview_note_for_title(self, title_zh: str | None) -> Path:
         return self.reading_note_path("总览", title_zh)
@@ -93,6 +123,10 @@ class PaperWorkspace:
     @property
     def legacy_overview_note(self) -> Path:
         return self.reading_workspace_path / "总览.md"
+
+    @property
+    def legacy_state_path(self) -> Path:
+        return self.attachment_path / "状态"
 
     @property
     def source_anchor_path(self) -> Path:

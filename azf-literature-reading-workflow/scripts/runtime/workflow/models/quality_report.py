@@ -7,10 +7,12 @@ from datetime import datetime
 @dataclass(slots=True)
 class PaperQualityReport:
     paper_workspace: str
+    source_language: str = "en"
     overall_status: str = "warning"
     metadata_status: str = "warning"
     pdf_status: str = "warning"
     mineru_status: str = "pending"
+    source_fulltext_status: str = "pending"
     layout_sanity_status: str = "not_applicable"
     figure_crop_status: str = "not_applicable"
     translation_status: str = "pending"
@@ -26,6 +28,7 @@ class PaperQualityReport:
             self.metadata_status,
             self.pdf_status,
             self.mineru_status,
+            self.source_fulltext_status,
             self.layout_sanity_status,
             self.figure_crop_status,
             self.translation_status,
@@ -58,4 +61,3 @@ class PaperQualityReport:
     def from_dict(cls, data: dict) -> "PaperQualityReport":
         allowed = set(cls.__dataclass_fields__)
         return cls(**{key: value for key, value in data.items() if key in allowed})
-

@@ -6,7 +6,7 @@ from pathlib import Path
 from workflow.models.source_anchor import SourceAnchor
 
 
-def validate_source_anchor_file(path: Path) -> list[str]:
+def validate_source_anchor_file(path: Path, workspace_root: Path | None = None) -> list[str]:
     if not path.exists():
         return [f"missing source anchor file: {path}"]
     try:
@@ -30,5 +30,9 @@ def validate_source_anchor_file(path: Path) -> list[str]:
             issues.append(f"duplicate anchor_id: {anchor.anchor_id}")
         seen.add(anchor.anchor_id)
         issues.extend(anchor.validate())
+        if workspace_root is not None:
+            target_value = anchor.note_target.split("#", 1)[0]
+            target = workspace_root.resolve() / Path(target_value)
+            if not target.is_file():
+                issues.append(f"anchor target missing in paper workspace: {target}")
     return issues
-

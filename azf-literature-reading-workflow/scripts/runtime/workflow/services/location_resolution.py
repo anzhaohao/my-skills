@@ -23,7 +23,8 @@ DEFAULT_VAULT_ROOT = Path("E:/software/Obsidian/安钊锋的外置大脑")
 DEFAULT_PAPER_RELATIVE = Path("02-Brain Cells/0_论文精读")
 DEFAULT_CONCEPT_RELATIVE = Path("02-Brain Cells/99_Mind Palace/1_扫盲班")
 DEFAULT_TEMPLATE_RELATIVE = Path("05-Junk Drawer/2_模板/2.1 Templater/概念卡模板.md")
-ROLE_NAMES = ("vault_root", "paper_root", "concept_library_root", "template_path")
+DEFAULT_ARTIFACT_ROOT = Path("D:/Postgraduate_JilinUniversity/04_Others/20260709-确定读文献工作流的方案/output")
+ROLE_NAMES = ("vault_root", "paper_root", "concept_library_root", "template_path", "artifact_root")
 
 
 def default_config_dir() -> Path:
@@ -241,6 +242,7 @@ def resolve_locations(
     paper_root: str | Path | None = None,
     concept_library_root: str | Path | None = None,
     template_path: str | Path | None = None,
+    artifact_root: str | Path | None = None,
     registry_path: str | Path | None = None,
 ) -> LocationResolution:
     registry_file = _resolved(registry_path or default_registry_path())
@@ -319,18 +321,40 @@ def resolve_locations(
         errors=errors,
     )
 
+    resolved_artifact = _select_role(
+        role="artifact_root",
+        explicit=artifact_root,
+        registry=registry,
+        fallback=DEFAULT_ARTIFACT_ROOT,
+        discover=lambda: [],
+        expect_file=False,
+        sources=sources,
+        candidates=candidates,
+        warnings=warnings,
+        errors=errors,
+    )
+
     for role, path in [
         ("paper_root", resolved_paper),
         ("concept_library_root", resolved_concept),
         ("template_path", resolved_template),
+        ("artifact_root", resolved_artifact),
     ]:
         if path is None:
             continue
         locations[role] = path
-        try:
-            path.resolve().relative_to(vault)
-        except ValueError:
-            errors.append(f"{role} is outside vault_root: {path}")
+        if role == "artifact_root":
+            try:
+                path.resolve().relative_to(vault)
+            except ValueError:
+                pass
+            else:
+                errors.append(f"artifact_root must be outside vault_root: {path}")
+        else:
+            try:
+                path.resolve().relative_to(vault)
+            except ValueError:
+                errors.append(f"{role} is outside vault_root: {path}")
 
     if resolved_concept:
         index_note = resolved_concept / INDEX_FOLDER / INDEX_NOTE
@@ -388,7 +412,7 @@ def validate_manifest(data: dict[str, Any], *, require_confirmed: bool) -> dict[
     vault = locations["vault_root"]
     if not vault.is_dir() or not (vault / ".obsidian").is_dir():
         raise RuntimeError(f"confirmed vault_root is unavailable: {vault}")
-    for role in ["paper_root", "concept_library_root"]:
+    for role in ["paper_root", "concept_library_root", "artifact_root"]:
         if not locations[role].is_dir():
             raise RuntimeError(f"confirmed {role} is unavailable: {locations[role]}")
     if not locations["template_path"].is_file():
@@ -398,6 +422,12 @@ def validate_manifest(data: dict[str, Any], *, require_confirmed: bool) -> dict[
             locations[role].relative_to(vault)
         except ValueError as exc:
             raise RuntimeError(f"confirmed {role} moved outside vault_root: {locations[role]}") from exc
+    try:
+        locations["artifact_root"].relative_to(vault)
+    except ValueError:
+        pass
+    else:
+        raise RuntimeError(f"confirmed artifact_root must be outside vault_root: {locations['artifact_root']}")
     return locations
 
 

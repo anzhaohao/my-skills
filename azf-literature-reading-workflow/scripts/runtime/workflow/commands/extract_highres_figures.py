@@ -14,23 +14,32 @@ from workflow.adapters.figure_render_extractor import (
 from workflow.models.paper import PaperWorkspace
 from workflow.models.source_anchor import SourceAnchor
 from workflow.reports.quality_report import load_quality_report, save_quality_report
-from workflow.services.cache_paths import figure_cache_dir, find_cached_mineru_auto_dir, find_cached_mineru_raw
+from workflow.services.artifact_runs import resolve_run_from_args
 from workflow.services.mineru_visual_crops import render_visual_crops
 from workflow.services.source_anchor_registry import SourceAnchorRegistry
+from workflow.services.workspace_paths import resolve_workspace_path, workspace_relative_value
 
 
 def _write_accepted_assets(workspace: PaperWorkspace, manifest: list[dict]) -> None:
     manifest_path = workspace.figure_manifest_path
-    write_figure_manifest(manifest_path, manifest)
-    registry = SourceAnchorRegistry(workspace.source_anchor_path)
+    normalized_manifest: list[dict] = []
     for item in manifest:
+        normalized = dict(item)
+        for key in ["file_path", "source_pdf"]:
+            if normalized.get(key):
+                normalized[key] = workspace_relative_value(workspace.root_path, str(normalized[key]))
+        normalized["path_base"] = "paper_workspace"
+        normalized_manifest.append(normalized)
+    write_figure_manifest(manifest_path, normalized_manifest)
+    registry = SourceAnchorRegistry(workspace.source_anchor_path)
+    for item in normalized_manifest:
         if item.get("crop_status") != "success" or not item.get("accepted_as_highres_figure", True):
             continue
-        file_path = Path(item["file_path"])
+        file_path = resolve_workspace_path(workspace.root_path, item["file_path"])
         registry.add(
             SourceAnchor(
                 anchor_id=item["asset_id"],
-                paper_workspace=str(workspace.root_path),
+                paper_workspace=".",
                 source_type=item.get("source_type") or "figure",
                 page=item.get("page"),
                 figure_label=item.get("figure_label"),
@@ -43,9 +52,9 @@ def _write_accepted_assets(workspace: PaperWorkspace, manifest: list[dict]) -> N
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
+    workspace, artifact = resolve_run_from_args(args)
     pdf_path = Path(args.pdf).resolve() if args.pdf else workspace.source_path / "原文.pdf"
-    cache_dir = figure_cache_dir(workspace.root_path)
+    cache_dir = artifact.parser_path / "figures"
     cache_dir.mkdir(parents=True, exist_ok=True)
     report = load_quality_report(workspace.quality_path, str(workspace.root_path))
 
@@ -70,8 +79,13 @@ def run(args) -> int:
         print(json.dumps({"status": "pass", "manifest": str(workspace.figure_manifest_path), "assets": manifest}, ensure_ascii=False, indent=2))
         return 0
 
-    mineru_output = Path(args.mineru_output).resolve() if args.mineru_output else find_cached_mineru_auto_dir(workspace.root_path)
-    raw_json_path = find_cached_mineru_raw(workspace.root_path)
+    if args.mineru_output:
+        mineru_output = Path(args.mineru_output).resolve()
+    else:
+        auto_candidates = [artifact.parser_path, *artifact.parser_path.rglob("auto")]
+        mineru_output = next((item for item in auto_candidates if any(item.glob("*.md")) and any(item.glob("*middle*.json"))), None)
+    raw_candidates = sorted(artifact.parser_path.rglob("*middle*.json"))
+    raw_json_path = raw_candidates[0] if raw_candidates else None
     legacy_raw = workspace.source_path / "MinerU原始输出.json"
     if not raw_json_path and legacy_raw.exists():
         raw_json_path = legacy_raw

@@ -20,6 +20,7 @@ def test_workspace_contract_detects_required_files(tmp_path: Path) -> None:
 中文题名: "测试论文"
 Zotero条目键: "ABCD1234"
 Zotero PDF链接: "zotero://open-pdf/library/items/PDF12345"
+中文全文: "[[【中译】测试论文.md|中译笔记]]"
 原文PDF: "[[附件/原文/原文.pdf|原文.pdf]]"
 MinerU英文全文: "[[附件/原文/MinerU英文全文.md|MinerU英文全文.md]]"
 ---

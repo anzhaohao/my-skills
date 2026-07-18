@@ -21,15 +21,14 @@ def _property_value(frontmatter: str, key: str) -> str:
     return ""
 
 
-def validate_workspace_contract(workspace_root: Path) -> list[str]:
-    workspace = PaperWorkspace.from_root(workspace_root)
+def validate_workspace_contract(workspace_root: Path, *, paper: PaperWorkspace | None = None) -> list[str]:
+    workspace = paper or PaperWorkspace.from_root(workspace_root)
     issues: list[str] = []
     required_dirs = [
         workspace.reading_workspace_path,
         workspace.attachment_path,
         workspace.source_path,
         workspace.figure_path,
-        workspace.state_path,
     ]
     required_files = [
         workspace.overview_note,
@@ -68,19 +67,41 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
             issues.append("overview must not contain 工作区 property")
         if _has_property(frontmatter, "处理状态"):
             issues.append("overview must not contain nested 处理状态 property")
+        for legacy_property in ["质量报告", "来源锚点"]:
+            if _has_property(frontmatter, legacy_property):
+                issues.append(f"overview must not expose external JSON property: {legacy_property}")
+        if not workspace.legacy_state_path.is_dir():
+            for status_property in ["外部产物ID", "质量状态", "来源核对状态", "最近验收时间"]:
+                if not _has_property(frontmatter, status_property):
+                    issues.append(f"overview missing external artifact status property: {status_property}")
+        if "quality-report.json" in text or "source-anchors.json" in text or "translation-audit.json" in text:
+            issues.append("overview body must not link raw machine JSON")
         if _has_property(frontmatter, "Zotero条目链接"):
             issues.append("overview must not contain Zotero条目链接; use Zotero PDF链接 only")
         zotero_key = _property_value(frontmatter, "Zotero条目键")
         zotero_pdf = _property_value(frontmatter, "Zotero PDF链接")
+        source_language = _property_value(frontmatter, "原文语言").casefold() or "en"
+        if source_language not in {"en", "zh"}:
+            issues.append("overview 原文语言 must be en or zh")
         if zotero_key and not zotero_pdf:
             issues.append("overview Zotero PDF链接 missing for Zotero-backed paper")
         if zotero_pdf and not zotero_pdf.startswith("zotero://open-pdf/library/items/"):
             issues.append("overview Zotero PDF链接 must use zotero://open-pdf/library/items/{attachment_key}")
+        zh_fulltext = _property_value(frontmatter, "中文全文")
+        if not zh_fulltext.startswith("[["):
+            issues.append("overview 中文全文 property must be an Obsidian wikilink")
+        if zh_fulltext and ("/" in zh_fulltext or "\\" in zh_fulltext):
+            issues.append("overview 中文全文 must use a short note wikilink without folder path")
+        expected_alias = "中文原文" if source_language == "zh" else "中译笔记"
+        if zh_fulltext and f"|{expected_alias}]]" not in zh_fulltext:
+            issues.append(f"overview 中文全文 wikilink alias must be {expected_alias}")
         if '原文PDF: "[[' not in frontmatter:
             issues.append("overview 原文PDF property must be an Obsidian wikilink")
-        if 'MinerU英文全文: "[[' not in frontmatter:
-            issues.append("overview MinerU英文全文 property must be an Obsidian wikilink")
-        for role in ["中译", "精读", "图表", "问答"]:
+        mineru_property = "MinerU中文全文" if source_language == "zh" else "MinerU英文全文"
+        if f'{mineru_property}: "[[' not in frontmatter:
+            issues.append(f"overview {mineru_property} property must be an Obsidian wikilink")
+        roles = ["原文" if source_language == "zh" else "中译", "精读", "图表", "问答"]
+        for role in roles:
             for note in workspace.reading_workspace_path.glob(f"【{role}】*.md"):
                 note_frontmatter = _frontmatter(note.read_text(encoding="utf-8-sig", errors="replace"))
                 if _has_property(note_frontmatter, "Zotero条目链接"):

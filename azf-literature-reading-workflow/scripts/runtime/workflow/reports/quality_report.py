@@ -20,6 +20,9 @@ def public_report_dict(report: PaperQualityReport) -> dict:
 
 def save_quality_report(path: Path, report: PaperQualityReport) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
+    report.paper_workspace = "."
     report.recompute_overall()
-    path.write_text(json.dumps(public_report_dict(report), ensure_ascii=False, indent=2), encoding="utf-8")
+    data = public_report_dict(report)
+    data["path_base"] = "paper_workspace"
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return path

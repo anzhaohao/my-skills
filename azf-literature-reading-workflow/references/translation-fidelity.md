@@ -17,7 +17,7 @@
 
 # 翻译审计
 
-正式接受一篇中译前，需要生成 `附件/状态/translation-audit.json`：
+正式接受一篇中译前，需要在当前外部 ArtifactRun 的 `state/translation-audit.json` 生成审计：
 
 ```json
 {

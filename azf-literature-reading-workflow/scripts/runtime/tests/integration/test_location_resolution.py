@@ -46,11 +46,14 @@ def _make_vault(tmp_path: Path, concept_relative: Path, *, marker: bool = True, 
     template = vault / "05-Junk Drawer" / "2_模板" / "2.1 Templater" / "概念卡模板.md"
     template.parent.mkdir(parents=True)
     template.write_text("---\n类型: 概念卡\n---\n", encoding="utf-8")
+    artifact_root = tmp_path / "output"
+    artifact_root.mkdir()
     return {
         "vault_root": vault,
         "paper_root": paper_root,
         "concept_library_root": concept_root,
         "template_path": template,
+        "artifact_root": artifact_root,
     }
 
 
@@ -70,6 +73,7 @@ def test_resolver_discovers_moved_concept_library_and_reports_stale_base(tmp_pat
                     "paper_root": str(paths["paper_root"]),
                     "concept_library_root": str(stale),
                     "template_path": str(paths["template_path"]),
+                    "artifact_root": str(paths["artifact_root"]),
                 }
             },
             allow_unicode=True,
@@ -103,7 +107,11 @@ def test_multiple_unmarked_concept_libraries_require_explicit_choice(tmp_path: P
     (second / INDEX_FOLDER).mkdir(parents=True)
     (second / INDEX_FOLDER / INDEX_NOTE).write_text("---\n类型: 概念库入口\n---\n", encoding="utf-8")
 
-    result = resolve_locations(vault_root=paths["vault_root"], registry_path=tmp_path / "missing.yaml")
+    result = resolve_locations(
+        vault_root=paths["vault_root"],
+        artifact_root=paths["artifact_root"],
+        registry_path=tmp_path / "missing.yaml",
+    )
 
     assert result.ready_for_confirmation is False
     assert any("multiple candidates" in error for error in result.errors)
@@ -116,6 +124,7 @@ def test_confirmed_manifest_rejects_folder_move(tmp_path: Path) -> None:
         paper_root=paths["paper_root"],
         concept_library_root=paths["concept_library_root"],
         template_path=paths["template_path"],
+        artifact_root=paths["artifact_root"],
         registry_path=tmp_path / "registry.yaml",
     )
     manifest = tmp_path / "manifest.json"
@@ -131,6 +140,25 @@ def test_confirmed_manifest_rejects_folder_move(tmp_path: Path) -> None:
         load_confirmed_locations(manifest)
 
 
+def test_confirmed_manifest_rejects_artifact_root_move(tmp_path: Path) -> None:
+    paths = _make_vault(tmp_path, Path("02-Brain Cells/99_Mind Palace/1_扫盲班"))
+    resolution = resolve_locations(
+        vault_root=paths["vault_root"],
+        paper_root=paths["paper_root"],
+        concept_library_root=paths["concept_library_root"],
+        template_path=paths["template_path"],
+        artifact_root=paths["artifact_root"],
+        registry_path=tmp_path / "registry.yaml",
+    )
+    manifest = tmp_path / "manifest.json"
+    write_pending_manifest(resolution, manifest, tmp_path / "registry.yaml")
+    confirm_manifest(manifest, tmp_path / "registry.yaml")
+    paths["artifact_root"].rename(tmp_path / "moved-output")
+
+    with pytest.raises(RuntimeError, match="artifact_root is unavailable"):
+        load_confirmed_locations(manifest)
+
+
 def test_mutating_cli_rejects_pending_manifest(tmp_path: Path, capsys) -> None:
     paths = _make_vault(tmp_path, Path("02-Brain Cells/99_Mind Palace/1_扫盲班"))
     resolution = resolve_locations(
@@ -138,6 +166,7 @@ def test_mutating_cli_rejects_pending_manifest(tmp_path: Path, capsys) -> None:
         paper_root=paths["paper_root"],
         concept_library_root=paths["concept_library_root"],
         template_path=paths["template_path"],
+        artifact_root=paths["artifact_root"],
         registry_path=tmp_path / "registry.yaml",
     )
     manifest = tmp_path / "manifest.json"

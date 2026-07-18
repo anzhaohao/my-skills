@@ -5,17 +5,16 @@ import shutil
 from pathlib import Path
 
 from workflow.adapters.mineru_docker import docker_status, pymupdf_preview_parse, run_mineru_docker
-from workflow.models.paper import PaperWorkspace
 from workflow.reports.quality_report import load_quality_report, save_quality_report
-from workflow.services.cache_paths import find_cached_mineru_raw, mineru_cache_dir
+from workflow.services.artifact_runs import resolve_run_from_args
 from workflow.services.mineru_outputs import attach_mineru_outputs
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
+    workspace, artifact = resolve_run_from_args(args)
     pdf_path = Path(args.pdf).resolve() if args.pdf else workspace.source_path / "原文.pdf"
-    markdown_path = workspace.source_path / "MinerU英文全文.md"
-    cache_dir = mineru_cache_dir(workspace.root_path)
+    markdown_path = workspace.mineru_markdown_path
+    cache_dir = artifact.parser_path / "mineru"
     report = load_quality_report(workspace.quality_path, str(workspace.root_path))
 
     if args.mode == "reuse":
@@ -33,6 +32,8 @@ def run(args) -> int:
         cached_raw = cache_dir / "reused_middle.json"
         shutil.copy2(reuse_raw, cached_raw)
         report.mineru_status = "pass"
+        report.source_language = workspace.source_language
+        report.source_fulltext_status = "pass"
         report.blocking_issues = [issue for issue in report.blocking_issues if "MinerU" not in issue]
         report.add_note("Reused previously verified local Docker MinerU Markdown and raw layout output; raw data remains outside the Obsidian vault.")
         save_quality_report(workspace.quality_path, report)
@@ -40,10 +41,13 @@ def run(args) -> int:
         return 0
 
     if args.mode == "existing":
-        raw_path = find_cached_mineru_raw(workspace.root_path)
+        raw_candidates = sorted(artifact.parser_path.rglob("*middle*.json"))
+        raw_path = raw_candidates[0] if raw_candidates else None
         legacy_raw = workspace.source_path / "MinerU原始输出.json"
         if markdown_path.exists() and (raw_path or legacy_raw.exists()):
             report.mineru_status = "pass"
+            report.source_language = workspace.source_language
+            report.source_fulltext_status = "pass"
             report.add_note("Attached existing local MinerU output; raw data is resolved from external cache when available.")
             save_quality_report(workspace.quality_path, report)
             print(json.dumps({"status": "pass", "markdown": str(markdown_path), "raw_cache": str(raw_path or legacy_raw)}, ensure_ascii=False, indent=2))
@@ -58,10 +62,12 @@ def run(args) -> int:
     if docker.get("available"):
         result = run_mineru_docker(pdf_path, cache_dir, image=args.docker_image)
         if result.returncode == 0:
-            mapped = attach_mineru_outputs(cache_dir, workspace.source_path)
+            mapped = attach_mineru_outputs(cache_dir, workspace.source_path, source_language=workspace.source_language)
             if mapped.get("markdown") and mapped.get("raw_output"):
                 report.mineru_status = "pass"
-                report.add_note("Formal Docker MinerU pipeline completed. Only MinerU英文全文.md was retained in the vault; raw output and images remain in external cache.")
+                report.source_language = workspace.source_language
+                report.source_fulltext_status = "pass"
+                report.add_note(f"Formal Docker MinerU pipeline completed. Only {markdown_path.name} was retained in the vault; raw output and images remain in external cache.")
                 save_quality_report(workspace.quality_path, report)
                 print(json.dumps({"status": "pass", "outputs": mapped}, ensure_ascii=False, indent=2))
                 return 0

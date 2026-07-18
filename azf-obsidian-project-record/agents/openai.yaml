@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "AZF Obsidian Project Record"
+  short_description: "为安钊锋维护 Obsidian 项目总笔记、主线笔记、调试记录和项目理解。"
+  default_prompt: "请按 AZF Obsidian 项目记录方法，先恢复已有事实，再通过当前模板维护项目总笔记、主线笔记、调试记录、项目理解和补充资料。"
