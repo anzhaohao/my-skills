@@ -5,7 +5,11 @@ from pathlib import Path
 from workflow.services.zh_fulltext import build_zh_fulltext
 from workflow.services.markdown_properties import localize_frontmatter_keys
 from workflow.services.zotero_links import ensure_frontmatter_property
-from workflow.validators.translation_fidelity import validate_translation_artifact, validate_workspace_translation
+from workflow.validators.translation_fidelity import (
+    suspicious_table_latex_ocr_issues,
+    validate_translation_artifact,
+    validate_workspace_translation,
+)
 
 
 def test_zh_fulltext_placeholder_does_not_pretend_to_translate(tmp_path: Path) -> None:
@@ -68,3 +72,15 @@ translation_note: "[[【中译】测试.md|中译笔记]]"
     assert "workspace:" not in content
     assert 'Zotero PDF链接: "zotero://open-pdf/library/items/PDF12345"' in content
     assert '中文全文: "[[【中译】测试.md|中译笔记]]"' in content
+
+
+def test_suspicious_table_latex_ocr_artifacts_are_flagged() -> None:
+    text = "| Pulse | $\\mathbf { S P M } + \\mathbf { P . L }$ | $\\boldsymbol { \\Upsilon } \\mathsf { e s }$ | $. 6 4 \\times 6 4 |"
+    issues = suspicious_table_latex_ocr_issues(text)
+    assert len(issues) == 4
+    assert all("suspicious table OCR/LaTeX artifact" in issue for issue in issues)
+
+
+def test_plain_table_labels_are_not_latex_ocr_artifacts() -> None:
+    text = "| 脉冲类型 | SPM + P.L. | SPM + N.L. | Yes* | 是* | 64 × 64 |"
+    assert suspicious_table_latex_ocr_issues(text) == []

@@ -19,6 +19,7 @@ def main() -> int:
         "extract-highres-figures",
         "layout-sanity-check",
         "generate-zh-fulltext",
+        "optimize-translation-footnotes",
         "generate-deep-reading",
         "migrate-concept-cards",
         "plan-batch",

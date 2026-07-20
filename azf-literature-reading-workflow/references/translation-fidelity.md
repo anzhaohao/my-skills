@@ -15,9 +15,37 @@
 7. 图注和表注也属于翻译范围，不得只翻正文。
 8. Parser 噪声或版面不确定处必须留下明确警告，不得自行猜测补齐。
 
+# 中译脚注规范
+
+正文参考文献标号属于中译笔记的可读性增强对象。处理范围采用排除区模型：除作者/机构区、通讯作者区、摘要前元信息、参考文献区、已生成脚注定义区和公式块内部外，其余正文都处理；`# 摘要` / `# Abstract` 默认纳入处理。可处理标号包括 `[1]`、`[2,3]`、`[1]-[3]`；作者名上标、作者机构、通讯作者和文末参考文献列表本身必须原样保留。
+
+脚注采用 Obsidian 原生 / Tidy Footnotes 兼容的数字脚注格式：正文 `[1]` 转为 `[^1]`，`[2,3]` 转为 `[^2][^3]`，`[1]-[3]` 转为 `[^1][^2][^3]`。脚注定义直接替代文末参考文献列表，仍使用标题 `# 参考文献`；定义写成 `[^1]: 原文参考文献 [1]：...`，用定义文本显式保留原文参考文献编号。正式笔记中不得保留 `<!-- azf-footnotes:... -->` 这类可见托管注释，也不得生成 `azf-ref` 长命名脚注锚点。
+
+公式区域最危险，禁止把 `[^...]` 插入 `$$...$$` 公式块内部，也不要改写原 LaTeX 公式。若后续确认公式处确有必须处理的引用或脚注，先记录待人工复核；需要 PDF 公式截图时，只截公式区域，并把说明和脚注放在公式块外。
+
+可用命令：
+
+```powershell
+python -X utf8 -m workflow.cli optimize-translation-footnotes --workspace <论文工作区>
+python -X utf8 -m workflow.cli optimize-translation-footnotes --workspace <论文工作区> --apply --backup-root <库外备份目录>
+python -X utf8 -m workflow.cli optimize-translation-footnotes --all-translations
+python -X utf8 -m workflow.cli optimize-translation-footnotes --all-translations --apply --backup-root <库外备份目录>
+```
+
+`--apply` 或 `--all-translations` 必须依赖已经确认的两轮 location manifest；单篇 `--workspace` dry-run 可以只读预检，但正式写入仍要先完成位置确认。验证器会检查脚注引用/定义一一对应、公式块内部无脚注锚点、公式截图链接可解析、参考文献脚注定义保留原文编号或来源说明。
+
+
+# 表格 LaTeX/OCR 乱码防复发规则
+
+表格单元格里的缩写、算法名、Yes/No、星号、百分比和普通标签默认按普通文本处理，不要因为 MinerU 输出里出现 `\mathbf`、`\boldsymbol` 或 `\mathsf` 就自动保留为 LaTeX。典型例子：`SPM + P.L.`、`SPM + N.L.`、`Yes*` / `是*`、`64 × 64` 应保持可读文本。
+
+只有真正的数学表达式才保留 LaTeX；如果 MinerU Markdown 与 PDF 表格不一致，以 PDF 或表格截图为准。无法确认时不要猜修，先在译文对应位置标记待人工复核。
+
+质量门会提示以下高风险表格 OCR/LaTeX 乱码：`\mathbf { S P M }`、`\boldsymbol { \Upsilon }`、`\mathsf { e s }`、`$. 6 4 \times 6 4`。出现这些模式时，应回看 PDF/截图，把普通表格文本清洗为可读中文或原始缩写，而不是把乱码继续带入正式中译。
+
 # 翻译审计
 
-正式接受一篇中译前，需要在当前外部 ArtifactRun 的 `state/translation-audit.json` 生成审计：
+正式接受一篇中译前，需要生成 `附件/状态/translation-audit.json`：
 
 ```json
 {

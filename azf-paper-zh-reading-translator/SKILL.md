@@ -1,6 +1,6 @@
 ---
 name: azf-paper-zh-reading-translator
-description: Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, and hedging. This is translation only, not summary or deep reading.
+description: Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, hedging, and original footnotes. This is translation only, not summary or deep reading.
 ---
 
 # Core Boundary
@@ -37,6 +37,23 @@ Before translation, confirm that MinerU layout order has passed review. If the p
 - Keep a technical English term on first mention when it improves searchability: `中文术语 (English term)`.
 - Do not output large bilingual blocks. The English source remains in `附件/原文/MinerU英文全文.md`.
 - Do not insert “核心理解”“方法解读”“对我的启发”“通俗解释”等精读内容。
+
+
+# Table OCR / LaTeX Artifact Contract
+
+In tables, abbreviations, labels, Yes/No cells, asterisks, percentages, and algorithm names are plain text by default. Do not convert or preserve ordinary table labels as LaTeX just because MinerU produced commands such as `\mathbf`, `\boldsymbol`, or `\mathsf`. For example, keep `SPM + P.L.`, `SPM + N.L.`, `Yes*`, `No`, percentages, and `64 × 64` as readable table text unless the PDF shows a real formula.
+
+True formulas remain LaTeX. When MinerU table text disagrees with the PDF/table screenshot, the PDF wins. If the cell cannot be verified, mark it for manual review instead of guessing or carrying damaged LaTeX into the final `【中译】` note. Treat patterns like `\mathbf { S P M }`, `\boldsymbol { \Upsilon }`, `\mathsf { e s }`, and `$. 6 4 \times 6 4` as high-risk OCR artifacts.
+
+# Footnote And Citation Contract
+
+Do not normalize the paper front matter into Obsidian footnotes. Author lines, author superscripts, affiliations, correspondence notes, received/revised/accepted dates, copyright notes, and DOI lines should remain in the same visible structure as the source/MinerU output unless the user explicitly asks for a different layout.
+
+Body bibliography citations such as `[1]`, `[2,3]`, and `[1]-[3]` are citations, not author-affiliation footnotes. Preserve them faithfully during translation. The literature workflow may later run `optimize-translation-footnotes` using an exclusion model: author/affiliation/correspondence/front-matter metadata, bibliography definitions, generated footnote definitions, and LaTeX formula blocks are excluded; abstract sections are included by default. The optimizer converts bibliography citations into Obsidian-native numeric footnotes: `[1]` becomes `[^1]`, `[2,3]` becomes `[^2][^3]`, and definitions replace the bibliography body under `# 参考文献`. Do not generate long IDs such as `azf-ref-*` and do not emit visible `<!-- azf-footnotes:... -->` management comments.
+
+If the source has a real explanatory footnote outside the bibliography system, keep it in the corresponding translated location and preserve e-mail addresses, URLs, institution names, formula symbols, citation numbers, and the original visible marker. Do not move it to `【精读】...md`. If reliable placement cannot be confirmed from MinerU/PDF, mark it for manual review instead of guessing.
+
+Never insert an Obsidian footnote anchor inside a LaTeX formula block. If a formula needs a footnote/citation treatment, preserve the LaTeX formula, add a PDF screenshot of only the formula region when required, and place the footnote anchor in the screenshot caption/说明 line outside the formula block. Use MinerU Markdown for text when reliable; PDF overrides MinerU on disagreement.
 
 # Output Contract
 
