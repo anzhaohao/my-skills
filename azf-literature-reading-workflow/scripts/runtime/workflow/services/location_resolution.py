@@ -10,20 +10,21 @@ from typing import Any, Callable
 
 import yaml
 
-INDEX_FOLDER = "入口和索引"
-INDEX_NOTE = "扫盲班总览.md"
-BASE_FILE = "扫盲班索引.base"
-CARD_FOLDER = "概念卡"
+# 当前约定：concept_library_root 本身就是中央扫盲班概念卡目录。
+# 不在其下自动创建“入口和索引/”“概念卡/”等子目录。
+# 这些 legacy 常量只用于识别并避开旧结构，不再作为目标结构。
+LEGACY_INDEX_FOLDER = "入口和索引"
+LEGACY_CARD_FOLDER = "概念卡"
 CONCEPT_MARKER_KEY = "系统标识"
 CONCEPT_MARKER_VALUE = "azf-literature-concept-library-v1"
-CONCEPT_ROLE_KEY = "系统角色"
-CONCEPT_ROLE_VALUE = "中央扫盲班"
 
 DEFAULT_VAULT_ROOT = Path("E:/software/Obsidian/安钊锋的外置大脑")
 DEFAULT_PAPER_RELATIVE = Path("02-Brain Cells/0_论文精读")
-DEFAULT_CONCEPT_RELATIVE = Path("02-Brain Cells/99_Mind Palace/1_扫盲班")
+DEFAULT_CONCEPT_RELATIVE = Path("02-Brain Cells/99_扫盲班")
 DEFAULT_TEMPLATE_RELATIVE = Path("05-Junk Drawer/2_模板/2.1 Templater/概念卡模板.md")
-DEFAULT_ARTIFACT_ROOT = Path("D:/Postgraduate_JilinUniversity/04_Others/20260709-确定读文献工作流的方案/output")
+DEFAULT_ARTIFACT_ROOT = Path(
+    "D:/Postgraduate_JilinUniversity/03_Sundries/02_DevLab/20260709-确定读文献工作流的方案/output"
+)
 ROLE_NAMES = ("vault_root", "paper_root", "concept_library_root", "template_path", "artifact_root")
 
 
@@ -99,21 +100,29 @@ def _find_vault_ancestor(path: Path) -> Path | None:
     return None
 
 
+def _is_concept_card_file(path: Path) -> bool:
+    if not path.is_file() or path.suffix.lower() != ".md":
+        return False
+    frontmatter = _read_frontmatter(path)
+    return frontmatter.get("类型") == "概念卡"
+
+
+def _is_concept_card_directory(path: Path) -> bool:
+    return path.is_dir() and any(_is_concept_card_file(child) for child in path.glob("*.md"))
+
+
 def _discover_concept_libraries(vault_root: Path) -> tuple[list[Path], list[Path]]:
-    marked: list[Path] = []
-    structural: list[Path] = []
-    for index_note in vault_root.rglob(INDEX_NOTE):
-        if index_note.parent.name != INDEX_FOLDER:
-            continue
-        root = index_note.parent.parent.resolve()
-        if not (root / CARD_FOLDER).is_dir():
-            continue
-        frontmatter = _read_frontmatter(index_note)
-        if frontmatter.get(CONCEPT_MARKER_KEY) == CONCEPT_MARKER_VALUE:
-            marked.append(root)
-        else:
-            structural.append(root)
-    return sorted(set(marked)), sorted(set(structural))
+    """Discover root-as-card-dir central sweepers.
+
+    The current contract is deliberately flat: the returned path is the directory
+    that directly contains concept-card Markdown files.
+    """
+    structural = [
+        path.resolve()
+        for path in _discover_concept_name_candidates(vault_root)
+        if _is_concept_card_directory(path)
+    ]
+    return [], sorted(set(structural))
 
 
 def _discover_named_directories(vault_root: Path, name: str) -> list[Path]:
@@ -122,7 +131,7 @@ def _discover_named_directories(vault_root: Path, name: str) -> list[Path]:
 
 def _discover_concept_name_candidates(vault_root: Path) -> list[Path]:
     keywords = ["扫盲班"]
-    excluded_names = {INDEX_FOLDER, CARD_FOLDER}
+    excluded_names = {LEGACY_INDEX_FOLDER, LEGACY_CARD_FOLDER}
     excluded_parts = {"Attachments", "0_论文精读"}
     candidates: set[Path] = set()
     for path in vault_root.rglob("*"):
@@ -281,7 +290,7 @@ def resolve_locations(
         if marked:
             return marked, "role-marker-discovery"
         if structural:
-            return structural, "structure-discovery"
+            return structural, "concept-card-directory-discovery"
         return _discover_concept_name_candidates(vault), "name-discovery"
 
     resolved_paper = _select_role(
@@ -320,7 +329,6 @@ def resolve_locations(
         warnings=warnings,
         errors=errors,
     )
-
     resolved_artifact = _select_role(
         role="artifact_root",
         explicit=artifact_root,
@@ -357,21 +365,15 @@ def resolve_locations(
                 errors.append(f"{role} is outside vault_root: {path}")
 
     if resolved_concept:
-        index_note = resolved_concept / INDEX_FOLDER / INDEX_NOTE
-        base_file = resolved_concept / INDEX_FOLDER / BASE_FILE
-        if index_note.is_file():
-            marker = _read_frontmatter(index_note)
-            if marker.get(CONCEPT_MARKER_KEY) != CONCEPT_MARKER_VALUE:
-                warnings.append(f"central concept library marker is missing from {index_note}")
-        else:
-            warnings.append(f"central concept library index note is missing: {index_note}")
-        if base_file.is_file():
-            expected_folder = vault_relative(resolved_concept / CARD_FOLDER, vault)
-            base_text = base_file.read_text(encoding="utf-8-sig", errors="replace")
-            if f'file.folder == "{expected_folder}"' not in base_text:
-                warnings.append(f"Base folder filter is stale: expected {expected_folder} in {base_file}")
-        else:
-            warnings.append(f"central concept Base file is missing: {base_file}")
+        legacy_children = [
+            resolved_concept / LEGACY_INDEX_FOLDER,
+            resolved_concept / LEGACY_CARD_FOLDER,
+        ]
+        for legacy_child in legacy_children:
+            if legacy_child.exists():
+                warnings.append(
+                    f"central concept library should be flat; legacy child exists and will not be used: {legacy_child}"
+                )
 
     return LocationResolution(locations, sources, candidates, warnings, errors)
 
@@ -432,39 +434,9 @@ def validate_manifest(data: dict[str, Any], *, require_confirmed: bool) -> dict[
 
 
 def repair_concept_location_metadata(locations: dict[str, Path]) -> list[str]:
-    repairs: list[str] = []
-    vault = locations["vault_root"]
-    concept_root = locations["concept_library_root"]
-    index_note = concept_root / INDEX_FOLDER / INDEX_NOTE
-    base_file = concept_root / INDEX_FOLDER / BASE_FILE
-
-    if index_note.is_file():
-        text = index_note.read_text(encoding="utf-8-sig", errors="replace")
-        frontmatter = _read_frontmatter(index_note)
-        if (
-            frontmatter.get(CONCEPT_ROLE_KEY) != CONCEPT_ROLE_VALUE
-            or frontmatter.get(CONCEPT_MARKER_KEY) != CONCEPT_MARKER_VALUE
-        ):
-            frontmatter[CONCEPT_ROLE_KEY] = CONCEPT_ROLE_VALUE
-            frontmatter[CONCEPT_MARKER_KEY] = CONCEPT_MARKER_VALUE
-            body = text
-            if text.startswith("---"):
-                parts = text.split("---", 2)
-                body = parts[2].lstrip("\r\n") if len(parts) == 3 else ""
-            rendered = yaml.safe_dump(frontmatter, allow_unicode=True, sort_keys=False).strip()
-            _write_text_atomic(index_note, f"---\n{rendered}\n---\n\n{body.rstrip()}\n")
-            repairs.append(f"updated central concept role marker: {index_note}")
-
-    if base_file.is_file():
-        expected = vault_relative(concept_root / CARD_FOLDER, vault)
-        text = base_file.read_text(encoding="utf-8-sig", errors="replace")
-        pattern = re.compile(r'file\.folder\s*==\s*"[^"]+"')
-        replacement = f'file.folder == "{expected}"'
-        updated, count = pattern.subn(replacement, text, count=1)
-        if count and updated != text:
-            _write_text_atomic(base_file, updated)
-            repairs.append(f"updated Base folder filter: {base_file}")
-    return repairs
+    # Flat concept-card directory mode has no in-directory index note or Base to
+    # repair. Keep this hook as a no-op for manifest compatibility.
+    return []
 
 
 def confirm_manifest(manifest_path: str | Path, registry_path: str | Path | None = None) -> dict[str, Any]:

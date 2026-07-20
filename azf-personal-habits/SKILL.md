@@ -1,7 +1,7 @@
 ---
 name: azf-personal-habits
 description: >-
-  An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, research, Git, long-running, rollback-sensitive, and skill-maintenance tasks. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, and frontend style. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead.
+  An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, Codex self-diagnosis (crash, hang, network/MCP/app-server, or SQLite logging), research, Git, long-running, rollback-sensitive, website-cloning, and skill-maintenance tasks. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, frontend style, and the default local website-cloning project. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead. Treat the local SQLite log trigger as a temporary diagnostic control only; retire this rule when an official stable fix is verified on this machine.
 ---
 
 # AZF Personal Habits
@@ -21,6 +21,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - For local HTML and frontend QA, prefer independent headless Playwright from the bundled workspace runtime. Use Edge or Chrome when visible UI, an existing login, or an extension is required. These alternatives must run outside Codex IAB so a browser-renderer failure cannot terminate the Codex desktop host.
 - Keep the OpenCLI and IAB rules separate. OpenCLI searches still require the Edge/Browser Bridge preflight above; an OpenCLI bridge failure must not fall back to IAB. Conversely, ordinary headless Playwright validation does not require the OpenCLI preflight because it does not use OpenCLI or its extension bridge.
 - If An Zhaofeng explicitly asks to use Codex IAB despite this known risk, report that it may terminate the current Codex process and ask for confirmation immediately before creating the IAB/browser-use tab. If IAB logs show `No ChatGPT browser route`, `Sign in to ChatGPT`, `hidden-browser-use`, `ResizeObserver`, or PiP upsert errors, stop using IAB and switch to the independent browser path instead of retrying.
+- **Temporary Codex SQLite diagnostic window:** For Codex-owned crash, hang, network/MCP/app-server, or SQLite write-amplification diagnosis, use the bounded restart-and-reproduce procedure below. It is not a normal performance setting and must not be used for ordinary coding.
 - Prefer reading this skill first when a task is for An Zhaofeng and personal workflow preferences may matter.
 - For any task that creates or modifies Markdown/Obsidian documents, always read and apply this `azf-personal-habits` skill first, then layer other relevant skills such as `azf-server-deploy` or paper-reading skills. Hardware asset facts now live in the Obsidian instrument-asset cards. Do not skip this skill just because the task's visible subject is hardware, server, key management, code, deployment, or another domain.
 - User facts and boundaries have their formal version in `agent-memory` under `vault/鐢ㄦ埛璁板繂/`; this skill only maintains operational procedures. If they conflict, follow the vault and remind An Zhaofeng. Locate `agent-memory` through `azf-agent-memory` first.
@@ -51,9 +52,46 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - When creating a new personal skill for An Zhaofeng, name the skill folder and SKILL frontmatter `name` with the `azf-` prefix. An existing project-note workflow may be kept directly in the Obsidian Vault without a separate Skill.
 - Treat skills with the `azf-` prefix as An Zhaofeng's own custom skills. When a task can match both a generic/system skill and an `azf-` custom skill, read and follow the relevant `azf-` skill first, then use generic skills only as supporting implementation tools.
 - If An Zhaofeng explicitly names or provides a custom skill for a task, prioritize that skill even when another installed skill has a similar description. State which custom skill is being used and follow its output, QA, and workflow requirements.
+- **Default website-cloning route:** When An Zhaofeng asks to clone, copy, rebuild, replicate, or reverse-engineer a website, or asks related workflow/tooling questions without naming another tool, default to `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260720-ai-website-cloner-template` with Conda environment `ai-website-cloner-template`. Before execution, read that project's `AGENTS.md` and `.codex/skills/clone-website/SKILL.md`, then use its `/clone-website <url1> [<url2> ...]` workflow. Keep different target sites isolated in separate branches, worktrees, or project copies so one clone does not contaminate another. A tool, path, or workflow explicitly specified by the user in the current turn overrides this default.
 - When An Zhaofeng says "精读文献", "精读论文", "论文精读", or asks to generate paper deep-reading notes, use `azf-literature-reading-workflow` as the default orchestration entry. Only when he explicitly asks for "逐句精读" or "逐段精读" should that workflow consult the archived note `【已归档】论文逐句精读与PDF++定位工作流.md` for paragraph-per-note and PDF++ sentence-card processing. If he explicitly says "不需要跳转", do not force PDF++ selection links; use page, paragraph, and sentence positioning instead.
 - When creating, supplementing, or optimizing any skill, maintain the README file in that skill folder at the same time. The README should be written in Chinese for An Zhaofeng, summarize what the skill does, when it should trigger, important stored facts or preferences, and the latest meaningful maintenance note.
 - For hardware and equipment facts, maintain the Obsidian asset cards under `03-Academic Toolkit/2_资源与档案/仪器设备资产`. For server Docker deployment paths, compose layout, reverse proxy, backup, and service-operation conventions, prefer `azf-server-deploy`.
+
+## Temporary Codex SQLite Diagnostic Window
+
+Use this local workaround only while diagnosing Codex itself. The current protection trigger is `codex_block_log_inserts_20260720` in `%USERPROFILE%\.codex\logs_2.sqlite`; it suppresses SQLite log inserts to reduce SSD write amplification, so diagnostics collected while it is enabled are incomplete.
+
+### Start the short window (first diagnostic turn)
+
+1. Confirm that the request concerns a Codex crash, hang, network/MCP/app-server failure, or SQLite logging problem. Do not disable the trigger for ordinary development.
+2. Check and record the trigger, `COUNT(*)`/`MAX(id)` in `logs`, `sqlite_sequence`, and the `-wal` file size before changing anything. Do not drop unrelated triggers.
+3. Tell An Zhaofeng: `为获取故障证据，我将暂时关闭 SQLite 写入保护；这会恢复日志写入并增加 SSD 写入。请立即完整重启 Codex，重启后只复现一次问题，然后回来，我会先收集日志并恢复保护。`
+4. Make the trigger drop the last action of that turn:
+
+   ```powershell
+   $db = "$env:USERPROFILE\.codex\logs_2.sqlite"
+   sqlite3 $db "PRAGMA busy_timeout=20000; DROP TRIGGER IF EXISTS codex_block_log_inserts_20260720;"
+   ```
+
+5. Do not continue long analysis or unrelated work while the trigger is absent. If An Zhaofeng does not return, the next Codex turn must check the trigger first and restore it before normal work.
+
+### Collect evidence after restart and one reproduction
+
+On the next turn, check that the trigger is absent, then collect only the evidence needed for the single reproduction: SQLite aggregates/tail data, `%LOCALAPPDATA%\Codex\Logs`, Windows Event/WER/Crashpad records, and the matching session JSONL. Preserve or copy evidence before cleanup; do not treat missing SQLite rows as proof that the conversation is missing because session JSONL is a separate source.
+
+Immediately after evidence collection, restore the protection and check the database:
+
+```powershell
+$db = "$env:USERPROFILE\.codex\logs_2.sqlite"
+sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block_log_inserts_20260720 BEFORE INSERT ON logs BEGIN SELECT RAISE(IGNORE); END; PRAGMA wal_checkpoint(TRUNCATE); PRAGMA quick_check;"
+sqlite3 $db "SELECT name FROM sqlite_master WHERE type='trigger' AND name='codex_block_log_inserts_20260720'; SELECT COUNT(*), COALESCE(MAX(id),0) FROM logs; SELECT seq FROM sqlite_sequence WHERE name='logs';"
+```
+
+Confirm the trigger exists, `quick_check` is `ok`, and the WAL is truncated or otherwise bounded before continuing analysis. Report the diagnostic window and the evidence gap caused by the earlier protection. Never leave the trigger disabled for convenience.
+
+### Retire this temporary rule when upstream is fixed
+
+Do not retire it merely because a GitHub issue is closed or a version number changed. Retire it only after an official stable release or configuration explicitly addresses the write-amplification behavior and a controlled no-trigger sample on this machine confirms that logging no longer grows abnormally. Then adopt the official strategy, stop installing the local trigger, remove this entire temporary section from `SKILL.md` and `README.md`, and mark the SQLite issue note as retired. Until all conditions are met, keep this procedure clearly labeled temporary.
 
 ## Frontend Preference
 

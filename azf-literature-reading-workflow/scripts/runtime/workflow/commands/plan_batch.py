@@ -3,17 +3,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from workflow.services.artifact_runs import resolve_run
+from workflow.models.paper import PaperWorkspace
 
 from workflow.validators.translation_fidelity import validate_workspace_translation
 
 
-def inspect_workspace(workspace: Path, *, artifact_root: Path, artifact_id: str | None = None) -> dict:
+def inspect_workspace(workspace: Path) -> dict:
     workspace = workspace.expanduser().resolve()
     source_pdf = workspace / "附件" / "原文" / "原文.pdf"
-    paper, artifact = resolve_run(artifact_root, workspace, artifact_id=artifact_id, create_if_missing=False)
-    mineru_markdown = paper.mineru_markdown_path
-    quality_path = paper.quality_path
+    mineru_markdown = workspace / "附件" / "原文" / "MinerU英文全文.md"
+    quality_path = PaperWorkspace.from_root(workspace).quality_path
     quality = {}
     if quality_path.is_file():
         quality = json.loads(quality_path.read_text(encoding="utf-8-sig"))
@@ -27,7 +26,7 @@ def inspect_workspace(workspace: Path, *, artifact_root: Path, artifact_id: str 
     if layout_status not in {"pass", "not_applicable"}:
         blockers.append(f"layout status is {layout_status or 'missing'}")
 
-    translation_issues = validate_workspace_translation(workspace, paper=paper)
+    translation_issues = validate_workspace_translation(workspace)
     if blockers:
         next_action = "resolve_blockers"
         state = "blocked"
@@ -43,20 +42,17 @@ def inspect_workspace(workspace: Path, *, artifact_root: Path, artifact_id: str 
 
     return {
         "workspace": str(workspace),
-        "artifact_id": artifact.artifact_id,
         "state": state,
         "next_action": next_action,
         "reuse_mineru": mineru_markdown.is_file(),
-        "source_language": paper.source_language,
-        "docker_required": not mineru_markdown.is_file(),
+        "docker_required": False,
         "blockers": blockers,
         "translation_issues": translation_issues,
     }
 
 
 def run(args) -> int:
-    artifact_root = args.resolved_locations["artifact_root"]
-    items = [inspect_workspace(Path(value), artifact_root=artifact_root, artifact_id=args.artifact_id) for value in args.workspaces]
+    items = [inspect_workspace(Path(value)) for value in args.workspaces]
     payload = {
         "mode": "dry-run",
         "policy": "audit_explicit_existing_mineru",

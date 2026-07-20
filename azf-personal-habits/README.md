@@ -12,6 +12,7 @@
 - 创建 Markdown 文档、Obsidian 项目记录、Excalidraw 图或论文思路图。
 - 使用 agent-reach/OpenCLI 进行 Twitter、Reddit、小红书、Facebook、Instagram 等依赖浏览器登录态的搜索或页面读取。
 - 预览或测试本地 HTML、做响应式验收、截图，或准备调用 Codex 内置浏览器/IAB/browser-use。
+- 克隆、复制、复刻、重建或逆向分析网站，或咨询相关工具和工作流。
 
 ## 当前关键规则
 
@@ -42,11 +43,47 @@
 - `C:\Users\anzhaofeng\.skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
+- 排查 Codex 自身闪退、卡顿、网络/MCP/app-server 或 SQLite 日志写入问题时，使用下面的“临时 SQLite 诊断窗口”；普通开发不要关闭日志保护。
+- 网站克隆及相关咨询默认进入 `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260720-ai-website-cloner-template`，使用 Conda 环境 `ai-website-cloner-template`。开始前读取项目的 `AGENTS.md` 和 `.codex/skills/clone-website/SKILL.md`，按 `/clone-website <url1> [<url2> ...]` 工作流执行；不同目标网站使用独立分支、worktree 或项目副本隔离。若我在当前回合明确指定其他工具、路径或流程，则以当前要求为准。
 - 我说“精读文献”“精读论文”“论文精读”或要求生成论文精读笔记时，默认以 `azf-literature-reading-workflow` 作为总流程入口。只有我明确说“逐句精读”或“逐段精读”时，才参考 `【已归档】论文逐句精读与PDF++定位工作流.md`；如果我明确说“不需要跳转”，不要强制 PDF++ 链接，改用页码、段落和句子定位。
 - 创建、补充、优化 skill 时，要同步维护该 skill 文件夹下的中文 `README.md`。
 - 通过代码运行的 QuickAdd UserScript 统一放在 `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\3_Plugin Mods\QuickAdd\Scripts`；移动或修改时同步更新 `.obsidian/plugins/quickadd/data.json`，并同步维护该目录下的 `QuickAdd脚本说明.md`，然后重新加载 QuickAdd。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
+
+## Codex 自身故障的临时 SQLite 诊断窗口
+
+当前本机用 `codex_block_log_inserts_20260720` trigger 暂时拦截 `%USERPROFILE%\.codex\logs_2.sqlite` 的日志插入，以降低 SSD 写入放大。它不是永久修复，而且开启时 SQLite 诊断记录不完整。
+
+### 首轮：关闭保护并要求重启复现
+
+仅在排查 Codex 自身故障时执行：
+
+1. 先记录 trigger 状态、`logs` 的 `COUNT(*)/MAX(id)`、`sqlite_sequence` 和 `logs_2.sqlite-wal` 大小。
+2. 明确提醒我：“为获取故障证据，我将暂时关闭 SQLite 写入保护；这会恢复日志写入并增加 SSD 写入。请立即完整重启 Codex，重启后只复现一次问题，然后回来，我会先收集日志并恢复保护。”
+3. 把下面的命令作为该轮最后一个动作，不要顺手继续普通工作：
+
+   ```powershell
+   $db = "$env:USERPROFILE\.codex\logs_2.sqlite"
+   sqlite3 $db "PRAGMA busy_timeout=20000; DROP TRIGGER IF EXISTS codex_block_log_inserts_20260720;"
+   ```
+
+### 重启后：先取证，再恢复
+
+下一轮先确认 trigger 仍关闭，只收集这一次复现需要的 SQLite 聚合/尾部数据、`%LOCALAPPDATA%\Codex\Logs`、Windows Event/WER/Crashpad 和对应会话 JSONL。SQLite 日志和会话 JSONL 是两套来源，不能因为前者缺行就判断会话丢失。
+
+取证完成后立即恢复并校验：
+
+```powershell
+$db = "$env:USERPROFILE\.codex\logs_2.sqlite"
+sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block_log_inserts_20260720 BEFORE INSERT ON logs BEGIN SELECT RAISE(IGNORE); END; PRAGMA wal_checkpoint(TRUNCATE); PRAGMA quick_check;"
+```
+
+确认 trigger 存在、`quick_check` 返回 `ok`、WAL 已截断或受控，再继续分析。若新一轮开始时发现 trigger 意外关闭且没有明确的活动诊断窗口，先恢复保护再做普通工作。
+
+### 官方修复后的弃用条件
+
+不能只因为 GitHub issue 关闭或版本号变化就删除本地方案。必须有官方稳定版/官方配置明确修复，并在本机做受控的无 trigger 采样，确认写入不再异常增长。满足后改用官方策略，停止安装本地 trigger，并从本 `SKILL.md` 与本 README 删除整段临时规范，同时把 SQLite 问题笔记标记为“已退役”。
 
 ## Visual / Excalidraw 习惯
 
@@ -58,6 +95,10 @@
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-07-20：加入 Codex 自身故障的临时 SQLite 诊断窗口。首轮短暂关闭 trigger 并要求完整重启、只复现一次；下一轮先取证再恢复保护。官方稳定修复经本机验证后删除本临时规范。
+
+- 2026-07-20：加入网站克隆默认路由。以后未指定其他工具时，网站克隆、复刻、重建、逆向分析及相关咨询默认使用本地 `ai-website-cloner-template` 项目和同名 Conda 环境，并按目标网站隔离工作区。
 
 - 2026-07-18：集中管理 QuickAdd UserScript：脚本迁移到 `05-Junk Drawer/3_Plugin Mods/QuickAdd/Scripts`，配置路径和脚本说明文档必须与每次移动/修改同步更新。
 

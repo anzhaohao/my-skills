@@ -1,18 +1,14 @@
-version: "1.3.0"
+version: "1.1.0"
 name: "paper-workspace-starter"
 notes:
   - "【总览】{中文题名}.md"
-  - "【中译】{中文题名}.md（英文原文）或【原文】{中文题名}.md（中文原文）"
+  - "【中译】{中文题名}.md"
   - "【精读】{中文题名}.md"
   - "【图表】{中文题名}.md"
   - "【问答】{中文题名}.md"
 attachments:
   - "附件/原文/原文.pdf"
   - "附件/原文/MinerU英文全文.md"
-  - "附件/原文/MinerU中文全文.md（中文原文时）"
   - "附件/图片/"
-external_artifacts:
-  - "<artifact_root>/<artifact_id>/state/"
-  - "<artifact_root>/<artifact_id>/parser/"
-  - "<artifact_root>/<artifact_id>/logs/"
+  - "附件/状态/"
 generated_manual_boundary: "Generated content must be bounded or whole-file owned; human note sections are preserved. Note filenames carry the title; note bodies omit duplicate title headings."

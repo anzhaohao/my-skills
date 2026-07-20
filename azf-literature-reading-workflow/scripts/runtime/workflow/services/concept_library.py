@@ -13,10 +13,8 @@ from typing import Any
 import yaml
 
 
-INDEX_FOLDER = "入口和索引"
-INDEX_NOTE = "扫盲班总览.md"
-BASE_FILE = "扫盲班索引.base"
-CARD_FOLDER = "概念卡"
+# 当前约定：concept_library_root 本身就是中央扫盲班概念卡目录。
+# 不在其下自动创建“入口和索引/”“概念卡/”等子目录。
 TEMPLATE_FILE = "概念卡模板.md"
 CONCEPT_TYPES = {
     "基础概念", "物理量", "物理机制", "实验现象", "测量方法",
@@ -408,7 +406,7 @@ def build_planned_card(name: str, sources: list[ConceptSource], target_root: Pat
     }
     return PlannedCard(
         name=name,
-        target=target_root / CARD_FOLDER / f"{name}.md",
+        target=target_root / f"{name}.md",
         sources=ordered_sources,
         frontmatter=frontmatter,
         body=body,
@@ -460,7 +458,7 @@ def scan_link_rewrites(vault_root: Path, canonical_names: dict[str, str], exclud
 
 
 def build_migration_plan(vault_root: Path, paper_root: Path, target_root: Path, template_target: Path) -> MigrationPlan:
-    link_prefix = (target_root / CARD_FOLDER).resolve().relative_to(vault_root.resolve()).as_posix()
+    link_prefix = target_root.resolve().relative_to(vault_root.resolve()).as_posix()
     sources, source_dirs, non_markdown = discover_concept_sources(paper_root, vault_root)
     grouped: dict[str, list[ConceptSource]] = {}
     canonical_names: dict[str, str] = {}
@@ -489,88 +487,6 @@ def build_migration_plan(vault_root: Path, paper_root: Path, target_root: Path, 
         non_markdown_files=non_markdown,
         link_prefix=link_prefix,
     )
-
-
-def render_index_note() -> str:
-    return """---
-类型: 概念库入口
-系统角色: 中央扫盲班
-系统标识: azf-literature-concept-library-v1
----
-
-![[扫盲班索引.base]]
-"""
-
-
-def render_base_file(card_folder: str) -> str:
-    return f"""filters:
-  and:
-    - file.ext == "md"
-    - file.folder == "{card_folder}"
-    - 类型 == "概念卡"
-properties:
-  file.name:
-    displayName: 概念
-  英文名:
-    displayName: 英文名
-  aliases:
-    displayName: 别名
-  领域:
-    displayName: 领域
-  主题:
-    displayName: 主题
-  概念类型:
-    displayName: 类型
-  状态:
-    displayName: 状态
-  相关论文:
-    displayName: 相关论文
-  修改时间:
-    displayName: 修改时间
-views:
-  - type: table
-    name: 全部概念
-    order:
-      - file.name
-      - 英文名
-      - 领域
-      - 主题
-      - 概念类型
-      - 状态
-      - 相关论文
-      - 修改时间
-    sort:
-      - property: file.name
-        direction: ASC
-  - type: table
-    name: 待处理
-    filters:
-      or:
-        - 状态 == "待整理"
-        - 状态 == "待合并"
-        - 状态 == "待核对"
-    order:
-      - file.name
-      - 状态
-      - 领域
-      - 主题
-      - 相关论文
-      - 修改时间
-    sort:
-      - property: 修改时间
-        direction: DESC
-  - type: table
-    name: 最近更新
-    order:
-      - file.name
-      - 修改时间
-      - 状态
-      - 领域
-      - 主题
-    sort:
-      - property: 修改时间
-        direction: DESC
-"""
 
 
 def render_templater_template() -> str:
@@ -616,8 +532,6 @@ def stage_plan(plan: MigrationPlan, staging_root: Path) -> None:
     for card in plan.cards:
         relative = card.target.relative_to(plan.target_root)
         write_text_atomic(staging_root / relative, card.render())
-    write_text_atomic(staging_root / INDEX_FOLDER / INDEX_NOTE, render_index_note())
-    write_text_atomic(staging_root / INDEX_FOLDER / BASE_FILE, render_base_file(plan.link_prefix))
     write_text_atomic(staging_root / "templater" / TEMPLATE_FILE, render_templater_template())
 
 
@@ -640,10 +554,9 @@ def write_report(plan: MigrationPlan, json_path: Path, markdown_path: Path) -> N
 
 ```text
 <concept_library_root>/
-├── 入口和索引/
-│   ├── 扫盲班总览.md
-│   └── 扫盲班索引.base
-└── 概念卡/
+├── 概念A.md
+├── 概念B.md
+└── ...
 ```
 
 # 同名重复项
@@ -658,20 +571,16 @@ def write_report(plan: MigrationPlan, json_path: Path, markdown_path: Path) -> N
 - Apply 前要求源目录全部为 Markdown 文件。
 - 先写入中央概念卡并更新显式路径链接，再验证，最后把论文内部 `扫盲班/` 移入 vault 外的回滚归档。
 - 同名重复项机械合并后标记为 `待核对`，保留各论文中的用法。
-- 入口笔记只嵌入一个 Base，不保存规则和边界；规则保存在项目和后续 Skill 中。
+- 中央扫盲班根目录只放概念卡，不自动生成入口笔记、Base 或子文件夹；规则保存在项目和 Skill 中。
 """
     write_text_atomic(markdown_path, markdown)
 
 
 def validate_staging(plan: MigrationPlan, staging_root: Path) -> list[str]:
     issues: list[str] = []
-    staged_cards = list((staging_root / CARD_FOLDER).glob("*.md"))
+    staged_cards = list(staging_root.glob("*.md"))
     if len(staged_cards) != plan.canonical_count:
         issues.append(f"staged card count mismatch: {len(staged_cards)} != {plan.canonical_count}")
-    if not (staging_root / INDEX_FOLDER / INDEX_NOTE).is_file():
-        issues.append("missing staged index note")
-    if not (staging_root / INDEX_FOLDER / BASE_FILE).is_file():
-        issues.append("missing staged Base file")
     if not (staging_root / "templater" / TEMPLATE_FILE).is_file():
         issues.append("missing staged Templater template")
     for path in staged_cards:
@@ -756,8 +665,6 @@ def apply_plan(
     try:
         for card in plan.cards:
             write_text_atomic(card.target, card.render())
-        write_text_atomic(plan.target_root / INDEX_FOLDER / INDEX_NOTE, render_index_note())
-        write_text_atomic(plan.target_root / INDEX_FOLDER / BASE_FILE, render_base_file(plan.link_prefix))
         write_text_atomic(plan.template_target, render_templater_template())
 
         canonical_names = {normalize_name(card.name): card.name for card in plan.cards}
@@ -773,7 +680,7 @@ def apply_plan(
                 rewritten_links += count
 
         validation_issues: list[str] = []
-        final_cards = list((plan.target_root / CARD_FOLDER).glob("*.md"))
+        final_cards = list(plan.target_root.glob("*.md"))
         if len(final_cards) != plan.canonical_count:
             validation_issues.append(f"final card count mismatch: {len(final_cards)} != {plan.canonical_count}")
         for card in plan.cards:

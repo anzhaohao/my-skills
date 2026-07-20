@@ -17,7 +17,7 @@ def test_concept_card_migration_merges_duplicates_and_rewrites_links(tmp_path: P
         (folder / "相位恢复.md").write_text(f"---\n创建时间: 2026-01-01\n修改时间: 2026-01-02\n---\n{body}\n", encoding="utf-8")
 
     cards = discover_source_cards(paper_root)
-    target = tmp_path / "central" / "概念卡"
+    target = tmp_path / "central"
     canonical, names, near = build_canonical_cards(cards, target)
 
     assert len(cards) == 2
@@ -26,11 +26,11 @@ def test_concept_card_migration_merges_duplicates_and_rewrites_links(tmp_path: P
     assert len(canonical[0].metadata["相关论文"]) == 2
     assert near == []
 
-    write_canonical_cards(canonical, names, "02-Brain Cells/99_Mind Palace/1_扫盲班/概念卡")
+    write_canonical_cards(canonical, names, "02-Brain Cells/99_扫盲班")
     assert validate_central_cards(target, 1) == []
     text = (target / "相位恢复.md").read_text(encoding="utf-8")
     assert "B 的独有内容" in text or "A 的内容" in text
 
-    rewritten, count = rewrite_concept_links("[[../扫盲班/相位恢复|相位恢复]] 和 [[相位恢复]]", names, "02-Brain Cells/99_Mind Palace/1_扫盲班/概念卡")
+    rewritten, count = rewrite_concept_links("[[../扫盲班/相位恢复|相位恢复]] 和 [[相位恢复]]", names, "02-Brain Cells/99_扫盲班")
     assert count == 2
-    assert rewritten.count("02-Brain Cells/99_Mind Palace/1_扫盲班/概念卡/相位恢复") == 2
+    assert rewritten.count("02-Brain Cells/99_扫盲班/相位恢复") == 2

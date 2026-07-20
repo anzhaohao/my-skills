@@ -10,16 +10,14 @@ def test_batch_plan_reuses_existing_mineru_without_docker(tmp_path: Path) -> Non
     source.mkdir(parents=True)
     (source / "原文.pdf").write_bytes(b"pdf")
     (source / "MinerU英文全文.md").write_text("Source sentence.", encoding="utf-8")
-    artifact_root = tmp_path / "output"
-    artifact_id = "20260718_101754__10.1234_test"
-    paper = PaperWorkspace.from_root(workspace, state_path_override=artifact_root / artifact_id / "state", artifact_id=artifact_id)
+    paper = PaperWorkspace.from_root(workspace)
     paper.quality_path.parent.mkdir(parents=True, exist_ok=True)
     paper.quality_path.write_text('{"layout_sanity_status":"pass","overall_status":"fail"}', encoding="utf-8")
     reading = workspace / "阅读工作台"
     reading.mkdir()
     (reading / "【中译】测试.md").write_text("摘要。" * 100, encoding="utf-8")
 
-    item = inspect_workspace(workspace, artifact_root=artifact_root, artifact_id=artifact_id)
+    item = inspect_workspace(workspace)
 
     assert item["state"] == "ready"
     assert item["next_action"] == "retranslate_from_existing_mineru"

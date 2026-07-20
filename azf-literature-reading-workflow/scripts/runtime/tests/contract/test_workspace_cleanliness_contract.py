@@ -17,7 +17,6 @@ def test_cache_is_external_and_cleanup_removes_legacy_transients(tmp_path: Path)
     assert not validate_workspace_cleanliness(workspace) == []
     cleanup_workspace_cache(workspace, cache_base)
     cleanup_legacy_workspace_transients(workspace)
-    (workspace / "附件" / "原文" / "原文.pdf").write_bytes(b"pdf")
 
     assert not cache.exists()
     assert validate_workspace_cleanliness(workspace) == []

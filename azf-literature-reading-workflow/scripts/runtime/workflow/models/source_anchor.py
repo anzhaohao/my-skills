@@ -18,9 +18,9 @@ class SourceAnchor:
     figure_label: str | None = None
     span_ref: str | None = None
     pdf_link: str | None = None
+    path_base: str | None = None
     confidence: str = "needs_review"
     review_note: str | None = None
-    path_base: str = "paper_workspace"
 
     def validate(self) -> list[str]:
         issues: list[str] = []
@@ -36,8 +36,6 @@ class SourceAnchor:
             issues.append(f"invalid confidence: {self.confidence}")
         if self.page is not None and self.page < 1:
             issues.append("page must be >= 1")
-        if self.path_base != "paper_workspace":
-            issues.append("path_base must be paper_workspace")
         return issues
 
     def to_dict(self) -> dict:
@@ -45,4 +43,6 @@ class SourceAnchor:
 
     @classmethod
     def from_dict(cls, data: dict) -> "SourceAnchor":
-        return cls(**data)
+        allowed = set(cls.__dataclass_fields__)
+        return cls(**{key: value for key, value in data.items() if key in allowed})
+

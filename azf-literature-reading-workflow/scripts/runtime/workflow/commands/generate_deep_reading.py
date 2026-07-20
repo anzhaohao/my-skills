@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from workflow.models.paper import PaperWorkspace
 from workflow.reports.quality_report import load_quality_report, save_quality_report
-from workflow.services.artifact_runs import resolve_run_from_args
 from workflow.services.markdown_properties import localize_frontmatter_keys
 from workflow.services.note_preservation import write_generated_note
 from workflow.services.zotero_links import ZOTERO_PDF_PROPERTY, ensure_frontmatter_property, read_workspace_zotero_pdf_link
@@ -24,7 +24,7 @@ def _deep_reading_frontmatter(zotero_pdf: str = "") -> str:
 
 
 def run(args) -> int:
-    workspace, _artifact = resolve_run_from_args(args, require_writable=not args.dry_run)
+    workspace = PaperWorkspace.from_root(Path(args.workspace))
     title_zh = args.title_zh
     out_path = workspace.reading_note_path("精读", title_zh)
     reused = Path(args.reuse_note).resolve() if args.reuse_note else None
@@ -79,9 +79,8 @@ def run(args) -> int:
                 existing = out_path.read_text(encoding="utf-8-sig", errors="replace")
                 out_path.write_text(ensure_frontmatter_property(existing, ZOTERO_PDF_PROPERTY, zotero_pdf), encoding="utf-8")
             write_generated_note(out_path, content, force=args.force)
-    if not args.dry_run:
-        report = load_quality_report(workspace.quality_path, str(workspace.root_path))
-        report.add_note("Reused previously reviewed deep-reading note." if reused else "Deep-reading scaffold generated with source-review warnings.")
-        save_quality_report(workspace.quality_path, report)
+    report = load_quality_report(workspace.quality_path, str(workspace.root_path))
+    report.add_note("Reused previously reviewed deep-reading note." if reused else "Deep-reading scaffold generated with source-review warnings.")
+    save_quality_report(workspace.quality_path, report)
     print(json.dumps({"status": "pass" if reused else "preview", "path": str(out_path), "dry_run": args.dry_run}, ensure_ascii=False, indent=2))
     return 0

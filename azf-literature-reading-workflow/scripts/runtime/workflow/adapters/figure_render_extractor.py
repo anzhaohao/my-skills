@@ -84,7 +84,7 @@ def run_pdf_figure_render_extractor(
     ]
     if mineru_output:
         command.extend(["--mineru-output", str(mineru_output)])
-    return subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace", check=False)
+    return subprocess.run(command, capture_output=True, text=True, check=False)
 
 
 def run_manual_region_crop(pdf_path: Path, regions_path: Path, output_dir: Path, dpi: int = 450) -> subprocess.CompletedProcess:
