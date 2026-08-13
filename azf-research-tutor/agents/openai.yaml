@@ -1,0 +1,4 @@
+interface:
+  display_name: "科研学习教练"
+  short_description: "把科研工作按零基础方式一步步讲明白，并检查是否真正理解"
+  default_prompt: "使用 $azf-research-tutor，把我当前的科研问题从零开始一步一步讲明白。"

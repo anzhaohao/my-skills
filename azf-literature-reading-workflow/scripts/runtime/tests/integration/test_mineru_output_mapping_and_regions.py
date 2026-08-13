@@ -21,7 +21,7 @@ def test_attach_mineru_outputs_keeps_raw_and_images_outside_vault(tmp_path: Path
     assert find_mineru_auto_dir(tmp_path / "cache") == auto
     mapped = attach_mineru_outputs(tmp_path / "cache", source)
 
-    assert Path(mapped["markdown"] or "").name == "MinerU英文全文.md"
+    assert Path(mapped["markdown"] or "").name == "accepted-mineru.md"
     assert Path(mapped["raw_output"] or "") == auto / "paper_middle.json"
     assert Path(mapped["images_dir"] or "") == auto / "images"
     assert not (source / "MinerU原始输出.json").exists()

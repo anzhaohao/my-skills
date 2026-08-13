@@ -17,7 +17,7 @@
 - 记忆系统统一叫 `agent-memory`。
 - `vault/` 是正式事实源，SQLite/Zvec/日志/缓存都是可重建运行产物。
 - `source/` 是普通源码目录，随 `anzhaohao/agent-memory` 的 `main` 分支备份，不是 submodule。
-- 当前上游是 `mcncarl/agent-memory-vault`；`mcncarl/codex-memory` 只作为历史旧名保留。
+- 当前上游是 `mcncarl/agent-memory-vault`；本地 `source/` 已同步到 `3c30a684`，`mcncarl/codex-memory` 只作为历史旧名保留。
 - Doctor v2.2 会检查远端备份时效、超过 24 小时的旧 Claim、语义 Python 完整性、SQLite/Zvec parity 和离线语义查询。
 - 不创建 `source-main`、额外远程仓库、fork 或 submodule，除非用户明确改变规则。
 - 写入正式记忆前要 reconcile，只能给出 `ADD`、`UPDATE`、`NOOP`、`MARK_OUTDATED`、`MERGE_REQUIRED`、`ASK_USER` 等动作。
@@ -40,6 +40,7 @@ AgentsView 只是原始会话证据层，不是事实源。它可以帮助定位
 
 # 最近维护
 
+- 2026-08-12：同步上游 `3c30a684`；启用来源门禁、reconcile、write intent/显式批准、内容绑定 apply、不可变 receipt/outcome 的五阶段安全协议，新增 canonical `retrieve`、Windows 原生运行时，并让 Claude Code 与 Harness ZCode 通过同一个 canonical skill 接入。
 - 2026-07-17：同步上游 `3097fe4` 的耐久性更新；加入 audit→Doctor、旧 Claim 预览/过期、远端备份与语义 Python 体检规则，并固化 Windows 下的 Python 启动、SQLite 关闭和 UTF-8 测试约束。
 - 2026-07-05：优化旧聊天检索规则。AgentsView 仅在旧聊天/历史 session 场景启用；探测改为轻量 HTTP 优先，避免 `Get-NetTCPConnection` 拖慢普通聊天。
 - 2026-07-04：加入 `MAINTENANCE_PRINCIPLES.md` 必读规则、单 `main` 分支备份规则，以及通用 agent-memory 接入提示词维护要求。

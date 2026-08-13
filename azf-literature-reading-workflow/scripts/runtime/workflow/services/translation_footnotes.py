@@ -348,10 +348,13 @@ def _default_backup_root() -> Path:
 def optimize_translation_footnotes(
     workspace_root: Path,
     *,
+    artifact_root: Path | None = None,
     apply: bool = False,
     backup_root: Path | None = None,
 ) -> TranslationFootnoteResult:
-    workspace = PaperWorkspace.from_root(workspace_root)
+    from workflow.services.artifact_runs import workspace_with_artifacts
+
+    workspace = workspace_with_artifacts(workspace_root, artifact_root, create=apply)
     notes = sorted(workspace.reading_workspace_path.glob("【中译】*.md"))
     if not notes:
         return TranslationFootnoteResult(str(workspace.root_path), "", not apply, False, [], [], None, None, ["Chinese translation note missing"])

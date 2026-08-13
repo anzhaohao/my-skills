@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from workflow.models.paper import PaperWorkspace
+from workflow.services.wikilinks import path_qualified_wikilink_targets, wikilink_targets
 
 
 def _frontmatter(text: str) -> str:
@@ -21,6 +22,24 @@ def _property_value(frontmatter: str, key: str) -> str:
     return ""
 
 
+def _find_vault_root(path: Path) -> Path | None:
+    for candidate in [path, *path.parents]:
+        if (candidate / ".obsidian").is_dir():
+            return candidate
+    return None
+
+
+def _target_matches(vault_root: Path, target: str) -> list[Path]:
+    clean = target.split("#", 1)[0].strip()
+    if not clean or "/" in clean or "\\" in clean:
+        return []
+    names = [clean] if Path(clean).suffix else [clean, f"{clean}.md"]
+    matches: set[Path] = set()
+    for name in names:
+        matches.update(candidate.resolve() for candidate in vault_root.rglob(name) if candidate.is_file())
+    return sorted(matches)
+
+
 def validate_workspace_contract(workspace_root: Path) -> list[str]:
     workspace = PaperWorkspace.from_root(workspace_root)
     issues: list[str] = []
@@ -28,11 +47,11 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
         workspace.reading_workspace_path,
         workspace.attachment_path,
         workspace.source_path,
-        workspace.figure_path,
     ]
     required_files = [
         workspace.overview_note,
-        workspace.source_path / "原文.pdf",
+        workspace.source_pdf_path(),
+        workspace.chinese_fulltext_path(),
     ]
     for folder in required_dirs:
         if not folder.is_dir():
@@ -81,16 +100,28 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
             issues.append("overview 中文全文 property must be an Obsidian wikilink to the 中译 note")
         if zh_fulltext and ("/" in zh_fulltext or "\\" in zh_fulltext):
             issues.append("overview 中文全文 must use a short note wikilink without folder path")
-        expected_alias = "|中文原文]]" if source_language == "zh" else "|中译笔记]]"
+        expected_alias = "|中文正文]]" if source_language == "zh" else "|中译笔记]]"
         if zh_fulltext and expected_alias not in zh_fulltext:
-            alias = "中文原文" if source_language == "zh" else "中译笔记"
+            alias = "中文正文" if source_language == "zh" else "中译笔记"
             issues.append(f"overview 中文全文 wikilink alias must be {alias}")
         if '原文PDF: "[[' not in frontmatter:
             issues.append("overview 原文PDF property must be an Obsidian wikilink")
-        mineru_property = "MinerU中文全文" if source_language == "zh" else "MinerU英文全文"
-        if f'{mineru_property}: "[[' not in frontmatter:
-            issues.append(f"overview {mineru_property} property must be an Obsidian wikilink")
-        for role in ["中译", "精读", "图表", "问答"]:
+        title_short = _property_value(frontmatter, "中文短标题") or title_zh
+        expected_pdf = workspace.source_pdf_path(title_short)
+        if not expected_pdf.is_file():
+            issues.append(f"source PDF must use confirmed short-title filename: {expected_pdf}")
+        if source_language == "en":
+            expected_mineru = workspace.mineru_source_path(title_short)
+            if 'MinerU原文: "[[' not in frontmatter:
+                issues.append("overview MinerU原文 property must be an Obsidian wikilink")
+            if not expected_mineru.is_file():
+                issues.append(f"English MinerU source must use confirmed short-title filename: {expected_mineru}")
+        elif _has_property(frontmatter, "MinerU原文"):
+            issues.append("Chinese source must merge MinerU into 【中译】 and must not expose a separate MinerU原文 property")
+        for forbidden in ["质量报告", "来源锚点"]:
+            if _has_property(frontmatter, forbidden):
+                issues.append(f"overview must not expose raw JSON property: {forbidden}")
+        for role in ["中译"]:
             for note in workspace.reading_workspace_path.glob(f"【{role}】*.md"):
                 note_frontmatter = _frontmatter(note.read_text(encoding="utf-8-sig", errors="replace"))
                 if _has_property(note_frontmatter, "Zotero条目链接"):
@@ -98,6 +129,34 @@ def validate_workspace_contract(workspace_root: Path) -> list[str]:
                 note_pdf = _property_value(note_frontmatter, "Zotero PDF链接")
                 if zotero_pdf and note_pdf != zotero_pdf:
                     issues.append(f"{note.name} Zotero PDF链接 must match overview")
+    legacy_files = [
+        workspace.source_path / "原文.pdf",
+        workspace.source_path / "MinerU英文全文.md",
+        workspace.source_path / "MinerU中文全文.md",
+    ]
+    for legacy in legacy_files:
+        if legacy.exists():
+            issues.append(f"legacy source filename retained: {legacy}")
+    vault_root = _find_vault_root(workspace.root_path)
+    checked_targets: set[str] = set()
+    for note in sorted(workspace.root_path.rglob("*.md")):
+        text = note.read_text(encoding="utf-8-sig", errors="replace")
+        for target in path_qualified_wikilink_targets(text):
+            relative = note.relative_to(workspace.root_path).as_posix()
+            issues.append(
+                f"{relative} contains path-qualified Wikilink target; "
+                f"use a short filename without folders: {target}"
+            )
+        if vault_root:
+            for target in wikilink_targets(text):
+                if target in checked_targets or "/" in target or "\\" in target:
+                    continue
+                checked_targets.add(target)
+                matches = _target_matches(vault_root, target)
+                if len(matches) > 1:
+                    issues.append(
+                        f"ambiguous short Wikilink target appears {len(matches)} times in the Vault: {target}"
+                    )
     return issues
 
 

@@ -8,6 +8,7 @@ from pathlib import Path
 from workflow.models.paper import PaperWorkspace
 from workflow.reports.quality_report import load_quality_report, save_quality_report
 from workflow.services.markdown_properties import localize_frontmatter_keys
+from workflow.services.artifact_runs import workspace_with_artifacts
 from workflow.services.cache_paths import workspace_cache_root
 from workflow.services.zotero_links import ZOTERO_PDF_PROPERTY, ensure_frontmatter_property, read_workspace_zotero_pdf_link
 from workflow.validators.image_links import validate_image_links
@@ -15,12 +16,25 @@ from workflow.validators.translation_fidelity import validate_translation_artifa
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
+    locations = getattr(args, "resolved_locations", {}) or {}
+    workspace = workspace_with_artifacts(Path(args.workspace), locations.get("artifact_root"), create=True)
     title_zh = args.title_zh
-    parsed = workspace.source_path / "MinerU英文全文.md"
-    out_path = workspace.reading_note_path("中译", title_zh)
+    parsed = workspace.mineru_source_path()
+    out_path = workspace.chinese_fulltext_path(title_zh)
     translated = Path(args.translated_note).resolve() if args.translated_note else None
     audit = Path(args.translation_audit).resolve() if args.translation_audit else None
+
+    if workspace.source_language == "zh":
+        if not out_path.is_file() or "等待 MinerU 合并" in out_path.read_text(encoding="utf-8-sig", errors="replace"):
+            print(json.dumps({"status": "needs_mineru", "reason": "Chinese source must first be merged by parse-with-mineru", "target": str(out_path)}, ensure_ascii=False, indent=2))
+            return 2
+        if not args.dry_run:
+            report = load_quality_report(workspace.quality_path, str(workspace.root_path))
+            report.translation_status = "not_applicable"
+            report.add_note("Chinese source uses the MinerU-merged 【中译】 note; translation audit is not applicable.")
+            save_quality_report(workspace.quality_path, report)
+        print(json.dumps({"status": "pass", "path": str(out_path), "source_language": "zh", "translation_mode": "mineru_merged_chinese_source", "dry_run": args.dry_run}, ensure_ascii=False, indent=2))
+        return 0
 
     if translated is None or audit is None:
         print(json.dumps({

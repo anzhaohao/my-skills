@@ -42,3 +42,20 @@ def test_two_round_location_commands_are_available() -> None:
 def test_mutating_commands_accept_location_manifest() -> None:
     args = build_parser().parse_args(["generate-deep-reading", "--workspace", "paper", "--title-zh", "测试"])
     assert hasattr(args, "location_manifest")
+
+
+def test_core_layout_migration_cli_defaults_to_dry_run() -> None:
+    args = build_parser().parse_args(["migrate-core-layout", "paper-a", "paper-b"])
+    assert args.workspaces == ["paper-a", "paper-b"]
+    assert args.apply is False
+    assert args.backup_root is None
+    assert hasattr(args, "location_manifest")
+
+
+def test_zotero_delivery_cli_defaults_to_dry_run() -> None:
+    args = build_parser().parse_args(["deliver-zotero-artifacts", "--workspace", "paper"])
+    assert args.apply is False
+    assert args.retire_workspace is False
+    assert args.library_id == 1
+    assert args.token_env == "ZOTERO_RESEARCH_DB_TOKEN"
+    assert hasattr(args, "location_manifest")

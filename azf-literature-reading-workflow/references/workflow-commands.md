@@ -88,7 +88,7 @@ Runs local Docker MinerU or attaches existing local MinerU output.
 
 ## `workflow.extract_highres_figures`
 
-Uses `pdf-figure-render-extractor` to create primary reading figures.
+Uses `azf-pdf-figure-render-extractor` to create primary reading figures.
 
 **Inputs**
 
@@ -155,6 +155,10 @@ Validates and imports a faithful translation produced by `azf-paper-zh-reading-t
 - translation fidelity validation result
 - source-anchor coverage report
 
+**Rules**
+
+- Imported Vault-internal Wikilinks to notes, PDFs, images, and other attachments use short filenames only. Path-qualified targets are rejected; generated linked filenames must be unique across the Vault.
+
 ## `workflow.generate_deep_reading`
 
 Generates paper-level deep-reading note.
@@ -188,6 +192,10 @@ Validates pilot gates and decides whether batch processing can proceed.
 - blocking issues
 - batch readiness recommendation
 - updated `latest_successful` and overview status fields only on successful promotion
+
+**Rules**
+
+- Every Markdown file inside each paper workspace is scanned for path-qualified Wikilink targets; any target containing `../`, `/`, or `\` blocks acceptance.
 
 ## `migrate-artifacts`
 

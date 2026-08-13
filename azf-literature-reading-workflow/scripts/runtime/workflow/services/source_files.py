@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 
-def ensure_source_pdf(pdf_path: Path, source_dir: Path, copy_name: str = "原文.pdf") -> Path:
+def ensure_source_pdf(pdf_path: Path, source_dir: Path, copy_name: str = "【原文】未命名论文.pdf") -> Path:
     source_dir.mkdir(parents=True, exist_ok=True)
     target = source_dir / copy_name
     if not pdf_path.exists():
@@ -22,4 +22,3 @@ def classify_pdf_attachments(paths: list[Path]) -> dict[str, list[str]]:
     primary = existing[:1]
     supplementary = existing[1:]
     return {"primary": primary, "supplementary": supplementary, "missing": missing}
-

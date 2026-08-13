@@ -14,9 +14,18 @@ def _resolve_markdown_target(note_path: Path, target: str) -> Path:
     return (note_path.parent / clean).resolve()
 
 
-def _resolve_wikilink_target(vault_root: Path, target: str) -> Path:
+def _find_vault_root(note_path: Path) -> Path | None:
+    for candidate in [note_path.parent, *note_path.parents]:
+        if (candidate / ".obsidian").is_dir():
+            return candidate
+    return None
+
+
+def _short_wikilink_matches(vault_root: Path, target: str) -> list[Path]:
     clean = target.split("#", 1)[0].strip()
-    return (vault_root / clean).resolve()
+    if "/" in clean or "\\" in clean:
+        return []
+    return [candidate for candidate in vault_root.rglob(clean) if candidate.is_file()]
 
 
 def extract_image_links(markdown: str) -> list[str]:
@@ -37,10 +46,15 @@ def validate_image_links(note_path: Path, vault_root: Path | None = None) -> lis
         resolved = _resolve_markdown_target(note_path, target)
         if not resolved.exists():
             issues.append(f"missing markdown image target: {target}")
+    vault_root = vault_root or _find_vault_root(note_path)
     if vault_root:
         for target in WIKILINK_IMAGE_RE.findall(text):
-            resolved = _resolve_wikilink_target(vault_root, target)
-            if not resolved.exists():
+            if "/" in target or "\\" in target:
+                issues.append(f"path-qualified wikilink image target is forbidden: {target}")
+                continue
+            matches = _short_wikilink_matches(vault_root, target)
+            if not matches:
                 issues.append(f"missing wikilink image target: {target}")
+            elif len(matches) > 1:
+                issues.append(f"ambiguous short wikilink image target: {target}")
     return issues
-

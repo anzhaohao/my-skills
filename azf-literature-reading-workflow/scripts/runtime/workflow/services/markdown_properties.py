@@ -20,7 +20,7 @@ DEFAULT_PROPERTY_NAMES = {
     "chinese_fulltext": "中文全文",
     "translation_note": "中文全文",
     "pdf": "原文PDF",
-    "mineru_markdown": "MinerU英文全文",
+    "mineru_markdown": "MinerU原文",
     "quality_report": "质量报告",
     "source_anchors": "来源锚点",
     "status": "笔记状态",

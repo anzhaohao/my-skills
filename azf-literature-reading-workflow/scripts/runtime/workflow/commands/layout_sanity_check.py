@@ -5,12 +5,14 @@ from pathlib import Path
 
 from workflow.models.paper import PaperWorkspace
 from workflow.reports.quality_report import load_quality_report, save_quality_report
+from workflow.services.artifact_runs import workspace_with_artifacts
 from workflow.validators.layout_sanity import simple_layout_sanity
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
-    markdown = workspace.source_path / "MinerU英文全文.md"
+    locations = getattr(args, "resolved_locations", {}) or {}
+    workspace = workspace_with_artifacts(Path(args.workspace), locations.get("artifact_root"), create=True)
+    markdown = workspace.chinese_fulltext_path() if workspace.source_language == "zh" else workspace.mineru_source_path()
     status, notes = simple_layout_sanity(markdown)
     report = load_quality_report(workspace.quality_path, str(workspace.root_path))
     report.layout_sanity_status = status

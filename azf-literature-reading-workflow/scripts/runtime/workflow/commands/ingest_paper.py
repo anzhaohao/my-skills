@@ -21,8 +21,17 @@ def run(args) -> int:
         citekey=args.citekey,
         zotero_key=args.zotero_key,
         zotero_pdf_attachment_key=args.zotero_pdf_key,
+        source_language=args.source_language,
     )
-    paper_workspace, plan = create_or_update_workspace(workspace, pdf_path, source, dry_run=args.dry_run)
+    locations = getattr(args, "resolved_locations", {}) or {}
+    artifact_root = Path(locations["artifact_root"]) if locations.get("artifact_root") else None
+    paper_workspace, plan = create_or_update_workspace(
+        workspace,
+        pdf_path,
+        source,
+        dry_run=args.dry_run,
+        artifact_root=artifact_root,
+    )
     payload = {"workspace": str(paper_workspace.root_path), "plan": plan.to_dict()}
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0

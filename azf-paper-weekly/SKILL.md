@@ -48,7 +48,7 @@ description: 安钊锋的本地论文周报生产编排 Skill。用于验证或�
 - “校验周报”：运行 `validate --week`，并检查概览与正文标题集合一致、没有占位内容或 PDF 直链。
 - “切换本地/自定义模型”：OpenAI-compatible 运行时保持 `provider: openai_compatible`；Ollama 原生 `/api/chat` 使用 `provider: ollama_native`。本机 HTTP 可无密钥，私有局域网 HTTP 必须显式开启 `允许不安全HTTP`；公网 HTTP 永远拒绝。修改后先验证和只读预演。
 - “切换云端/中转站”：保持 `provider: openai_compatible`，在被 Git 忽略的生产 YAML 填写 `API密钥`、准确模型 ID 和 HTTPS Base URL；先解除费用安全锁并填写真实单价与正数上限，再做单周预览。`api_key_env` 只作旧配置兼容。
-- “可视化维护多个配置”：优先双击项目根目录 `启动论文周报配置管理器.cmd`，命令行场景再调用 `scripts/open-config-manager.ps1`。档案位于 `config/profiles/`，验证通过后才原子切换唯一生产 YAML；GUI 不显示 Key。计划任务通过 `config model-info` 自动决定是否检查 Ollama，无需随档案切换修改任务参数。
+- “可视化维护多个配置”：优先双击项目根目录 `启动论文周报配置管理器.cmd`，命令行场景再调用 `scripts/open-config-manager.ps1`。档案位于 `config/profiles/`，验证通过后才原子切换唯一生产 YAML；GUI 不显示 Key。管理器右侧可在确认后启动本周周报，并从项目 `runtime/current-progress.json` 每秒刷新进度条；计划任务通过 `config model-info` 自动决定是否检查 Ollama，无需随档案切换修改任务参数。
 - “注册或修改计划任务”：这是外部持久化变更，必须有明确授权。默认任务名为 `AZF Paper Weekly`，每周一 09:00，错过后尽快运行，当前交互用户，受限权限。
 
 可直接运行 [scripts/paper-weekly.ps1](scripts/paper-weekly.ps1) 做安全命令映射。写入类操作必须显式传入 `-ConfirmProductionWrite`。
@@ -63,7 +63,8 @@ description: 安钊锋的本地论文周报生产编排 Skill。用于验证或�
 4. 确认没有 PDF 直链、模板占位符或半成品临时文件。
 5. 再运行同一生成命令，确认返回 `skipped_existing` 且文件哈希不变。
 6. 单一来源失败可以生成，但必须在报告中透明披露；全部来源失败不得生成空周报。
-7. 启用期刊评价时，检查入选论文展示中科院升级版年份、分区或中性原因，并在来源与质量说明中报告精确匹配数量；期刊分最多只占 5 分，不能替代内容质量。
+7. 启用期刊评价时，检查每篇“今日必读”的顶部基本信息完整：阅读标记、来源、日期、总分、期刊分、收录口径、作者和链接。规范化精确匹配时，顶部徽章必须显示 `中科院升级版YYYY X区`；预印本、未收录、名称歧义或未启用时，不得伪造分区，必须紧接徽章区另起 `<small>...</small>` 小字说明原因并提醒人工核验。
+8. 在来源与质量说明中报告期刊分区精确匹配和中性处理数量；期刊分最多只占 5 分，不能替代内容质量。
 
 ### 4. 精读交接
 

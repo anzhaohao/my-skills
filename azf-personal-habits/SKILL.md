@@ -1,12 +1,27 @@
 ---
 name: azf-personal-habits
 description: >-
-  An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, Codex self-diagnosis (crash, hang, network/MCP/app-server, or SQLite logging), research, Git, long-running, rollback-sensitive, website-cloning, and skill-maintenance tasks. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, frontend style, and the default local website-cloning project. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead. Treat the local SQLite log trigger as a temporary diagnostic control only; retire this rule when an official stable fix is verified on this machine.
+  An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, Codex self-diagnosis (crash, hang, network/MCP/app-server, or SQLite logging), research, Git, long-running, rollback-sensitive, long-file reads, website-cloning, skill-maintenance, and reuse-first discovery for new projects, deployments, substantial features, or tool replacements. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, frontend style, and the default local website-cloning project. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead. Treat the local SQLite log trigger as a temporary diagnostic control only; retire this rule when an official stable fix is verified on this machine.
 ---
 
 # AZF Personal Habits
 
 Use this skill as An Zhaofeng's global personal preference layer. Treat it as a standing collaboration habit: protect rollback ability, keep work recoverable, leave a clean handoff trail, follow document-format preferences, and preserve frontend style preferences.
+
+## Reuse-first discovery
+
+For a new project, deployment, substantial feature, automation, tool replacement, or workflow rebuild, route to `azf-reuse-first`: scan bounded local sources first, research deployable online candidates second, and wait for explicit user confirmation before implementation. Do not force this full gate for explanations, tiny fixes, or a project the user has already selected.
+
+## Reliable Long-File Reading
+
+Use this protocol whenever a local instruction, `AGENTS.md`, `SKILL.md`, reference, log, JSON, source file, or other text artifact may exceed a single tool result:
+
+1. Inspect the file's total line count and byte size before reading. On Windows, decode UTF-8 explicitly with `Get-Content -Encoding utf8` or Python `encoding="utf-8"`; mojibake is not a successful read.
+2. If the file exceeds 150 lines or 12 KB, read it sequentially in chunks of at most 100–150 lines. Reduce the chunk size for long lines, dense tables, JSON, or source code. Keep one long file per tool result and print exact line numbers.
+3. Track `path`, `initial total lines`, `last confirmed line`, and `next unread line`. Do not rely on memory or a prose claim such as “the rest was similar.”
+4. Continue until the final chunk reaches EOF and the last confirmed line equals the initial total line count. If the file changes during the read, recount it and re-read the affected range.
+5. If output reports `truncated`, omits an expected tail, or ends ambiguously, do not claim completion. Resume from the last confirmed line and re-read a small overlap when the boundary is uncertain.
+6. Read every selected `SKILL.md` completely before taking task actions. Apply the same EOF verification to every reference that the skill marks as required.
 
 ## Core Rules
 
@@ -31,6 +46,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - For multi-step work, keep a visible next-step trail so a new chat/model can resume quickly.
 - On Windows/Codex tasks, when reading or writing UTF-8 text, processing files in bulk, running longer scripts, or facing possible PowerShell encoding issues, prefer Python scripts, python -c, or temporary .py files. Use PowerShell mainly for lightweight orchestration and tool invocation to reduce mojibake and token waste.
 - When creating Markdown documents, do not write the document title again inside the body content unless the user explicitly asks for an in-document heading. If there is no body title, start the remaining section hierarchy at `#` instead of `##`.
+- When generating an Obsidian Templater debug-record template, prefer creating the Markdown template directly through the filesystem or Obsidian CLI rather than using `computer-use`. Let Templater generate the date and title dynamically and prompt for key fields such as device, issue, status, logs, data, and verification. Keep the template separate from generated notes; only create or sync the resulting note when An Zhaofeng explicitly requests it. Use `computer-use` only when GUI behavior or visual rendering itself must be verified.
 - When creating or editing Obsidian Markdown notes with properties, write exactly one YAML frontmatter block at the very start of the file. The first bytes must be plain `---` with no UTF-8 BOM or hidden character before it; never create a second `--- ... ---` metadata block below the first one. Merge `鍒涘缓鏃堕棿` / `淇敼鏃堕棿` and business fields such as `椤圭洰`, `绫诲瀷`, `鐘舵€乣, `aliases`, and `tags` into that single block.
 - Before substantial code edits, inspect repository state with `git status` when inside a Git repo.
 - If the workspace is not a Git repo and the user is starting meaningful coding work, recommend initializing Git before edits.
@@ -45,6 +61,7 @@ Use this skill as An Zhaofeng's global personal preference layer. Treat it as a 
 - During debugging, bug fixes, project code changes, hardware/software investigation, or Git commit/push workflows, do not modify Obsidian notes unless An Zhaofeng explicitly asks in the current turn to update/sync/write/organize notes. Bound Obsidian notes may be read for context, but the note vault is read-only by default during code work. If note updates would be useful but were not requested, mention them as a pending optional follow-up in the final response instead of editing the vault.
 - If An Zhaofeng explicitly asks to update Obsidian notes, first state the affected note files and whether the change is append-only or structural. For broad, structural, or formatting-sensitive note changes, create a rollback backup before writing, then report exactly what changed and why.
 - Before modifying important user files, create a rollback backup first when the task is broad, risky, or user asks for backup. Rollback backups must never be written into the source repository, source workspace, source folder, or beside the original file (for example never create `*.bak-*` next to files being edited). If the user does not specify a backup location, default to the Codex backup root `E:\software\CodexPlusPlus\Codex备份`, then create one clearly named task subfolder such as `YYYYMMDD_HHMMSS_任务名_修改前备份`, and put the backed-up files inside that task folder. This keeps rollback points centralized and easy to find. If a previous backup was accidentally created inside the source tree, report it and ask before moving or deleting it.
+- **Project-local cache preference:** For software physically deployed under `E:\software`, keep package-manager stores, virtual environments, model/download caches, and build caches inside that software's own project directory or a clearly named project-specific subfolder. Do not leave project-specific caches at a drive root such as `E:\.pnpm-store` or in an unrelated user/system cache when a project-scoped location is supported. Prefer relative, project-level configuration and ignore machine-local cache directories in Git. When migrating an existing cache, populate and verify the new location first, then remove junctions/reparse points safely and delete the old cache only after the project still builds or starts successfully.
 - When writing Obsidian notes or research/workflow records for An Zhaofeng, prefer his plain working-note tone: write like a clear lab handoff, use common Chinese where possible, explain necessary technical terms in one sentence, and avoid stacking professional jargon without context.
 - Do not make notes sound more professional than needed. Optimize first for "future An Zhaofeng can understand this at a glance": write the plain meaning, then the technical detail. It is better to say "杩欎竴姝ョ‘璁?GUI 鐪熺殑鎵撳紑浜嗚繖鍙拌澶? than to only say "瀹屾垚璁惧韬唤闂幆楠岃瘉". Add a small amount of warmth when appropriate, such as acknowledging why a detour was confusing or why a conclusion matters, while keeping the note concise.
 - When reorganizing An Zhaofeng's existing Obsidian notes, preserve the user's original reasoning chain before improving structure. Do not flatten an explanatory paragraph, screenshot sequence, or folded callout into a generic agent summary when the original order explains why a later decision was made.
@@ -103,6 +120,17 @@ When An Zhaofeng asks to build a frontend, website, app, dashboard, landing page
 - Combine React Bits and GSAP when useful: React Bits for local visual components, GSAP for orchestration and custom behavior.
 - Prioritize usability, readability, product fit, and the existing design system over visual flash.
 
+## Project-Local Cache Habit
+
+When installing, deploying, updating, or repairing software under `E:\software`:
+
+1. Put project-owned package stores and caches inside the corresponding project folder by default, for example `.pnpm-store/`, `.venv/`, `.cache/`, `models/`, or another tool-supported project-local directory. Do not create or retain a project-specific cache at the drive root merely because the package manager chose that default.
+2. Prefer project-scoped, relative configuration so moving the project does not embed a machine-specific absolute path. Keep cache folders out of Git; use the repository's established ignore mechanism, or `.git/info/exclude` for machine-local files that should not alter upstream history.
+3. Before moving an existing cache, identify every owning project, active process, hard link, junction, symlink, or reparse point. A shared cache must not be assigned to one project until all consumers have been mapped.
+4. Configure and populate the new cache first, rebuild or relink dependencies, and verify the package-manager-reported path plus the project's relevant import, test, build, or startup check.
+5. Only after verification, detach old junctions/reparse points without following them into the project, prune or delete the old cache, and confirm the original location is gone. If a tool policy blocks the final deletion, report the exact remaining size and provide one explicit, validated cleanup command instead of claiming completion.
+6. For pnpm, always verify the effective configuration with `pnpm config get store-dir` and `pnpm store path`; do not assume that writing `.npmrc` changed the active store. On pnpm versions that use `pnpm-workspace.yaml` for project settings, prefer a portable entry such as `storeDir: .pnpm-store`.
+
 ## Backup Habit
 
 When An Zhaofeng asks for a backup but does not name a location:
@@ -123,7 +151,7 @@ When creating a `.md` document file for the user:
 - Start the body directly with the substantive content, metadata block, summary, or first necessary section.
 - For Obsidian notes with properties, the metadata block must be the only frontmatter block and must start at byte 0 with plain `---`. Save files as UTF-8 without BOM. Do not paste or generate `---` (`U+FEFF` before the delimiter), because Obsidian plugins such as `Update time on edit` may fail to recognize the existing properties and create a duplicate `鍒涘缓鏃堕棿` / `淇敼鏃堕棿` block.
 - If adding AI-generated metadata to an existing note, inspect the current top frontmatter first and merge new fields into it. Keep `鍒涘缓鏃堕棿`, `淇敼鏃堕棿`, `椤圭洰`, `绫诲瀷`, `鐘舵€乣, `aliases`, `tags`, and similar fields together in the single top block; do not insert another YAML block into the body.
-- When writing Obsidian note-to-note wikilinks inside the same vault, use short filename links without folder paths, for example `[[【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]` rather than `[[02-Brain Cells/.../【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]`. This keeps links resilient when note folders move. Use folder paths only when linking non-note assets or when a specific plugin/workflow explicitly requires a path.
+- When writing any Obsidian Wikilink inside the same vault, use only the target filename, whether the target is a note, PDF, image, or other attachment. For example, use `[[【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]` and `![[Fig-01.png]]`, never `[[02-Brain Cells/.../file]]` or `![[../附件/图片/Fig-01.png]]`. Verify the target filename is unique across the Vault; rename a generated asset on collision instead of adding a folder path. Preserve paths only in non-Wikilink filesystem records or when An Zhaofeng explicitly overrides this rule for a named plugin.
 - If the Markdown body has no explicit document title, use `#` for the first-level content sections, `##` for subsections, and `###` only below that. Do not start ordinary sections at `##` unless a body title already occupies `#`.
 - Add a body title only when the user explicitly requests it, the template requires it, or the document would be ambiguous without it.
 
@@ -182,6 +210,11 @@ When creating, installing, updating, or optimizing a personal skill, use `C:\Use
 4. Keep secrets out of skills and README files: never record passwords, API keys, tokens, private keys, cookies, or recovery codes.
 5. If the update changes the overall skills catalog, refresh the top-level `C:\Users\anzhaofeng\.skills-manager\skills\README.md`.
 6. If the work is broad or affects important personal rules, make a small rollback backup before editing.
+7. For cross-harness behavior, identify the target harness and inspect its existing user-level and project-level instruction adapters, overrides, configuration entries, links, and reparse points before creating anything. Do not assume that every harness uses the same filename or precedence.
+8. If an effective adapter already exists, reuse it and make only a focused update to the relevant block. Preserve unrelated user rules and the existing link direction; never create a second adapter for the same scope merely for convenience.
+9. Keep the complete personal workflow in the canonical Skills Manager skill. Keep each harness adapter short: include only the bootstrap rules that must work before skill discovery plus a pointer to the canonical skill when that harness can read it.
+10. If no usable adapter exists, report the proposed native path, scope, precedence, and minimal content before creating it. Create a new adapter only when the current request explicitly authorizes that mutation.
+11. After updating or creating an adapter, verify which file the harness actually resolves and whether a higher-priority override shadows it. If effective loading cannot be verified, report that limitation instead of claiming the adapter is active.
 
 Preferred Chinese README content:
 

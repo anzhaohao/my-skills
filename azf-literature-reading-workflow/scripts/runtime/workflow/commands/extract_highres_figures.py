@@ -15,6 +15,7 @@ from workflow.models.paper import PaperWorkspace
 from workflow.models.source_anchor import SourceAnchor
 from workflow.reports.quality_report import load_quality_report, save_quality_report
 from workflow.services.cache_paths import figure_cache_dir, find_cached_mineru_auto_dir, find_cached_mineru_raw
+from workflow.services.artifact_runs import workspace_with_artifacts
 from workflow.services.mineru_visual_crops import render_visual_crops
 from workflow.services.source_anchor_registry import SourceAnchorRegistry
 
@@ -43,8 +44,9 @@ def _write_accepted_assets(workspace: PaperWorkspace, manifest: list[dict]) -> N
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
-    pdf_path = Path(args.pdf).resolve() if args.pdf else workspace.source_path / "原文.pdf"
+    locations = getattr(args, "resolved_locations", {}) or {}
+    workspace = workspace_with_artifacts(Path(args.workspace), locations.get("artifact_root"), create=True)
+    pdf_path = Path(args.pdf).resolve() if args.pdf else workspace.source_pdf_path()
     cache_dir = figure_cache_dir(workspace.root_path)
     cache_dir.mkdir(parents=True, exist_ok=True)
     report = load_quality_report(workspace.quality_path, str(workspace.root_path))

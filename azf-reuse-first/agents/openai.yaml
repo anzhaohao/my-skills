@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reuse First"
+  short_description: "本地优先、网络调研、候选评分和二次确认后的实施门禁"
+  default_prompt: "Use $azf-reuse-first to find reusable local and online projects before implementing this request."

@@ -36,7 +36,8 @@ def run(args) -> int:
     results = []
     overall_issues: list[str] = []
     for workspace in workspaces:
-        result = optimize_translation_footnotes(workspace, apply=args.apply, backup_root=backup_root)
+        artifact_root = Path(locations["artifact_root"]) if locations and locations.get("artifact_root") else None
+        result = optimize_translation_footnotes(workspace, artifact_root=artifact_root, apply=args.apply, backup_root=backup_root)
         validation_issues = validate_translation_footnotes(Path(result.note_path)) if result.note_path else result.issues
         result.issues.extend(issue for issue in validation_issues if issue not in result.issues)
         if result.issues:

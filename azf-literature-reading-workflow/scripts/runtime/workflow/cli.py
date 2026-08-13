@@ -6,6 +6,7 @@ import sys
 
 from workflow.commands import (
     confirm_locations,
+    deliver_zotero_artifacts,
     doctor,
     extract_highres_figures,
     generate_deep_reading,
@@ -13,6 +14,7 @@ from workflow.commands import (
     ingest_paper,
     layout_sanity_check,
     locate,
+    migrate_core_layout,
     migrate_concept_cards,
     optimize_translation_footnotes,
     parse_with_mineru,
@@ -41,12 +43,14 @@ def _add_common_workspace(parser: argparse.ArgumentParser) -> None:
 
 
 def _requires_confirmed_locations(args: argparse.Namespace) -> bool:
-    if args.command in {"parse-with-mineru", "extract-highres-figures", "validate-pilot"}:
+    if args.command in {"parse-with-mineru", "extract-highres-figures", "validate-pilot", "deliver-zotero-artifacts"}:
         return True
     if args.command in {"ingest-paper", "generate-zh-fulltext", "generate-deep-reading"}:
         return not args.dry_run
     if args.command == "migrate-concept-cards":
         return bool(args.apply)
+    if args.command == "migrate-core-layout":
+        return True
     if args.command == "optimize-translation-footnotes":
         return bool(args.apply or getattr(args, "all_translations", False))
     return False
@@ -84,7 +88,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--workspace", help="Existing or target paper workspace folder")
     _add_location_manifest(p)
     p.add_argument("--title-en")
-    p.add_argument("--title-zh", default="中文题名待定")
+    p.add_argument("--title-zh", required=True, help="Confirmed Chinese short title used by every user-visible file")
+    p.add_argument("--source-language", choices=["en", "zh"], default="en")
     p.add_argument("--author", action="append", help="Repeat for each author")
     p.add_argument("--year")
     p.add_argument("--venue")
@@ -168,9 +173,24 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--delete-sources", action="store_true", help="Permanently delete validated paper-local 扫盲班 folders")
     p.set_defaults(func=migrate_concept_cards.run)
 
+    p = sub.add_parser(
+        "migrate-core-layout",
+        help="Dry-run or apply the short-title layout migration and archive legacy auxiliary notes",
+    )
+    p.add_argument("workspaces", nargs="+")
+    _add_location_manifest(p)
+    p.add_argument("--apply", action="store_true")
+    p.add_argument("--backup-root", help="External rollback backup root; required with --apply")
+    p.add_argument(
+        "--archive-root",
+        help="Defaults to <paper_root>/99_归档/旧版辅助笔记",
+    )
+    p.set_defaults(func=migrate_core_layout.run)
+
     p = sub.add_parser("plan-batch", help="Build a read-only queue for workspaces explicitly declared to have existing MinerU output")
     p.add_argument("workspaces", nargs="+")
     p.add_argument("--output")
+    _add_location_manifest(p)
     p.set_defaults(func=plan_batch.run)
 
     p = sub.add_parser("validate-pilot", help="Validate pilot workspaces and clean transient caches on pass")
@@ -179,6 +199,35 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", help="Optional path to save the pilot validation JSON report")
     p.add_argument("--keep-cache", action="store_true", help="Retain external cache for debugging")
     p.set_defaults(func=validate_pilot.run)
+
+    p = sub.add_parser(
+        "deliver-zotero-artifacts",
+        help="Dry-run or deliver validated MinerU/Chinese Markdown to Zotero Research Database",
+    )
+    _add_common_workspace(p)
+    p.add_argument(
+        "--endpoint",
+        default="http://127.0.0.1:23119/zotero-research-db/v1/artifacts/import",
+        help="Zotero Research Database loopback endpoint",
+    )
+    p.add_argument("--library-id", type=int, default=1, help="Personal Zotero library ID")
+    p.add_argument(
+        "--token-env",
+        default="ZOTERO_RESEARCH_DB_TOKEN",
+        help="Environment variable containing the local import token",
+    )
+    p.add_argument(
+        "--token-file",
+        help="Local token file; defaults to ~/.config/azf-literature-reading-workflow/zotero-research-db-token",
+    )
+    p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--apply", action="store_true", help="Send artifacts; dry-run by default")
+    p.add_argument(
+        "--retire-workspace",
+        action="store_true",
+        help="After Zotero confirms every artifact, move the validated Obsidian workspace into the external artifact run",
+    )
+    p.set_defaults(func=deliver_zotero_artifacts.run)
 
     return parser
 

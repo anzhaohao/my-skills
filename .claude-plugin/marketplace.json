@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.07.18"
+    "version": "2026.08.13"
   },
   "name": "my-skills",
   "owner": {
@@ -36,7 +36,16 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's local agent-memory long-term memory workflow. Use at the start of existing-project, debugging, continuation, \"last time\", repository, hardware, deployment, or preference-sensitive tasks to recall relevant memory from E:\\software\\Obsidian\\agent-memory before inspecting code. Use at task closeout to write stable facts, decisions, project state, reusable debugging lessons, or next steps back into the memory vault and rebuild its SQLite/Zvec indexes. Especially use for FrogTrace and other long-running local E-drive projects. Also use when updating agent-memory prompts, workflows, source scripts, or GitHub backup rules.",
+      "description": "Apple's approach to interface design and fluid, physical motion, translated for the web. Use when building or reviewing gesture-driven UI, spring animations, drag/swipe/sheet interactions, momentum and interruptible transitions, translucent materials and depth, typography (optical sizing, tracking, leading), reduced-motion, or the design foundations (feedback, spatial consistency, restraint) behind Apple-style interfaces.",
+      "name": "apple-design",
+      "skills": [
+        "./"
+      ],
+      "source": "./apple-design",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's local agent-memory workflow for Codex, Claude Code, Harness ZCode, and other local agent harnesses. Use at the start of existing-project, debugging, continuation, \"last time\", repository, hardware, deployment, or preference-sensitive tasks to recall relevant memory from E:\\software\\Obsidian\\agent-memory before inspecting code. Use at task closeout to write stable facts, decisions, project state, reusable debugging lessons, or next steps back into the memory vault and rebuild its SQLite/Zvec indexes. Especially use for FrogTrace and other long-running local E-drive projects. Also use when updating agent-memory prompts, workflows, source scripts, or GitHub backup rules.",
       "name": "azf-agent-memory",
       "skills": [
         "./"
@@ -54,7 +63,16 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's local-first, two-round literature workflow for Zotero-backed paper ingestion, local Docker MinerU parsing, layout review, reviewed high-resolution figures, faithful sentence-accounted Chinese translation, separate deep-reading notes, quality gates, and a movable central Obsidian concept library. Use when processing, migrating, validating, or continuing papers under the personal Obsidian literature workspace. Always locate and confirm note paths before any write-enabled round.",
+      "description": "Automatically compensates for missing multimodal capability when the model or agent lacks native vision, or native image/PDF reading fails or returns only a placeholder or metadata. Use to read, recognize, interpret, or extract image and PDF content. MUST be used immediately when reading a real image or PDF fails visually, even if the user did not mention DeepSight. Do NOT bypass with same-directory answer files, manifests, or pixel-color scripts. Do NOT invoke when native vision already handles the input reliably unless explicitly requested. Each selected routing step / answer command may run at most once; on non-zero exit, timeout, null result, or all attempts ok=false, stop and report failure — do NOT retry at host level or call Ollama/provider/API directly.",
+      "name": "azf-deepsight",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-deepsight",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's local-first, two-round literature workflow for Zotero-backed paper ingestion, Chinese-short-title source naming, local Docker MinerU parsing, faithful Chinese fulltext, optional Zotero-only delivery, deep reading/figures/Q&A, external artifact history, quality gates, and a movable central Obsidian concept library. Use when processing, migrating, validating, delivering, or continuing papers under the personal literature workflow. Always locate and confirm note paths before any write-enabled round.",
       "name": "azf-literature-reading-workflow",
       "skills": [
         "./"
@@ -81,7 +99,7 @@
       "strict": false
     },
     {
-      "description": "Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, and hedging. This is translation only, not summary or deep reading.",
+      "description": "Faithfully translate English academic paper Markdown, especially MinerU/PDF parser output, into an Obsidian-ready Chinese fulltext note. Use for `【中译】...md` or `中文全文.md` when every source sentence must be accounted for while preserving structure, formulas, citations, figures, tables, values, units, hedging, and original footnotes. This is translation only, not summary or deep reading.",
       "name": "azf-paper-zh-reading-translator",
       "skills": [
         "./"
@@ -90,12 +108,39 @@
       "strict": false
     },
     {
-      "description": "An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, research, Git, long-running, rollback-sensitive, and skill-maintenance tasks. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, and frontend style. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead.",
+      "description": "Extract clean high-resolution figures/images from academic PDFs for PPT, Obsidian notes, paper reading, or image collection. Use when Codex needs to use MinerU output to locate figures, run local Docker MinerU, crop high-DPI rendered PDF pages, collect MinerU images, manually crop PDF regions, or handle PDFs where direct image extraction produces fragmented masks, alpha layers, separated color layers, vector overlays, or incomplete images.",
+      "name": "azf-pdf-figure-render-extractor",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-pdf-figure-render-extractor",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's global personal working habits. Use at the start of programming, Markdown/Obsidian, planning, debugging, Codex self-diagnosis (crash, hang, network/MCP/app-server, or SQLite logging), research, Git, long-running, rollback-sensitive, long-file reads, website-cloning, skill-maintenance, and reuse-first discovery for new projects, deployments, substantial features, or tool replacements. Apply preferences for Git checkpoints and rollback, recoverable handoffs, concise status updates, Chinese skill READMEs, no duplicate Markdown body titles, frontend style, and the default local website-cloning project. Treat browser-backed agent-reach/OpenCLI as a P0 reliability path requiring Edge/Browser Bridge preflight and bounded output. Treat Codex's in-app browser/IAB/browser-use as a P0 crash risk on the current machine; avoid it by default for local HTML QA, screenshots, and ordinary page reads, using independent Playwright, Edge, or Chrome instead. Treat the local SQLite log trigger as a temporary diagnostic control only; retire this rule when an official stable fix is verified on this machine.",
       "name": "azf-personal-habits",
       "skills": [
         "./"
       ],
       "source": "./azf-personal-habits",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's research-learning tutor layer. Use when he asks to learn, understand, explain, teach, walk through, start from zero, treat him as a beginner, check whether he truly understands, or learn from work Codex just performed. Also use during papers, simulations, code, data analysis, DOE, experiments, formulas, figures, and project work when the result must be explained step by step in plain Chinese. Keep the underlying research workflow running; add teaching without replacing the domain skill.",
+      "name": "azf-research-tutor",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-research-tutor",
+      "strict": false
+    },
+    {
+      "description": "An Zhaofeng's reuse-first discovery gate for new software projects, deployments, substantial features, automations, tool replacements, and workflow changes. Before implementation, perform a bounded read-only scan of local projects, skills, scripts, and templates, then research deployable online candidates; compare fit, maintenance, licensing, security, compatibility, and cost; recommend reuse, adaptation, or greenfield work; and wait for explicit second-round confirmation before cloning, installing, editing, or deploying.",
+      "name": "azf-reuse-first",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-reuse-first",
       "strict": false
     },
     {
@@ -117,7 +162,7 @@
       "strict": false
     },
     {
-      "description": "Convene the Council of High Intelligence in Codex when the user asks for /council, council deliberation, triads, duo debates, or multi-perspective decision analysis.",
+      "description": "Run a model-diverse subagent council to investigate the same problem from multiple perspectives, compare findings, and produce a final recommendation. Use this skill whenever the user asks for a council, second opinions, multiple agents/models to evaluate one question, parallel investigation, red-team/blue-team comparison, or help deciding between competing technical approaches.",
       "name": "council",
       "skills": [
         "./"
@@ -132,6 +177,24 @@
         "./"
       ],
       "source": "./create-skill",
+      "strict": false
+    },
+    {
+      "description": "Design experiments and studies BEFORE data is collected — choosing a design, randomizing, blocking, and laying out treatment combinations so results are interpretable. Use whenever someone is planning a study, asks how to assign subjects/samples to groups, mentions randomization, blocking, stratification, controls, factorial or fractional-factorial designs, design of experiments (DOE), screening many factors, response-surface optimization, crossover or repeated-measures or split-plot designs, cluster/group randomization, Latin squares, plate layouts, batch/run-order effects, replication vs. pseudoreplication, or sequential/adaptive/group-sequential designs. Trigger even for informal phrasings like \"how should I set up this experiment\", \"how do I avoid confounding\", \"what's the best way to test these 6 factors\", or \"assign these mice to conditions\". For computing the sample size or power once the design is chosen, use statistical-power; for analyzing data already collected, use statistical-analysis.",
+      "name": "experimental-design",
+      "skills": [
+        "./"
+      ],
+      "source": "./experimental-design",
+      "strict": false
+    },
+    {
+      "description": "Perform bounded, local exploratory analysis of explicitly supported scientific files. Use for redacted CSV/TSV/JSON profiles; optional NumPy, HDF5, FASTA/FASTQ, and basic image metadata inspection; missingness/leakage audits; outlier and transformation sensitivity; and rigorous EDA report scaffolds. Other domain formats are reference-only and unknown formats fail closed.",
+      "name": "exploratory-data-analysis",
+      "skills": [
+        "./"
+      ],
+      "source": "./exploratory-data-analysis",
       "strict": false
     },
     {
@@ -243,7 +306,7 @@
       "strict": false
     },
     {
-      "description": "Multi-source literature search, citation verification, MeSH search strategy, citation file management (.nbib/.ris/.bib conversion), and reference management (BibTeX, related articles, ID conversion) via MCP tools (PubMed, CrossRef, arXiv). Use when the user needs coordinated multi-step literature workflows beyond a single MCP call.",
+      "description": "Multi-source literature search, citation verification, strict independent other-citation audits, article-level citation metric tables, influential citer profiling with citation-context extraction, MeSH search strategy, citation file management (.nbib/.ris/.bib conversion), and reference management (BibTeX, related articles, ID conversion) via MCP tools (PubMed, CrossRef, arXiv, Scopus, ScienceDirect). Use for coordinated literature workflows beyond one MCP call, including 文献检索、 查文献、找文献、文献综述检索、查论文、引文核对、参考文献管理、文献去重、 严格他引、他引判定、排除自引、谁引用了我的文章、引用我的文章的人有没有大牛、 院士引用、校长引用、院长引用、杰青引用、长江学者引用、Fellow引用、文章引用表、 指定文章引用数、严格他引数、整理成表格.",
       "name": "nature-academic-search",
       "skills": [
         "./"
@@ -252,7 +315,7 @@
       "strict": false
     },
     {
-      "description": "Add strict Nature/CNS citations to manuscript text by splitting long passages into citable segments, searching only accepted flagship and subjournal titles from Nature Portfolio, the AAAS Science family, and Cell Press, filtering by publication time range, and exporting one reference-manager-ready output by default. Use this skill whenever the user asks to input text and automatically get references, add citations to a paragraph/manuscript, find Nature-series or CNS support for statements, create text-to-reference correspondence, \"分段引用\", \"自动给出引用\", \"Nature系列引用\", \"CNS及子刊\", \"支撑文献\", \"补引用\", \"找引用\", or export EndNote/RIS/ENW/Zotero RDF.",
+      "description": "Add strict Nature/CNS citations to manuscript text by splitting long passages into citable segments, searching only accepted flagship and subjournal titles from Nature Portfolio, the AAAS Science family, and Cell Press, filtering by publication time range, and exporting one reference-manager-ready output by default. Use this skill whenever the user asks to input text and automatically get references, add citations to a paragraph/manuscript, find Nature-series or CNS support for statements, create text-to-reference correspondence, \"分段引用\", \"自动给出引用\", \"Nature系列引用\", \"CNS及子刊\", \"支撑文献\", \"补引用\", \"找引用\", or export EndNote/RIS/ENW/Zotero RDF. Also trigger on general academic-writing citation needs even without the word \"Nature\", such as adding references while writing a paper, finding sources/literature for a claim, building a reference list, citation/referencing for academic writing, and Chinese phrasings like 学术写作引用、写论文加引用、写paper找文献、加参考文献、配文献、引用文献、文献支撑.",
       "name": "nature-citation",
       "skills": [
         "./"
@@ -261,7 +324,7 @@
       "strict": false
     },
     {
-      "description": "Prepare, audit, or revise Nature-ready Data Availability statements, data repository plans, dataset citations, and FAIR metadata checklists for manuscripts. Use when the user asks about Nature data availability, research data sharing, repository selection, accession numbers, restricted or sensitive data, source data, supplementary datasets, DataCite-style dataset references, FAIR metadata for academic publication, or Chinese-to-English data availability wording for Chinese-speaking authors preparing Nature-family submissions.",
+      "description": "Prepare, audit, or revise Nature-ready Data Availability statements, data repository plans, dataset citations, and FAIR metadata checklists for manuscripts. Use when the user asks about Nature data availability, research data sharing, repository selection, accession numbers, restricted or sensitive data, source data, supplementary datasets, DataCite-style dataset references, FAIR metadata for academic publication, or Chinese-to-English data availability wording for Chinese-speaking authors preparing Nature-family submissions. Also trigger on general academic-writing data needs even without the word \"Nature\", such as writing a data availability statement for any journal, code/data sharing sections, repository selection while writing a paper, and Chinese phrasings like 数据可用性声明、数据可用性、 数据共享、代码可用性、学术写作数据声明、写数据声明、数据存放、数据仓库选择.",
       "name": "nature-data",
       "skills": [
         "./"
@@ -270,7 +333,7 @@
       "strict": false
     },
     {
-      "description": "Submission-grade Nature/high-impact journal figure workflow for Python or R. Use whenever the user asks to create, revise, audit, or polish manuscript figures, multi-panel scientific plots, figures4papers-style matplotlib plots, or journal-ready SVG/PDF/TIFF outputs, especially for Nature-family or other high-impact journals. Before plotting, define the figure's conclusion, evidence logic, export needs, and review risks. If the user has not chosen Python or R, ask \"Python or R?\" and stop. Use only the selected backend for figure generation, previewing, exporting, and QA. Supports matplotlib/seaborn and ggplot2/patchwork/ComplexHeatmap. Not for dashboards or Illustrator/Figma-first infographics.",
+      "description": "Create, revise, audit, and export submission-grade scientific figures for Nature-family and other high-impact venues in Python (matplotlib/seaborn) or R (ggplot2/patchwork/ComplexHeatmap), including multi-panel plots, figures4papers-style work, and journal-ready SVG/PDF/TIFF outputs. Use for paper or scientific plots, manuscript data visualization, 论文配图、学术写作配图、科研绘图、科研作图、画图、作图、出图、论文图表、可视化. Define the conclusion, evidence logic, data integrity, template compatibility, export needs, and reviewer risks before plotting; honor or persist the Python/R backend choice. Also use the separate OpenRouter GPT Image 2 route for explicit AI-generated graphical abstracts, mechanism diagrams, concept schematics, 论文示意图、机制示意图、图形摘要; this route skips backend choice and treats outputs as drafts. Do not use for interactive dashboards, statistics-only analysis, data cleaning, literature review, code debugging, pure photo editing, or Illustrator/Figma-first infographics without manuscript-figure intent.",
       "name": "nature-figure",
       "skills": [
         "./"
@@ -279,7 +342,7 @@
       "strict": false
     },
     {
-      "description": "Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and runs an explicit self-review/corrective revision loop focused on figure quality, text overflow prevention, and non-template visual design before delivery.",
+      "description": "Build a complete Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, figure legends, or reading notes. Use for journal club, group meeting, thesis seminar, paper sharing, conference or defense decks, and Chinese requests such as 论文做PPT、论文汇报、组会PPT、文献汇报、学术汇报、做幻灯片、读书报告PPT. It classifies paper type, builds an evidence-led story, selects key figures, writes Chinese slide content and speaker notes, creates the actual .pptx, and runs corrective QA for complete figure crops, stable alignment, text overflow, and de-templated Chinese academic expression. Also trigger when improving weak paper-to-PPT output with cropped figures, loose alignment, obvious AI-style wording, or heavy manual rework.",
       "name": "nature-paper2ppt",
       "skills": [
         "./"
@@ -288,7 +351,7 @@
       "strict": false
     },
     {
-      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, \"Float too large\", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md.",
+      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, \"Float too large\", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md. Also trigger on general academic/scientific writing requests even without the word \"Nature\", including academic writing, scientific writing, SCI/paper writing, English manuscript polishing, language editing, proofreading, and Chinese phrasings such as 学术写作、科研写作、论文润色、写paper、SCI写作、英文论文润色、语言润色、润色、改写、学术英语、英文写作.",
       "name": "nature-polishing",
       "skills": [
         "./"
@@ -297,7 +360,7 @@
       "strict": false
     },
     {
-      "description": "Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, arXiv, publisher HTML, or pasted text. Use whenever the user asks to translate or read a paper, make 中英文对照/原文对照/全文翻译解读, extract figures or tables into the right positions, preserve figure/table placement near relevant prose, or keep exact source anchors for every block. This skill must not degrade into a summary-only output unless the user explicitly asks for a summary.",
+      "description": "Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, arXiv, publisher HTML, or pasted text. Use whenever the user asks to translate or read a paper, make 中英文对照/原文对照/全文翻译解读, extract figures or tables into the right positions, preserve figure/table placement near relevant prose, or keep exact source anchors for every block. This skill must not degrade into a summary-only output unless the user explicitly asks for a summary. Also trigger on general paper-reading and translation requests even without the word \"Nature\", such as reading/translating an academic paper, literature reading, understanding a paper, and Chinese phrasings like 读论文、精读论文、论文翻译、文献翻译、文献阅读、学术阅读、帮我读这篇文章、翻译这篇paper.",
       "name": "nature-reader",
       "skills": [
         "./"
@@ -306,7 +369,7 @@
       "strict": false
     },
     {
-      "description": "Draft, audit, or revise point-by-point reviewer response letters for Nature-family manuscript revisions. Use when the user provides reviewer comments, editor decision letters, revision notes, response drafts, or asks how to respond to major/minor revision requests, rebuttal letters, response to reviewers, peer-review reports, 审稿意见回复, 逐点回复, 修回信, 大修回复, 小修回复, or 如何回复 reviewer.",
+      "description": "Draft, audit, or revise Nature-style revision correspondence packages: point-by-point reviewer response letters, rebuttal letters, revision cover letters, LaTeX cover/response templates, and red-marked revised-manuscript excerpts. Use for reviewer comments, editor decision letters, pasted editorial emails, response drafts, cover letters, response to reviewers, rebuttal, 修回信, 返修邮件, 编辑邮件, 返修 cover letter, 审稿意见回复, 逐点回复, 大修回复, 小修回复, 回复审稿人, 修改稿回复, 写rebuttal, 回应审稿意见, 标红修改, or LaTeX 模板.",
       "name": "nature-response",
       "skills": [
         "./"
@@ -315,7 +378,7 @@
       "strict": false
     },
     {
-      "description": "Simulate a Nature-style reviewer assessment from the referee perspective rather than an author rebuttal. Use when the user wants a pre-submission review, reviewer report, peer-review style critique, novelty/significance/technical soundness assessment, reviewer-style manuscript evaluation, 审稿人视角评估, 预审稿意见, or Nature reviewer report. Return 3 reviewer reports plus a cross-review synthesis, grounded only in the local Nature reviewer source basis.",
+      "description": "Simulate a Nature-style reviewer assessment from the referee perspective rather than an author rebuttal. Use when the user wants a pre-submission review, reviewer report, peer-review style critique, novelty/significance/technical soundness assessment, reviewer-style manuscript evaluation, 审稿人视角评估, 预审稿意见, or Nature reviewer report. Return 3 reviewer reports plus a cross-review synthesis, grounded only in the local Nature reviewer source basis. Also trigger on general pre-submission review requests during academic writing even without the word \"Nature\", such as getting a mock peer review for any journal, critiquing a draft as a reviewer would, assessing novelty/rigor before submission, and Chinese phrasings like 审稿人视角、模拟审稿、预审、帮我审一下论文、投稿前自审、审稿意见模拟、找论文问题.",
       "name": "nature-reviewer",
       "skills": [
         "./"
@@ -324,7 +387,7 @@
       "strict": false
     },
     {
-      "description": "Draft, restructure, or plan Nature-style manuscript sections from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduction, related-work, method, experiments, discussion, conclusion, title, or full manuscript argument rather than only polish finished prose.",
+      "description": "Draft, restructure, or plan Nature-style manuscript sections and initial-submission materials from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduction, related-work, method, experiments, discussion, conclusion, title, full manuscript argument, pre-submission cover letter, title page, highlights, author-contribution statement, availability/declaration text, reviewer suggestions, or a complete initial submission package rather than only polish finished prose. Also trigger on general academic-writing and first-submission requests such as writing a paper from scratch, drafting a manuscript/section, structuring a paper, submission package, 投稿材料、首次投稿、投稿前 cover letter、投稿信、标题页、亮点、作者贡献、数据可用性声明、推荐审稿人.",
       "name": "nature-writing",
       "skills": [
         "./"
@@ -342,29 +405,21 @@
       "strict": false
     },
     {
-      "name": "paper-obsidian-review",
-      "skills": [
-        "./"
-      ],
-      "source": "./paper-obsidian-review",
-      "strict": false
-    },
-    {
-      "description": "Extract clean high-resolution figures/images from academic PDFs for PPT, Obsidian notes, paper reading, or image collection. Use when Codex needs to use MinerU output to locate figures, run local Docker MinerU, crop high-DPI rendered PDF pages, collect MinerU images, manually crop PDF regions, or handle PDFs where direct image extraction produces fragmented masks, alpha layers, separated color layers, vector overlays, or incomplete images.",
-      "name": "pdf-figure-render-extractor",
-      "skills": [
-        "./"
-      ],
-      "source": "./pdf-figure-render-extractor",
-      "strict": false
-    },
-    {
       "description": "Generates optimized prompts for AI tools. Activates only when the user explicitly asks to write, fix, improve, or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image AI, video AI, coding agents, etc.). Does not activate for general conversation, coding tasks, document writing, or other non-prompt-engineering work.",
       "name": "prompt-master",
       "skills": [
         "./"
       ],
       "source": "./prompt-master",
+      "strict": false
+    },
+    {
+      "description": "Multi-objective optimization framework. NSGA-II, NSGA-III, MOEA/D, Pareto fronts, constraint handling, benchmarks (ZDT, DTLZ), for engineering design and optimization problems.",
+      "name": "pymoo",
+      "skills": [
+        "./"
+      ],
+      "source": "./pymoo",
       "strict": false
     },
     {
@@ -395,7 +450,7 @@
       "strict": false
     },
     {
-      "description": "Create or update the project constitution from interactive or provided principle inputs, ensuring all dependent templates stay in sync.",
+      "description": "Create or update the project constitution from interactive or provided principle inputs.",
       "name": "speckit-constitution",
       "skills": [
         "./"
@@ -455,6 +510,15 @@
         "./"
       ],
       "source": "./speckit-taskstoissues",
+      "strict": false
+    },
+    {
+      "description": "Guided statistical analysis for research data - test selection, assumption checking, effect sizes, power analysis, Bayesian alternatives, and APA-formatted reporting. Use whenever a user wants to compare groups, test a hypothesis, analyze experimental or survey data, check statistical assumptions, compute required sample sizes, or write up results - even if they never name a specific test. Covers t-tests, ANOVA, chi-square, correlation, regression, non-parametric and Bayesian methods. For low-level model APIs, see the statsmodels and pymc skills.",
+      "name": "statistical-analysis",
+      "skills": [
+        "./"
+      ],
+      "source": "./statistical-analysis",
       "strict": false
     },
     {

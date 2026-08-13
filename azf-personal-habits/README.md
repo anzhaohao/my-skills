@@ -9,12 +9,20 @@
 - 开始为 An Zhaofeng 做编程、前端页面/应用、文档、实验记录、项目规划或调试任务。
 - 任务涉及 Git 分支、提交、推送、回滚、备份或交接记录。
 - 创建、补充、优化任何 skill。
+- 新建项目、部署服务、开发较大功能、引入工具或替换工作流，需要先寻找本地和网络上的可复用方案。
+- 为 Codex、Claude Code、Cursor、Windsurf、OpenCode 等 Harness 检查、复用或创建个人规则适配器。
+- 读取较长的本地说明、`AGENTS.md`、`SKILL.md`、reference、日志、JSON 或源码文件。
 - 创建 Markdown 文档、Obsidian 项目记录、Excalidraw 图或论文思路图。
 - 使用 agent-reach/OpenCLI 进行 Twitter、Reddit、小红书、Facebook、Instagram 等依赖浏览器登录态的搜索或页面读取。
 - 预览或测试本地 HTML、做响应式验收、截图，或准备调用 Codex 内置浏览器/IAB/browser-use。
 - 克隆、复制、复刻、重建或逆向分析网站，或咨询相关工具和工作流。
 
 ## 当前关键规则
+
+- 跨 Harness 适配必须先识别目标 Harness，并检查已有的用户级/项目级入口、override、配置项、链接和 reparse point。已有有效适配器时只定点更新原入口，不重复创建、不覆盖无关规则；没有适配器时，先说明原生路径、作用域、优先级和最小内容，只有当前请求明确授权后才创建。完整规则继续以 Skills Manager 中的个人 skill 为准，适配器只保留启动所需的最少规则；修改后要验证 Harness 实际加载的是哪一个文件以及是否被更高优先级入口覆盖。
+- 新项目或较大实现先使用 `azf-reuse-first`：第一轮只读扫描本地项目、Skills、脚本和模板，再用 `agent-reach` 检索网络候选，比较许可证、维护、安全、兼容性和改造成本；输出推荐方案后停止，等待二次确认，确认前不得克隆、安装、创建或修改项目文件。
+- 长文件先统计总行数和字节数；超过 150 行或 12 KB 时，按最多 100～150 行连续分段，并在每段标出准确行号。Windows 下显式使用 UTF-8 解码；出现乱码、`truncated`、尾部缺失或边界不明时不能声称读取完成，必须从最后确认行继续，直到最后确认行等于总行数并到达 EOF。选中的 `SKILL.md` 及其必读 reference 都适用该规则。
+- Obsidian Templater 调试记录优先直接生成 Markdown 模板或使用 Obsidian CLI，不默认调用 `computer-use`。日期、标题和设备/问题/状态/日志/数据/验证等关键字段交给 Templater 动态生成；模板文件与生成后的记录分开保存，只有明确要求时才创建或同步记录。仅在必须验证 Obsidian 界面行为或渲染效果时使用 `computer-use`。
 
 - OpenCLI 浏览器搜索属于 P0 稳定性路径。搜索开始时必须先显示“正在检查 Edge 与 Browser Bridge”，运行 `scripts/opencli_guard.py preflight --json`，确认连接后再显示“OpenCLI 已连接，开始搜索”。这里显示的是执行状态，不公开模型内部思维链。
 - Edge 关闭时由预检脚本最小化启动 Default profile；扩展仍未连接时只重启一次 daemon。仍失败就快速切换 agent-reach 的备用后端，禁止直接进入约 20 秒的无界等待，也禁止借 Codex IAB/browser-use 修复 OpenCLI。
@@ -28,6 +36,7 @@
 - 项目代码或项目文件改动前必须先二次确认：如果我只是要求“更新工作记录、分析问题、评估方案、解释行为”，不要顺手改代码；必须先给出修改方案、影响文件和风险点，等我明确确认后再改。
 - 调试、修 bug、代码改动、硬件/软件排查或 Git 提交/推送时，Obsidian 笔记库默认只读。除非我在当前回合明确说“更新笔记、同步笔记、写入笔记、整理笔记”，否则不要修改 Obsidian 正文；如果确实值得补记，只在最后说明“笔记未更新，可作为后续待办”。
 - 未指定备份位置时，默认把 Codex 回滚备份放到 `E:\software\CodexPlusPlus\Codex备份\YYYYMMDD_HHMMSS_任务名_修改前备份`。
+- 部署在 `E:\software` 下的软件，其包管理器仓库、虚拟环境、模型下载缓存和构建缓存默认放进该软件自己的项目目录或明确的项目子目录，不要把项目专属缓存留在 `E:\` 根目录或无关的用户/系统缓存目录。迁移缓存时必须先建立并验证新位置，再安全解除 junction/reparse point，最后删除旧缓存。
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
 - 多步骤任务要留下可接手的进度线索。
@@ -35,7 +44,7 @@
 - 创建 Markdown 文档时，默认不要在正文重复写文件标题。
 - 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - 创建或修改 Obsidian 笔记属性时，只允许文件最开头有一个 YAML frontmatter；第一行必须是纯 `---`，不能有 UTF-8 BOM 或隐藏字符。`创建时间`、`修改时间`、`项目`、`类型`、`状态`、`aliases`、`tags` 等字段必须合并在同一个属性块里，不能在正文再补一个属性块。
-- Obsidian 库内笔记互相引用时，默认使用不带文件夹路径的短 wikilink，例如 `[[【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]`；不要写成 `[[02-Brain Cells/.../【中译】...md|中译笔记]]`。这样笔记文件夹移动时链接更稳。资源/附件或插件明确要求路径时才保留路径。
+- Obsidian Vault 内所有 Wikilink 都只写目标文件名，笔记、PDF、图片和其它附件没有例外。例如使用 `[[【中译】使用二次谐波产生的频率分辨光学门控.md|中译笔记]]` 和 `![[Fig-01.png]]`，不要写文件夹路径或 `../`。写入前确认文件名全库唯一；冲突时重命名生成资产，不用目录规避。
 - Obsidian 附件按类型分流：图片使用全局 `Attachments/<笔记目录>/<笔记文件名.md>/` 镜像体系；PDF、PPTX、DOCX、XLSX、视频、压缩包等其他非 Markdown 文件放在当前笔记目录下的本地 `附件/` 文件夹。Markdown 文件仍留在正文目录，不当作附件。
 - 创建或总结 Obsidian / Markdown 笔记时，不要写得过于专业。优先让“未来的我一眼看懂”：先写人话含义，再补必要技术细节；可以有一点温度，比如说明为什么这一步容易误解、这个结论为什么重要，但不要变成长篇抒情。
 - 整理我已有的 Obsidian 笔记时，先保留原文判断链，再做结构化优化；不要把能说明“为什么后来这样决策”的解释段、截图序列或折叠 callout 压平成泛化摘要。
@@ -50,6 +59,14 @@
 - 通过代码运行的 QuickAdd UserScript 统一放在 `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\3_Plugin Mods\QuickAdd\Scripts`；移动或修改时同步更新 `.obsidian/plugins/quickadd/data.json`，并同步维护该目录下的 `QuickAdd脚本说明.md`，然后重新加载 QuickAdd。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
+
+## 项目缓存归属习惯
+
+- 软件部署到 `E:\software` 时，缓存也要跟着项目走。常见位置包括项目内的 `.pnpm-store/`、`.venv/`、`.cache/`、`models/` 等；优先使用相对路径和项目级配置。
+- 缓存目录默认不进入 Git。纯本机配置优先放进 `.git/info/exclude`；适合团队共用的相对配置才考虑保留在项目文件中。
+- 迁移前先确认旧缓存属于哪些项目，并检查运行进程、硬链接、junction、symlink 和 reparse point，避免删除缓存时顺着链接误伤源码。
+- 标准顺序是：配置新路径 → 填充/重链接依赖 → 检查包管理器实际路径 → 完成构建或启动验证 → 解除旧链接 → 删除旧缓存 → 确认原路径消失。
+- pnpm 必须用 `pnpm config get store-dir` 和 `pnpm store path` 核验实际位置。pnpm 版本如果改用 `pnpm-workspace.yaml` 保存项目配置，可使用 `storeDir: .pnpm-store`；不要只写 `.npmrc` 就默认已经生效。
 
 ## Codex 自身故障的临时 SQLite 诊断窗口
 
@@ -96,6 +113,16 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 
 ## 最近维护
 
+- 2026-08-11：新增 `azf-reuse-first` 路由。新项目、部署、较大功能、工具替换和工作流重建先查本地、再查网络，第一轮只读并等待二次确认后实施。
+
+- 2026-08-11：加入跨 Harness 短适配器维护规则。先识别 Harness 并检查现有入口、覆盖优先级和链接；已有适配就复用并定点更新，禁止重复创建。只有缺失且当前请求明确授权时才新增原生适配器，并在完成后验证实际加载结果。当前已确认的 Codex 适配器继续使用 `.codex/AGENTS.md`。
+
+- 2026-08-11：加入长文件稳定读取协议。先统计行数和大小，长文件按明确行号分段读取，跟踪最后确认行并验证 EOF；出现截断、乱码或尾部不明确时禁止声称读取完成。全局 `.codex/AGENTS.md` 同步加入简短兜底规则，使该协议在个人习惯 skill 尚未触发时也能生效。
+
+- 2026-07-25：加入项目缓存归属偏好。部署在 `E:\software` 下的软件，其 pnpm/npm、Python、模型和构建缓存优先放入对应项目目录；迁移时先验证新缓存和项目可用性，再解除 junction/reparse point 并清理旧路径，避免在盘符根目录遗留项目专属缓存。
+
+- 2026-07-23：加入 Obsidian Templater 调试记录偏好。优先直接生成 Markdown 模板或使用 Obsidian CLI；由 Templater 动态生成日期、标题并提示收集关键字段，不默认使用 `computer-use`，且模板与生成后的记录分开保存。
+
 - 2026-07-20：加入 Codex 自身故障的临时 SQLite 诊断窗口。首轮短暂关闭 trigger 并要求完整重启、只复现一次；下一轮先取证再恢复保护。官方稳定修复经本机验证后删除本临时规范。
 
 - 2026-07-20：加入网站克隆默认路由。以后未指定其他工具时，网站克隆、复刻、重建、逆向分析及相关咨询默认使用本地 `ai-website-cloner-template` 项目和同名 Conda 环境，并按目标网站隔离工作区。
@@ -104,7 +131,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 
 - 2026-07-18：归档逐句精读 Skill；“精读文献”“精读论文”“论文精读”继续进入 `azf-literature-reading-workflow`，明确逐句或逐段时参考论文精读工作流目录下的已归档 PDF++ 定位方法。
 
-- 2026-07-17：加入 Obsidian 库内笔记短 wikilink 规则。笔记到笔记的引用默认只写文件名和别名，例如 `[[【中译】...md|中译笔记]]`，不在前面加文件夹路径；资源和附件链接可按需要保留路径。
+- 2026-07-28：短 Wikilink 规则扩展到笔记、PDF、图片和其它附件，取消旧的资源/附件路径例外；文件名冲突时先重命名目标资产。
+- 2026-07-17：加入 Obsidian 库内笔记短 wikilink 规则。其“资源和附件可保留路径”的旧例外已被 2026-07-28 规则覆盖。
 
 - 2026-07-16：加入 Codex IAB P0 闪退保护。当前便携 Gate-off `26.707.12708.0` 在无可用 ChatGPT browser route 时，创建 `hidden-browser-use` WebView 后可于页面加载完成后直接退出；以后本地 HTML 验收默认使用独立 headless Playwright，OpenCLI 与 IAB 的门禁和回退路径严格分离。
 

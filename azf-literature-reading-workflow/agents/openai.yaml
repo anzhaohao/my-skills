@@ -1,4 +1,4 @@
 interface:
   display_name: "AZF 文献阅读工作流"
-  short_description: "本地 Zotero、MinerU、忠实中译、精读和中央概念库工作流"
-  default_prompt: "按本地优先和可回滚规则处理一篇论文：确认 Zotero 来源，运行 MinerU 和版面检查，生成逐句忠实中译及审计，再生成独立精读并维护中央概念库。"
+  short_description: "本地 Zotero、MinerU、中文全文、Zotero 入库与库外审计工作流"
+  default_prompt: "按本地优先和可回滚规则处理一篇论文：先确认路径与中文短标题，再生成短标题 PDF、MinerU 原文、总览和中文全文；Vault 内笔记、PDF、图片和附件的 Wikilink 一律只写唯一短文件名；中文来源把 MinerU 直接合并进【中译】，精读、图表和问答仅在明确要求时生成。若选择 Zotero 输出后端，必须先通过质量门并预演，再用本机令牌交付；只有明确选择 Zotero 为唯一长期后端时才可在完整确认后归档 Obsidian 工作区。"

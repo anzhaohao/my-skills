@@ -12,7 +12,7 @@ Use this skill to make An Zhaofeng's Obsidian project notes easy to resume and e
 Maintain five project-note roles:
 
 1. Total note: project entrance, current status, reading order, and navigation.
-2. Mainline notes: connect related records into a few clear threads.
+2. Mainline notes: connect related records into a few clear threads. Classify each one as exactly one of `主要主线` or `临时主线`, and show the two classes separately in the total note.
 3. Debug records: chronological process records, handoff notes, bug notes, and experiment records.
 4. Project-understanding notes: code maps, process explanations, source reading, and diagrams.
 5. Supplement notes: GUI guides, plans, environment/dependency explanations, old schemes, temporary investigations, and archived material.
@@ -43,7 +43,8 @@ For a new or substantial existing project under `01-Project`, prefer the current
 项目文件夹/
   0_总览/
     项目名总笔记.md
-    项目名主线索引.<当前Base或Components格式>
+    项目名主要主线索引.components
+    项目名临时主线索引.components
     项目名未归类调试记录.<当前Base或Components格式>
   1_主线笔记/
     主题A.md
@@ -69,7 +70,8 @@ Minimum useful bootstrap:
 项目文件夹/
   0_总览/
     项目名总笔记.md
-    项目名主线索引.<当前Base或Components格式>
+    项目名主要主线索引.components
+    项目名临时主线索引.components
     项目名未归类调试记录.<当前Base或Components格式>
   1_主线笔记/
   2_调试记录/
@@ -82,7 +84,7 @@ At creation time:
 1. Before searching for a template or writing, recover project facts from the current request, `azf-agent-memory`, existing Vault notes, the local repository, and—when available and relevant—AgentsView/local chat history. Treat chat history as evidence to reconcile, not as unquestioned truth.
 2. Derive the project folder name from the user's explicit name/path first; otherwise use the existing `YYYYMMDD_项目名` convention and normalize it to the Vault's current naming style.
 3. Invoke the discovered total-note template once and fill it with the recovered goal, known facts, current state, source/repository links, and immediate next step. Do not generate an empty or generic note.
-4. Keep the total-note's project index views in `0_总览`, following the current project's Base/Components pattern and the active index template. These are structural views referenced by the total note, not content notes; an empty view is acceptable, but never create placeholder mainline or debug cards merely to populate it.
+4. Keep the total-note's project index views in `0_总览`. For new projects, create `项目名主要主线索引.components` and `项目名临时主线索引.components` from their active Components templates, replace only the project-folder path in each filter, and keep the unclassified-debug index in its active Base/Components format. These are structural views referenced by the total note, not content notes; an empty view is acceptable, but never create placeholder mainline or debug cards merely to populate it.
 5. For a request that only says to create/bootstrap the project in Obsidian, generate no mainline, debug, experiment, or project-understanding content note beyond the total note. Existing logs, screenshots, or repository facts may be summarized or linked from the total note, but do not become separate records until An Zhaofeng explicitly asks to import,整理, or generate those records.
 6. When An Zhaofeng explicitly requests record import/整理, create mainline notes only for real threads supported by the recovered facts, debug/experiment records only for actual evidence, and project-understanding notes only when evidence or the request supports them. If no such records are needed, leave the corresponding folders without placeholder notes; create `实验记录/` only when an experiment record is needed.
 7. Do not create `.azf/project-notes.yaml` unless explicitly requested.
@@ -97,7 +99,7 @@ Use numbered section headings in total notes. Because the filename already carri
 Preferred total-note dashboard flow for active projects:
 
 1. `现在先看这里`: current status and immediate handoff.
-2. `主线与当前状态`: the few active threads that explain the project state, preferably rendered by a lightweight Obsidian Bases view.
+2. `当前主线`: show `主要主线` and `临时主线` as two lightweight Components views.
 3. `目前待解决的问题`: unresolved issue index and issue detail cards.
 4. `未归类调试记录 / 小 bug 收件箱`: list records that have not yet been attached to a mainline note using the current Base/Templater view.
 
@@ -135,9 +137,15 @@ aliases:
 
 # 二、当前主线
 
-![[项目名主线索引.<当前Base或Components格式>]]
+## 主要主线
 
-<!-- 可选：如果项目需要解释主线分组、从属关系或当前判断，继续写在 base 下面；base 只做索引，不替代解释。 -->
+![[项目名主要主线索引.components]]
+
+## 临时主线
+
+![[项目名临时主线索引.components]]
+
+<!-- 可选：如果项目需要解释主线分组、从属关系或当前判断，继续写在两个 Components 视图下面；组件视图只做索引，不替代解释。 -->
 
 # 三、目前待解决的问题 / 需求
 
@@ -174,11 +182,11 @@ Total-note rules:
 
 - The mainline display title in the total note may be more direct than the filename. Do not rename the mainline file just to improve the dashboard title.
 - A mainline derived from another mainline can be shown as an indented `### 1.1 ...` block, but it should remain an independent mainline note when it has its own reusable problem logic.
-- In `主线与当前状态` / `当前主线`, put a lightweight `.base` view directly under the section heading as a compact index. The mainline base should show only `创建日期`, `主线` (from `file.name`, not a duplicated frontmatter property), and `当前状态`, sorted from old to new by `创建时间 ASC`.
-- The mainline base is an index, not a replacement for An Zhaofeng's hand-written mainline explanation. If the total note already has grouped mainline descriptions, dependencies, or current judgments, keep them below the base instead of deleting them.
-- Do not include `下一步` in the mainline base by default. The total note should stay clean; next actions belong in records or direct user planning unless the user explicitly asks for them.
+- In `当前主线`, put the `主要主线` and `临时主线` Components views under their matching subsection headings. Each view should show only `文件名`, `创建时间`, and `当前状态`, sorted from old to new by `创建时间 ASC`.
+- These Components views are indexes, not replacements for An Zhaofeng's hand-written mainline explanation. If the total note already has grouped mainline descriptions, dependencies, or current judgments, keep them below the views instead of deleting them.
+- Do not include `下一步` in either mainline view by default. The total note should stay clean; next actions belong in records or direct user planning unless the user explicitly asks for them.
 
-When creating or updating a project mainline Base, invoke the currently discovered Base/Templater template for that role, place the generated view in the project's `0_总览/`, and replace only the project-specific filter value. If the active Vault has no matching template, ask An Zhaofeng before proceeding.
+When creating the two mainline Components views, use the currently discovered `项目主要主线索引Components模板.components` and `项目临时主线索引Components模板.components`, place the generated copies in the project's `0_总览/`, name them `项目名主要主线索引.components` and `项目名临时主线索引.components`, and replace the placeholder folder with the exact Vault-relative path `01-Project/<项目文件夹>/1_主线笔记`. In each view, keep exactly two filter conditions: `${file.parent}` equals that path, and `${file.tags}` contains the matching classification tag. Do not add filters for file extension, `项目笔记类型`, project name, filename prefix, or status. If the active Vault has no matching template, ask An Zhaofeng before proceeding.
 
 ## Unresolved Issues Table
 
@@ -309,6 +317,10 @@ When Obsidian Bases is available, invoke the currently discovered Base/Templater
 
 Use mainline notes when raw records are too isolated to show relationships. A mainline note should summarize one thread, not duplicate every detail. An Zhaofeng prefers a concise linear mainline: use date-based progress entries instead of Step diary structure.
 
+Classify every mainline note with exactly one tag: use `主要主线` for a stable, long-lived project thread expected to connect multiple records or stages; use `临时主线` for a short-lived investigation or coordination thread that may later be merged into a major mainline, promoted, archived, or closed.
+
+Store both classes directly under `1_主线笔记/`; do not split them into separate subfolders. Ask for the class when it is not clear from the request, then ensure the chosen tag is present after applying the current mainline template. If neither tag is present, the note intentionally appears in neither mainline view. Do not put both tags on one note. Existing projects and historical notes do not require migration unless An Zhaofeng explicitly requests it.
+
 When creating or updating a mainline note, invoke the currently discovered Templater template for the mainline role. Do not write the body from a copied example in this skill. If the active Vault has no matching template or the operation is happening outside Obsidian without a callable Templater bridge, ask An Zhaofeng before proceeding; never recreate a guessed template.
 
 Good mainline topics include "光谱仪连接与采集", "波长映射与频率插值", "FROG迹图反演与结果保存", or the equivalent threads for another project.
@@ -316,7 +328,8 @@ Good mainline topics include "光谱仪连接与采集", "波长映射与频率�
 Mainline-writing rules:
 
 - Start mainline filenames with `【主线】` unless the user says otherwise. Do not force rename older files without asking.
-- Mainline frontmatter should include `当前状态: 一句话状态` for the total note's mainline base. Do not add a separate `主线` frontmatter property; the base's `主线` column should read the note name via `file.name`. Keep `笔记状态` only as a coarse compatibility field when it already exists.
+- Mainline frontmatter should include `当前状态: 一句话状态` for the total note's Components views and exactly one classification tag, `主要主线` or `临时主线`. Do not add a separate `主线` frontmatter property; the view's filename column should read the note name via `file.name`. Keep `笔记状态` only as a coarse compatibility field when it already exists.
+- The optional `【主线】` filename prefix is only a naming convention; never use it as a Components filter.
 - Mainlines should sound like a clear handoff for a future beginner: "具体来说就是..." is better than formal abstract wording.
 - Use `# 推进记录` with date headings such as `## YYYY-MM-DD：一句话结论`; do not use `Step 1/2/3` as the mainline structure.
 - Each progress entry should bind the progress, the plan used for this progress, and the debug record for this progress. If every debug run has a different plan, put `本次方案` under the matching progress entry instead of collecting all方案 links at the bottom.

@@ -18,6 +18,7 @@ def paper_source_from_pdf(
     citekey: str | None = None,
     zotero_key: str | None = None,
     zotero_pdf_attachment_key: str | None = None,
+    source_language: str = "en",
 ) -> PaperSource:
     return PaperSource(
         zotero_key=zotero_key,
@@ -30,6 +31,7 @@ def paper_source_from_pdf(
         venue=venue,
         doi=doi,
         pdf_attachments=[pdf_path],
+        source_language=source_language,
     )
 
 

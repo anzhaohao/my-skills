@@ -8,7 +8,7 @@ from pathlib import Path
 
 import fitz
 
-SKILL_ROOT = Path("C:/Users/anzhaofeng/.skills-manager/skills/pdf-figure-render-extractor")
+SKILL_ROOT = Path("C:/Users/anzhaofeng/.skills-manager/skills/azf-pdf-figure-render-extractor")
 EXTRACT_SCRIPT = SKILL_ROOT / "scripts" / "extract_pdf_figures.py"
 CROP_REGIONS_SCRIPT = SKILL_ROOT / "scripts" / "crop_regions.py"
 

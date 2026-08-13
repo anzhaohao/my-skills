@@ -76,7 +76,7 @@ def validate_translation_artifact(source_path: Path, note_path: Path, audit_path
     if audit.get("status") != "pass":
         issues.append("translation audit status must be pass")
     if audit.get("source_sha256") != file_sha256(source_path):
-        issues.append("translation audit source_sha256 does not match MinerU英文全文.md")
+        issues.append("translation audit source_sha256 does not match 【MinerU原文】 Markdown")
 
     source_sentences = audit.get("source_sentence_count")
     accounted_sentences = audit.get("accounted_sentence_count")
@@ -112,17 +112,29 @@ def validate_workspace_translation(workspace: Path, audit_path: Path | None = No
     paper = PaperWorkspace.from_root(workspace)
     source_language = _frontmatter_value(paper.overview_note, "原文语言") or "en"
     if source_language == "zh":
-        source = workspace / "附件" / "原文" / "MinerU中文全文.md"
-        notes = sorted((workspace / "阅读工作台").glob("【原文】*.md"))
+        notes = sorted((workspace / "阅读工作台").glob("【中译】*.md"))
         issues: list[str] = []
-        if not source.is_file():
-            issues.append(f"Chinese MinerU source missing: {source}")
         if not notes:
-            issues.append(f"Chinese original note missing: {workspace}")
+            issues.append(f"MinerU-merged Chinese fulltext note missing: {workspace}")
         if len(notes) > 1:
-            issues.append(f"multiple Chinese original notes require review: {workspace}")
+            issues.append(f"multiple Chinese fulltext notes require review: {workspace}")
+        if notes:
+            text = notes[0].read_text(encoding="utf-8-sig", errors="replace")
+            frontmatter = (
+                text.split("---", 2)[1]
+                if text.startswith("---") and text.count("---") >= 2
+                else ""
+            )
+            if not frontmatter:
+                issues.append("Chinese fulltext must start with one YAML frontmatter block")
+            elif "MinerU合并到中文正文: true" not in frontmatter:
+                issues.append("Chinese fulltext must record MinerU合并到中文正文: true")
+            if "等待 MinerU 合并" in text:
+                issues.append("Chinese fulltext still contains the MinerU merge placeholder")
+            if sum("\u4e00" <= char <= "\u9fff" for char in text) < 200:
+                issues.append("MinerU-merged Chinese fulltext is too short")
         return issues
-    source = workspace / "附件" / "原文" / "MinerU英文全文.md"
+    source = paper.mineru_source_path()
     notes = sorted((workspace / "阅读工作台").glob("【中译】*.md"))
     if not notes:
         return [f"Chinese translation note missing: {workspace}"]

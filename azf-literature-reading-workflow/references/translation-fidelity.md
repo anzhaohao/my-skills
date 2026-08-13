@@ -66,3 +66,5 @@ python -X utf8 -m workflow.cli optimize-translation-footnotes --all-translations
 `azf-paper-zh-reading-translator` 用于提高术语、句法、公式、图表和引用的一致性，不允许借 Skill 名义进行总结或发散。
 
 翻译 Skill 完成中译和审计后，工作流 CLI 只负责验证、导入、保护已有人工内容和更新质量报告。CLI 不再伪造摘要式“中译初版”。
+
+中译内嵌的本地图片必须使用 `![[文件名.png]]`；总览、中译和其它 Vault Markdown 中指向笔记、PDF、图片或附件的 Wikilink 均只保留文件名，不写 `../` 或任何文件夹路径。若文件名不唯一，先重命名目标资产，再写短链接。

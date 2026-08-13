@@ -7,9 +7,10 @@
 - 生产配置：`D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260715-ai-paper-weekly\config\paper-weekly.production.local.yaml`
 - 正式模板：`E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板\2.0 Default template\论文周报模板.md`
 - 周报根目录：`E:\software\Obsidian\安钊锋的外置大脑\02-Brain Cells\98_论文周报`
-- 运行目录：`%LOCALAPPDATA%\paper-weekly`
-- 数据库：`%LOCALAPPDATA%\paper-weekly\paper-weekly.db`
-- 日志：`%LOCALAPPDATA%\paper-weekly\logs`
+- 运行目录：项目根目录 `runtime/`
+- 数据库：项目根目录 `runtime\paper-weekly.db`
+- 日志：项目根目录 `runtime\logs`
+- 进度状态：项目根目录 `runtime\current-progress.json` 和 `runtime\progress\progress-<ISO 周次>.jsonl`
 - 计划任务包装脚本：`D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260715-ai-paper-weekly\scripts\run-scheduled.ps1`
 - 配置管理器：`D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260715-ai-paper-weekly\scripts\open-config-manager.ps1`
 - 一键启动器：`D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260715-ai-paper-weekly\启动论文周报配置管理器.cmd`

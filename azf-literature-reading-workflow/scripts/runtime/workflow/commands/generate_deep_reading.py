@@ -6,6 +6,7 @@ from pathlib import Path
 from workflow.models.paper import PaperWorkspace
 from workflow.reports.quality_report import load_quality_report, save_quality_report
 from workflow.services.markdown_properties import localize_frontmatter_keys
+from workflow.services.artifact_runs import workspace_with_artifacts
 from workflow.services.note_preservation import write_generated_note
 from workflow.services.zotero_links import ZOTERO_PDF_PROPERTY, ensure_frontmatter_property, read_workspace_zotero_pdf_link
 
@@ -24,7 +25,8 @@ def _deep_reading_frontmatter(zotero_pdf: str = "") -> str:
 
 
 def run(args) -> int:
-    workspace = PaperWorkspace.from_root(Path(args.workspace))
+    locations = getattr(args, "resolved_locations", {}) or {}
+    workspace = workspace_with_artifacts(Path(args.workspace), locations.get("artifact_root"), create=True)
     title_zh = args.title_zh
     out_path = workspace.reading_note_path("精读", title_zh)
     reused = Path(args.reuse_note).resolve() if args.reuse_note else None

@@ -1,243 +1,130 @@
 ---
 name: council
-description: "Convene the Council of High Intelligence in Codex when the user asks for /council, council deliberation, triads, duo debates, or multi-perspective decision analysis."
+description: Run a model-diverse subagent council to investigate the same problem from multiple perspectives, compare findings, and produce a final recommendation. Use this skill whenever the user asks for a council, second opinions, multiple agents/models to evaluate one question, parallel investigation, red-team/blue-team comparison, or help deciding between competing technical approaches.
 ---
 
-# /council for Codex
+# Council
 
-You are the Council Coordinator. Run structured multi-persona deliberation using the council agent files.
+Use this skill to coordinate multiple subagents investigating the same question, with different models first and different assigned perspectives second, then synthesize their reports into one recommendation.
 
-## Invocation Patterns
+This skill is best for judgment-heavy tasks: architecture tradeoffs, risky bug fixes, code review red-teaming, rollout decisions, incident analysis, and “is this alternative worth pursuing?” questions.
 
-```
-/council [problem]
-/council --quick [problem]
-/council --duo [problem]
-/council --triad [domain] [problem]
-/council --members socrates,feynman,ada [problem]
-/council --profile exploration-orthogonal [problem]
-```
+## Workflow
 
-## Flags
+### 1. Frame the council question
 
-| Flag | Effect |
-|------|--------|
-| `--full` | Use all 18 members |
-| `--quick` | 2-round fast mode |
-| `--duo` | 2-member polarity dialectic |
-| `--triad [domain]` | Use predefined 3-member panel |
-| `--members a,b,c` | Use explicit member names |
-| `--profile [name]` | Use profile panel (`classic`, `exploration-orthogonal`, `execution-lean`) |
+State the decision the council should answer in one sentence. Identify:
 
-If no panel flag is present, auto-select the best triad from problem context.
+- the competing options or hypothesis under review;
+- the codebase, branch, PR, issue, design, or artifact to inspect;
+- whether agents should be read-only or may make code changes;
+- the final decision criteria, such as correctness, risk, implementation cost, testability, rollout safety, or product behavior.
 
-## Member Roster
+If the user’s request is ambiguous, ask only the minimum clarification needed. Otherwise choose sensible defaults and proceed.
 
-`aristotle, socrates, sun-tzu, ada, aurelius, machiavelli, lao-tzu, feynman, torvalds, musashi, watts, karpathy, sutskever, kahneman, meadows, munger, taleb, rams`
+### 2. Choose council members
 
-## Triads
+Prioritize model diversity. A council should not default to three agents on the same model with different angles; use that only when the available launch configuration cannot provide multiple useful models, or when the user explicitly asks for one model. If model diversity is unavailable, say so briefly before falling back to perspective-only diversity.
 
-| Domain | Members |
-|--------|---------|
-| `architecture` | aristotle, ada, feynman |
-| `strategy` | sun-tzu, machiavelli, aurelius |
-| `ethics` | aurelius, socrates, lao-tzu |
-| `debugging` | feynman, socrates, ada |
-| `innovation` | ada, lao-tzu, aristotle |
-| `conflict` | socrates, machiavelli, aurelius |
-| `complexity` | lao-tzu, aristotle, ada |
-| `risk` | sun-tzu, aurelius, feynman |
-| `shipping` | torvalds, musashi, feynman |
-| `product` | torvalds, machiavelli, watts |
-| `founder` | musashi, sun-tzu, torvalds |
-| `ai` | karpathy, sutskever, ada |
-| `ai-product` | karpathy, torvalds, machiavelli |
-| `ai-safety` | sutskever, aurelius, socrates |
-| `decision` | kahneman, munger, aurelius |
-| `systems` | meadows, lao-tzu, aristotle |
-| `uncertainty` | taleb, sun-tzu, sutskever |
-| `design` | rams, torvalds, watts |
-| `economics` | munger, machiavelli, sun-tzu |
-| `bias` | kahneman, socrates, watts |
+Preferred default roster for a three-member council:
 
-## Profiles
+- Opus 4.7 or the strongest available Claude/Opus reasoning model: architecture, correctness, and edge-case analysis.
+- GPT 5.5 or the strongest available GPT/Codex model: implementation-grounded review, feasibility, and test strategy.
+- An open-source model such as Kimi 2.6, GLM 5.1, or the strongest available OSS/local model: contrarian critique, hidden assumptions, and alternative framing.
 
-- `classic`: all 18 members
-- `exploration-orthogonal`: socrates, feynman, sun-tzu, machiavelli, ada, lao-tzu, aurelius, torvalds, karpathy, sutskever, kahneman, meadows
-- `execution-lean`: torvalds, feynman, sun-tzu, aurelius, ada
+If one of these exact models is unavailable in the active harness, use the closest available model from that family and note the substitution. If no open-source model is available, use a third distinct frontier model if possible; otherwise use the strongest remaining model with a deliberately adversarial or specialist angle.
 
-## Execution Protocol
+Assign both a model and an angle to each member. Avoid making the angles redundant with the models; for example, do not ask all members to do general architecture review. Useful angle combinations include:
 
-### Step 1: Locate Council Assets
+- architect/correctness reviewer;
+- implementation/testability reviewer;
+- red-team, security, performance, or product-risk reviewer;
+- contrarian “argue against the obvious solution” reviewer.
 
-Resolve council files in this order:
+When different children need different models, launch them in separate `run_agents` calls because model selection is run-wide. If the requested model resolves differently than expected, treat the resolved launch settings as authoritative and continue unless they make the task infeasible.
 
-1. `~/.codex/skills/council/agents/`
-2. `./agents/`
+When using non-default harnesses, choose valid model IDs for that harness. For example, Claude Code may expose `claude-opus-4-7`, Codex may expose `gpt-5.5`, and open-source models depend on the currently configured local or remote provider. Do not invent unsupported model IDs; if a desired model is not available, select the closest supported substitute and preserve the intended angle diversity.
 
-If neither exists, stop and tell the user to run `./install.sh --codex`.
+For read-only investigations, keep all children in the same checkout and explicitly tell them not to edit files. For implementation or prototyping councils, give each local child its own git worktree and branch so they cannot collide.
 
-### Step 2: Parse Request
+### 3. Brief before launching
 
-Extract:
+For explicit orchestration requests, briefly tell the user which council members you plan to launch and what each will investigate, then wait for approval before calling `run_agents`.
 
-- Mode: `full` (default), `quick`, or `duo`
-- Problem statement
-- Panel selection via `--members`, `--triad`, `--profile`, or `--full`
+The shared brief should include:
 
-For `--duo` without explicit members, choose a polarity pair from keywords:
+- repository path or artifact location;
+- current branch or base context;
+- the exact question to answer;
+- relevant background and known concerns;
+- required files/symbols to inspect, if known;
+- constraints, especially read-only/no commits/no PRs;
+- expected report format.
 
-- architecture/structure: `aristotle` + `lao-tzu`
-- shipping/execution: `torvalds` + `musashi`
-- strategy/competition: `sun-tzu` + `aurelius`
-- ai/ml/model: `karpathy` + `sutskever`
-- decision/bias: `kahneman` + `feynman`
-- default fallback: `socrates` + `feynman`
+Keep launch prompts short enough that task titles stay compact. If a long brief causes launch validation issues, launch with a minimal prompt and send the full brief to the child agents immediately afterward.
 
-### Step 2.5: Runtime Reliability Defaults
+### 4. Ask for structured reports
 
-Use these defaults unless the user requests stricter/faster behavior:
+Ask every council member to return:
 
-- `spawn_timeout_ms`: 45000 per member
-- `round_timeout_ms`: 60000 for quick/duo, 90000 for full
-- `retry_attempts`: 2 retries after initial attempt (max 3 total attempts per seat per round)
-- `retry_backoff_sec`: 2, then 5
-- `hard_min_live_seats`: 2
+1. exact file paths, symbols, docs, or evidence inspected;
+2. the current behavior or current implementation;
+3. the alternative being evaluated;
+4. correctness risks and edge cases;
+5. implementation and testing cost;
+6. recommendation: keep current approach, pursue alternative, or use a hybrid;
+7. confidence level and unknowns.
 
-Track seat state per member:
+Encourage independence. Do not share one child’s findings with the others unless you are intentionally doing a second-round critique.
 
-- `live`: normal agent responses
-- `degraded`: agent timed out/failed and is being simulated from persona file
-- `offline`: could not recover enough information for this seat
+### 5. Collect reports
 
-### Step 3: Run Restatement Gate (Parallel)
+Read completion messages as they arrive. Do not rely on lifecycle success alone; the useful output is in the child’s report.
 
-Spawn one sub-agent per selected member with `spawn_agent`, `fork_context=true`.
+If a report is missing key evidence or makes an unsupported claim, send a focused follow-up question to that same child rather than launching a replacement. Reuse existing children for follow-ups because they retain context.
 
-Prompt template:
+### 6. Synthesize the recommendation
 
-```
-Read and follow this persona file exactly: {agent_file_path}
+Compare the reports by evidence quality, not by vote count. In the final answer:
 
-Problem:
-{problem}
+- lead with the recommendation;
+- call out consensus and disagreements;
+- explain why the recommended option wins against the decision criteria;
+- explicitly address the user’s stated concern;
+- include relevant file paths/symbols without overloading the answer;
+- distinguish “do now” from optional future hardening;
+- mention confidence and material unknowns.
 
-Return only:
-1) Your restatement (one sentence)
-2) Alternative framing (one sentence)
-Maximum 50 words total.
+Prefer a concise decision memo over a transcript summary. The user needs the distilled recommendation, not every intermediate detail.
+
+## Final answer template
+
+Use this shape unless the task calls for something different:
+
+```markdown
+## Recommendation
+
+[One or two sentences with the decision.]
+
+## Why
+
+- [Key reason 1]
+- [Key reason 2]
+- [Key reason 3]
+
+## Tradeoffs and risks
+
+- [Risk or caveat]
+- [Testing/rollout implication]
+
+## Final call
+
+[Concrete next step: merge current change, pursue alternative, hybrid, run tests, etc.]
 ```
 
-Wait with `spawn_timeout_ms`. If a seat fails or times out:
+## Practical notes
 
-1. Retry spawn up to `retry_attempts` using backoff.
-2. If still failing, set seat to `degraded` and produce a `[Simulated]` restatement from that persona file.
-3. If persona file cannot be read, mark seat `offline`.
-
-If live seats drop below `hard_min_live_seats`, switch to fully simulated mode for all seats and state this explicitly.
-
-### Step 3.5: External Seats (HTTP and CLI archetypes)
-
-Some provider archetypes are dispatched outside the host runtime's `spawn_agent`. Anonymization (Step 4) and Chairman selection (Step 5) apply equally to these seats — no special-case logic.
-
-**`openai_compatible_api` (NVIDIA NIM today; Together / Fireworks / vLLM in the future)** — dispatch via HTTP:
-
-- Read `base_url` and `api_key_env` from the seat config (or detection JSON for auto-routing).
-- Resolve the API key from the env var at routing time. Never inline.
-- POST to `{base_url}/chat/completions` with an OpenAI-compatible payload (system+user messages, `temperature: 0.7`, `max_tokens: 1200`).
-- Extract `.choices[0].message.content`. If empty or non-2xx, mark the seat `degraded` and apply the standard fallback (anthropic per the agent's `model` frontmatter).
-- Per-seat timeout: 90 seconds (hosted open-weight endpoints are slower than first-party APIs).
-
-**`cursor_cli` (Cursor)** — dispatch via subprocess. Cursor is a model aggregator: one binary (`cursor-agent`) serves GPT-5.x, Claude, Gemini, and Grok families.
-
-- Run headless and read-only: `cursor-agent -p --mode ask --model {model} --output-format text "{full prompt}"`.
-- Auth is resolved by the CLI itself (prior `cursor-agent login` or `CURSOR_API_KEY`). Never inline a key. On auth error, mark the seat `degraded` and apply the standard fallback.
-- Empty stdout or non-zero exit → `degraded` + fallback. Per-seat timeout: 90 seconds.
-- Counts as a single provider for spread. Because Cursor can serve `claude-*` models, prefer cross-family models (`gpt-*`, `gemini-*`, `grok-*`) for any seat opposite a native `anthropic` seat in a polarity pair. Verify live IDs with `cursor-agent --list-models`.
-
-### Step 4: Deliberation Rounds
-
-Keep the same spawned agents for all rounds via `send_input`.
-
-**Round 2 anonymization (full and quick modes).** Before sending Round 2 prompts in full or quick mode, build a stable label mapping `Member A` → first panel member, `Member B` → second, …, rewrite each Round 1 output's header to its label, strip in-body self-attribution, and instruct each agent that identities are masked and they must reference peers by label only. Retain the mapping privately in coordinator state and restore it for Round 3, tie-breaking, and the verdict. Duo mode is exempt (only two members; identity cannot be masked by elimination). Rationale: Choi et al. (arXiv:2510.07517) and Karpathy `llm-council` — identity labels in peer-review prompts drive conformity/self-bias.
-
-**Anti-conformity directive (Round 2, all modes).** When sending Round 2 prompts, include this paragraph verbatim before the per-mode instructions:
-
-> Anti-conformity directive. If your Round 1 position was correct, defend it. Do not update merely because peers disagree, because consensus is forming, or because a position is repeated by multiple members. Update only when presented with sound, validity-aligned reasoning that exposes a specific flaw in your earlier argument. Naming that flaw is required when you update; if you cannot name it, you should not update.
-
-Rationale: Choi et al. (arXiv:2510.07517), Free-MAD (arXiv:2509.11035), controlled-study arXiv:2511.07784 — generic "be critical" instructions underperform; the load-bearing piece is the "name-the-flaw" requirement that converts disposition into verifiable behavior.
-
-Full mode:
-
-1. Round 1: Independent analysis, blind-first, max 300 words/member.
-2. Round 2: Cross-examination with **anonymized** peer outputs + anti-conformity directive, max 220 words/member, each member engages at least 2 peers by Member-X label.
-3. Round 3: Final position, max 100 words/member. Real names restored.
-
-Quick mode:
-
-1. Round 1: Restate + rapid analysis, max 200 words/member.
-2. Round 2: Final position with **anonymized** peer outputs + anti-conformity directive, max 75 words/member. Real names restored in the verdict.
-
-Duo mode:
-
-1. Round 1: Opening position, max 250 words/member.
-2. Round 2: Direct response to counterpart with anti-conformity directive, max 180 words/member. (No anonymization — see rationale above.)
-3. Round 3: Final statement, max 60 words/member.
-
-Structured stance & weighted tie-breaking (full + quick modes):
-
-1. **Designate the domain-weight seat at panel selection** (before any analysis): the single member whose domain most directly matches the problem carries **1.5×** weight; all others **1.0×**. Lock it up front — selecting it after seeing positions would let the coordinator nudge the outcome. If the match is ambiguous, designate none and tie-break on equal weights.
-2. The final round (full Round 3 / quick Round 2) MUST end each member's output with a structured stance line: `STANCE: <short option label> | CONFIDENCE: high|med|low | DEALBREAKER: yes|no`. Members reuse the same label where they agree; `STANCE: abstain` if backing no option. Re-prompt for a missing/unparseable line — never infer stance from prose.
-3. Tally weighted votes per canonical option. Consensus iff `W_option ≥ (2/3) × W_total`, where `W_total` includes abstainers' weight (abstention raises the bar). Highest option clearing the bar wins; `DEALBREAKER: yes` dissent goes in the Minority Report regardless.
-4. No option clears 2/3 → genuine split: do NOT force consensus and do NOT add a round (the spent round budget is the forcing function). Present each option with its weighted tally to the user. Record the tally (`option → weight`, marking the 1.5× seat) in the verdict's Vote Tally field. Duo mode issues no tally — it is dialectic, not decision-issuing.
-
-Round execution reliability policy:
-
-1. Send prompts to all `live` seats in parallel.
-2. Wait using `round_timeout_ms`.
-3. For each missing response, retry `send_input` up to `retry_attempts` with a stricter prompt: "Respond now in <= {word_limit} words."
-4. If still missing, move seat to `degraded` and generate `[Simulated]` output from persona instructions plus prior round context.
-5. Carry `degraded` seats forward for remaining rounds unless the seat recovers.
-6. If live seats drop below `hard_min_live_seats`, complete remaining rounds in fully simulated mode and mark confidence lower.
-
-### Step 5: Synthesis Output (CHAIRMAN)
-
-Synthesis is performed by an explicit **Chairman** — a model that did NOT deliberate in Rounds 1–3. The Chairman is selected before Round 1 using this algorithm (first match wins):
-
-1. **Explicit override**: `--chairman <name>` was passed (provider tag — `anthropic`, `openai`, `google`, `ollama`, `nvidia_nim`, `cursor_cli` — or a model alias).
-2. **Auto-select**: highest-tier model among available providers, **preferring one not on the panel** when possible. Tie-breaker: provider listed first by the host runtime.
-3. **Single-provider fallback**: use that provider's highest tier and note the overlap in the verdict.
-
-The Chairman is dispatched as a single call with the full audit transcript (Round 2 de-anonymized using the mapping retained in coordinator state — see Step 4 anonymization). Constraint: Chairman MUST NOT be a deliberating member in the same session.
-
-Return a verdict with this order, produced by the Chairman:
-
-1. `Selected Panel` (members + mode)
-2. `Chairman` (name, provider, model, selection rationale)
-3. `Acceptable Compromises` — what this verdict gives up, named explicitly (required in full; optional in quick; encouraged in duo)
-4. `Kill Criteria` — observable conditions that would falsify the verdict; format `"If <X> by <date>, invalidated → <Y>"` (required in full and quick; encouraged in duo)
-5. `Concrete Next Step` — exactly one action with an artifact-producing verb (required in all modes)
-6. `Unresolved Questions`
-7. `Key Agreements`
-8. `Key Disagreements`
-9. `Decision Options` (2-4 options with tradeoffs)
-10. `Recommended Next Steps` (additional actions beyond Concrete Next Step; ordered)
-11. `Confidence` (high/medium/low + why)
-12. `Execution Reliability` (live/degraded/offline seat counts and any timeout caveats)
-
-Always preserve dissent. Never flatten disagreements into fake consensus. Sections 3-5 are non-negotiable in full mode — they make the verdict operational (observable, falsifiable, actionable) instead of advisory prose.
-
-**Chairman fallback**: if the Chairman call fails or times out, the coordinator synthesizes the verdict directly and annotates `Chairman: <name> (FAILED — synthesized by coordinator fallback)`.
-
-### Step 6: Fallback Behavior
-
-If `spawn_agent` is unavailable or too many seats fail, run a local simulated council:
-
-- Read each selected persona file.
-- Produce clearly labeled `[Simulated]` outputs per member.
-- Keep the same round structure.
-- Explicitly state why fallback was used (`spawn unavailable`, `timeouts`, or `seat failures`).
-
-### Step 7: Session Metadata (issue #7, Phase 1)
-
-After the verdict is emitted, append a `Session Metadata` block with `schema_version: 1` containing: `mode`, `panel_size`, `rounds_run`, `tools_used`, `provider_count`, `fallbacks_triggered`, and best-effort `input_tokens_estimate` / `output_tokens_estimate` / `duration_seconds` (write `~unknown` if not available from the host runtime). Block is delimited by `---` so it's grep-able and redirectable.
+- If the council is read-only, tell children not to modify files, commit, create branches, or open PRs.
+- If the council involves PR or branch work, follow the repository’s normal version-control rules and use isolated worktrees for parallel local edits.
+- If the council is about code review feedback, mark review comments resolved only after the underlying issue is actually addressed.
+- Do not expose internal child agent IDs in user-facing summaries unless the user explicitly asks for them.

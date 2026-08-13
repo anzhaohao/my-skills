@@ -6,7 +6,7 @@
 
 小红书有三个后端，**先跑 `agent-reach doctor --json` 看 xiaohongshu 的 `active_backend` 是哪个**，再用对应命令组。
 
-### 后端 A：OpenCLI（桌面首选，复用浏览器登录态）
+### 后端 A：OpenCLI（桌面首选）
 
 ```bash
 # 搜索笔记
@@ -25,14 +25,20 @@ opencli xiaohongshu feed -f yaml
 opencli xiaohongshu user USER_ID -f yaml
 ```
 
-> 要求 Chrome 打开且装了 OpenCLI 扩展。报 AUTH_REQUIRED 说明浏览器里没登录小红书，让用户在 Chrome 里登录一次即可。
+> 要求 Chrome 打开且装了 OpenCLI 扩展。OpenCLI 只使用用户已经存在且明确控制
+> 的 Chrome 会话；Agent Reach 不替用户登录，也不读取浏览器 Cookie。
+> `agent-reach configure xhs-cookies` 不会把 Cookie 注入 OpenCLI。
+> 如果没有现成会话，不要自动登录；改走后端 B/C，并按对应的
+> Cookie-Editor 手工导出流程配置。
 
 ### 后端 B：xiaohongshu-mcp（服务器场景）
 
 ```bash
-# 未登录时：先查状态，再取二维码给用户扫
+# 认证前先让用户用 Cookie-Editor 手工导出，再显式导入
+agent-reach configure xhs-cookies "导出的 Cookie Header String"
+
+# 只读检查当前状态
 mcporter call 'xiaohongshu.check_login_status()' --timeout 120000
-mcporter call 'xiaohongshu.get_login_qrcode()' --timeout 120000
 
 # 搜索
 mcporter call 'xiaohongshu.search_feeds(keyword: "query")' --timeout 120000
@@ -41,7 +47,10 @@ mcporter call 'xiaohongshu.search_feeds(keyword: "query")' --timeout 120000
 mcporter call 'xiaohongshu.get_feed_detail(feed_id: "...", xsec_token: "...")' --timeout 120000
 ```
 
-> 首次调用会自动下载约 150MB 无头浏览器，务必带 `--timeout 120000`。未登录时 search 会挂死，先 check_login_status。
+> 首次调用会自动下载约 150MB 无头浏览器，务必带 `--timeout 120000`。
+> 认证只走 Cookie-Editor 手工导出；导入后先运行 `check_login_status`。
+> 该显式命令会保存/导入用户提供的 xiaohongshu.com 同域 Cookie 集，用户应
+> 确认范围；非 xiaohongshu.com 域 Cookie 会被忽略。
 
 ### 后端 C：xhs-cli（存量备选，上游 2026-03 起停更）
 
@@ -57,6 +66,10 @@ xhs feed                    # 推荐
 
 ### 通用注意事项
 
+> **认证边界**: Agent Reach 不得替用户执行小红书登录，也不得读取浏览器
+> Cookie。OpenCLI 只能使用用户已有且明确控制的 Chrome 会话；
+> xiaohongshu-mcp / 存量工具使用 Cookie-Editor 手工导出。
+>
 > **xsec_token 限制**: 小红书强制 xsec_token 机制，**不能直接用裸 note_id 去读**。正确流程：先搜索/feed 拿结果，再用结果中的完整 URL/ID 去读。三个后端都一样。
 >
 > **频率控制**: 高频请求（批量搜索、深翻评论）会触发验证码，平台限制无法绕过。每次操作间隔 2-3 秒。
@@ -65,29 +78,17 @@ xhs feed                    # 推荐
 
 ## Twitter/X (twitter-cli)
 
-### 安钊锋本机覆盖规则（必须优先）
+### 认证前置条件
 
-遇到用户给 `x.com/.../status/...`、`twitter.com/.../status/...`、X Article 或推文串链接时，先使用 `azf-x-opencli-reading` skill，再执行本小节的通用 Twitter/X 路由。
-
-安钊锋主要用 Microsoft Edge 跑 OpenCLI；不要因为 `agent-reach doctor --json` 或 `opencli doctor` 提示 Chrome/Chromium extension warning 就判定 OpenCLI 不可用。先按 `azf-x-opencli-reading` 的顺序尝试 `opencli twitter article "URL" -f yaml`、`opencli twitter tweets "URL" -f yaml`，必要时重启 daemon 后再重试。
-
-### 链接读取优先级（status / Article）
-
-遇到用户给 `x.com/.../status/...` 或 `twitter.com/.../status/...` 时，先判断是不是 X Article 卡片或长文入口。很多长文的 `status` 页面只包含标题、封面和摘要，完整内容在 Article 读取路径里。
-
-桌面环境装了 OpenCLI 时，优先用 OpenCLI 读取，尤其适合复用 Edge/Chrome 登录态：
+`agent-reach configure twitter-cookies "..."` 保存的 Cookie 只供
+`agent-reach doctor` 检查显式凭据是否齐全。`doctor` 不执行上游
+`twitter status`，也不会设置当前 Shell。运行下面任何 `twitter` 命令前，
+必须在同一个 Shell 或子进程环境中显式提供：
 
 ```bash
-# 长文 / X Article：优先尝试
-opencli twitter article "URL_OR_ID" -f yaml
-
-# 普通推文 / 推文串：注意是 tweets，不是 tweet
-opencli twitter tweets "URL_OR_ID" -f yaml
+export TWITTER_AUTH_TOKEN="..."
+export TWITTER_CT0="..."
 ```
-
-如果 `agent-reach doctor --json` 或 `opencli doctor` 提示 Chrome/Chromium extension 未连接，不要立刻判定 OpenCLI 不可用；用户可能使用 Edge。应直接试一次 `opencli twitter article ...` / `opencli twitter tweets ...`，失败后再让用户确认浏览器扩展和登录态。
-
-Jina Reader / 普通网页抓取只能作为兜底或交叉验证。若输出是 X 登录页、只有文章卡片、只有标题/封面/摘要，或出现 `x.com/i/article/...`，不能当作已经读到完整正文，必须继续追 Article 路径。
 
 ### 稳定命令
 
@@ -129,7 +130,8 @@ twitter likes
 
 > **安装**: `pipx install twitter-cli`（确保 v0.8.5+）
 >
-> **认证**: 推荐用 Cookie-Editor 导出后设置环境变量 `TWITTER_AUTH_TOKEN` + `TWITTER_CT0`。自动提取在 SSH/Docker/无头环境不可用。
+> **认证**: 只用 Cookie-Editor 手工导出，再显式设置环境变量
+> `TWITTER_AUTH_TOKEN` + `TWITTER_CT0`；不要依赖自动浏览器读取。
 >
 > **IP 风控**: 不要在 VPS/数据中心 IP 上频繁调用，尤其是 followers/following，有封号风险。使用住宅代理或本地环境。
 >

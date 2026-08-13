@@ -25,8 +25,13 @@ def _first(source_dir: Path, patterns: list[str]) -> Path | None:
     return None
 
 
-def attach_mineru_outputs(output_root: Path, source_dir: Path) -> dict[str, str | None]:
-    """Expose accepted MinerU Markdown in the vault while keeping raw output and images in cache."""
+def attach_mineru_outputs(
+    output_root: Path,
+    source_dir: Path,
+    *,
+    target_name: str = "accepted-mineru.md",
+) -> dict[str, str | None]:
+    """Copy the accepted MinerU Markdown into the external parser run directory."""
     auto_dir = find_mineru_auto_dir(output_root)
     result: dict[str, str | None] = {
         "auto_dir": str(auto_dir) if auto_dir else None,
@@ -41,7 +46,7 @@ def attach_mineru_outputs(output_root: Path, source_dir: Path) -> dict[str, str 
 
     source_dir.mkdir(parents=True, exist_ok=True)
     source_markdown = _first(auto_dir, ["*.md"])
-    markdown = source_dir / "MinerU英文全文.md" if source_markdown else None
+    markdown = source_dir / target_name if source_markdown else None
     if source_markdown and markdown:
         shutil.copy2(source_markdown, markdown)
 

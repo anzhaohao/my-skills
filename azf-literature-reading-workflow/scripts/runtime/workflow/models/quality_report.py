@@ -15,7 +15,7 @@ class PaperQualityReport:
     figure_crop_status: str = "not_applicable"
     translation_status: str = "pending"
     image_link_status: str = "warning"
-    source_anchor_status: str = "warning"
+    source_anchor_status: str = "not_applicable"
     preservation_status: str = "warning"
     blocking_issues: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
@@ -58,4 +58,3 @@ class PaperQualityReport:
     def from_dict(cls, data: dict) -> "PaperQualityReport":
         allowed = set(cls.__dataclass_fields__)
         return cls(**{key: value for key, value in data.items() if key in allowed})
-
