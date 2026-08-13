@@ -82,6 +82,26 @@ DeepSight 为缺少原生多模态能力、或无法直接访问视觉输入的�
 9. **最终答案唯一来源**：最终答案只能来自成功的 DeepSight result；失败则报告失败，
    不得旁路猜测或拼接答案。
 
+## 答不出自动降级（answer-fallback，服务层内建）
+
+当某个视觉模型调用**成功**、但**明确表示没能回答**图片问题（结果中 `uncertainty`
+非空，或 `summary` 含"无法识别 / 无法确定 / cannot identify"等措辞）时，
+DeepSight 服务层会自动按档案优先级切换到下一个档案重试，**无需宿主手动再发一次**。
+
+- 触发信号：`result.summary` 或 `result.uncertainty` 条目命中内置的"无法识别 / 无法确定 /
+  cannot identify"措辞。仅 `uncertainty` 非空**不算**答不出（模型常把截断文字、引号样式等
+  次要细节写进 uncertainty，但主体已作答）。
+- 降级链：按总控台配置的 fallback 顺序进行，**跳过本地 ollama**（provider=ollama 且
+  is_local=True 的档案，如 `ollama-qwen35-9b`）。
+- 结果标记：`attempts[].did_not_answer` 为 `true` 表示该档案答不出；
+  `warnings` 会注明"按优先级降级到 <档案>"。
+- 全部可降级档案都无法回答时，返回最后一份结果并附 `warnings`；宿主应如实向用户说明
+  "当前可用模型都未能回答该问题"，不得自行拼接或猜测答案。
+- 关闭方式：`vision.answer_fallback=false`（默认 `true`）；`--no-fallback` 会同时禁用
+  异常降级与答不出降级。
+- 宿主约束：该降级由 DeepSight 服务层完成，**不算宿主重试**；宿主仍只调用一次目标命令
+  （`vision analyze` / `pdf analyze-page`），读完返回即可。
+
 ## 路由规则
 
 > **调用方式**：所有 `deepsight` 命令通过稳定调用器执行，不依赖 PATH。
@@ -102,10 +122,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 仅当当前宿主为 Claude Code 且粘贴的图片没有可访问文件路径时：
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision recover-paste [--count N] [--session <id>] [--analyze] [--prompt <text>]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision recover-paste [--count N] [--session <id>] [--transcript <path>] [--cwd <path>] [--analyze] [--prompt <text>]
 ```
 
 - 这是宿主特定适配能力，不是通用前置条件。
+- 自动恢复：无需手工查找 transcript；DeepSight 会按 `--session` / `CLAUDE_CODE_SESSION_ID` /
+  `CLAUDE_SESSION_ID` 精确定位，否则按当前目录选择最近包含可恢复图片的 Claude 会话。
+- 若宿主能替换 `${CLAUDE_SESSION_ID}`，建议传 `--session ${CLAUDE_SESSION_ID}` 提升精确度；
+  替换或环境变量不可用时默认自动恢复仍可用。
 - 其他 Agent 宿主不需实现此功能。
 - 成功恢复路径后立即使用规则 1 分析。
 
@@ -177,6 +201,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 - 必要时简短注明：使用的视觉档案、页码、是否使用了视觉分析。
 - 不要声称自己"直接看见"了没有实际读取的内容。
 - 引用视觉分析结果时标注置信度标记（如有）。
+
+### 识图思维链（recognition chain）必报
+
+对图片做视觉识别时，最终回复必须给出**识图思维链**：按执行顺序说明每个节点用到的
+模型及其作用，让用户看清"是谁识别出来的、中途发生了什么、为什么"。信息只来自本次
+实际返回结果的 `attempts[]`（每次尝试的 provider / model / ok / did_not_answer /
+error）与 `warnings`（降级原因），**不得编造节点**。
+
+- 每个节点至少说明：使用的**模型**（档案 id 或模型名）、该节点**起到的作用**
+  （初判 / 补充识别 / 兜底）、**结果**（成功回答 / 答不出 / 调用失败及其原因）。
+- 发生降级时说明**触发原因**：是调用失败（non-JSON / 超时 / 鉴权等）还是答不出
+  （uncertainty 命中无法识别措辞），以及跳过了哪些本地 ollama 档案。
+- 只用了单个模型也须明说："本次仅用 <模型> 一步完成，无降级"。
+- 示例（仅示意格式，不得照抄）：
+  1. 节点1 `aliyun-qwen3-vl-flash`（初判）：输出非法 JSON，调用失败 → 降级；
+  2. 节点2 `Gemini / gemini-3.6-flash`（补充识别）：成功，识别出品牌 X；
+  3. 兜底：无（未再需要）。
 
 ## 安全约束
 
