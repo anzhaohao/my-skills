@@ -35,7 +35,7 @@
 - Obsidian 笔记库 `E:\software\Obsidian\安钊锋的外置大脑` 及其 `anzhaohao/obsidian` 备份仓库是分支例外：默认始终使用 `main`。除非我在当前回合明确同意创建或切换分支，否则任何 Agent 都不得为该笔记库新建分支、切换分支或自动执行 branch-worthy 流程；需要回滚保护时改用提交、推送、tag 和外部备份。如果发现笔记库意外位于非 `main` 分支，只能先报告并询问，不能自行切换。
 - 项目代码或项目文件改动前必须先二次确认：如果我只是要求“更新工作记录、分析问题、评估方案、解释行为”，不要顺手改代码；必须先给出修改方案、影响文件和风险点，等我明确确认后再改。
 - 调试、修 bug、代码改动、硬件/软件排查或 Git 提交/推送时，Obsidian 笔记库默认只读。除非我在当前回合明确说“更新笔记、同步笔记、写入笔记、整理笔记”，否则不要修改 Obsidian 正文；如果确实值得补记，只在最后说明“笔记未更新，可作为后续待办”。
-- 未指定备份位置时，默认把 Codex 回滚备份放到 `E:\software\CodexPlusPlus\Codex备份\YYYYMMDD_HHMMSS_任务名_修改前备份`。
+- 未指定备份位置时，默认把 AI 改前回滚备份放到 `E:\software\AI改前备份\YYYYMMDD_HHMMSS_任务名_修改前备份_<harness>`（harness = `codex` / `claude-code` 等来源）。
 - 部署在 `E:\software` 下的软件，其包管理器仓库、虚拟环境、模型下载缓存和构建缓存默认放进该软件自己的项目目录或明确的项目子目录，不要把项目专属缓存留在 `E:\` 根目录或无关的用户/系统缓存目录。迁移缓存时必须先建立并验证新位置，再安全解除 junction/reparse point，最后删除旧缓存。
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
@@ -112,6 +112,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-08-16：将 AI 回滚备份默认根目录统一为 `E:\software\AI改前备份`（原 `E:\software\CodexPlusPlus\Codex备份` 保留不动），子目录命名在 `YYYYMMDD_HHMMSS_任务名_修改前备份` 末尾追加 harness 来源 `_codex` / `_claude-code`。
 
 - 2026-08-11：新增 `azf-reuse-first` 路由。新项目、部署、较大功能、工具替换和工作流重建先查本地、再查网络，第一轮只读并等待二次确认后实施。
 
