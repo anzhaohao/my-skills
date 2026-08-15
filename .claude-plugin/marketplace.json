@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.08.13"
+    "version": "2026.08.15"
   },
   "name": "my-skills",
   "owner": {
@@ -54,6 +54,15 @@
       "strict": false
     },
     {
+      "description": "Cost-aware autonomous development loop for local code repositories: route bounded Work Items through Claude Code + DS v4 Flash, Luna, Terra, DS v4 Pro, and Sol; independently verify the real diff and tests; and perform bounded automatic rework. Use for local feature development, bug fixes, refactors, tests, performance work, technical-debt cleanup, and code review with repair.",
+      "name": "azf-auto-dev-loop",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-auto-dev-loop",
+      "strict": false
+    },
+    {
       "description": "An Zhaofeng's evidence-analysis workflow for deep-learning runs. Use when Codex needs to inspect configs, manifests, train logs, metrics, figures, predictions, checkpoints, or baselines and turn them into a reliable experiment summary. Use with azf-obsidian-project-record when the result belongs in the Obsidian project vault.",
       "name": "azf-deep-learning-experiment-record",
       "skills": [
@@ -69,6 +78,15 @@
         "./"
       ],
       "source": "./azf-deepsight",
+      "strict": false
+    },
+    {
+      "description": "Generate and compare multiple HTML/CSS visual alternatives without freezing an aesthetic direction: isolate each variant, render real desktop and mobile screenshots with independent Playwright, produce a comparison gallery, and apply only the user's selected variant. Use for landing pages, dashboards, frontend prototypes, visual polish, responsive UI, animations, and requests to generate many designs for selection.",
+      "name": "azf-html-ui-loop",
+      "skills": [
+        "./"
+      ],
+      "source": "./azf-html-ui-loop",
       "strict": false
     },
     {

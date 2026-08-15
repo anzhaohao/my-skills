@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "run_id", "source_baseline", "variant_count", "variants"],
+  "properties": {
+    "status": { "const": "VARIANTS_READY" },
+    "run_id": { "type": "string" },
+    "source_baseline": { "type": "object" },
+    "source_repo": { "type": "string" },
+    "target_page": { "type": "string" },
+    "variant_count": { "type": "integer", "minimum": 1, "maximum": 20 },
+    "target_viewports": { "type": "array", "items": { "type": "string" } },
+    "functional_requirements": { "type": "array", "items": { "type": "string" } },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["variant_id", "path", "generation_prompt"],
+        "properties": {
+          "variant_id": { "type": "string" },
+          "path": { "type": "string" },
+          "generation_prompt": { "type": "string" },
+          "changed_files": { "type": "array", "items": { "type": "string" } },
+          "screenshots": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

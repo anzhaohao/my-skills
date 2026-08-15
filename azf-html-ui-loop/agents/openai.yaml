@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF HTML UI Loop"
+  short_description: "Generate visual variants and compare browser screenshots"
+  default_prompt: "Use $azf-html-ui-loop to generate isolated HTML/CSS variants, capture desktop/mobile screenshots, and wait for my selection before applying one."

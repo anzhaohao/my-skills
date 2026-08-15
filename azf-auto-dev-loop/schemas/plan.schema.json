@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "complexity_score",
+    "risk_level",
+    "mechanical",
+    "selected_executor",
+    "selected_evaluator",
+    "summary",
+    "steps",
+    "work_items",
+    "affected_files",
+    "test_commands",
+    "acceptance_criteria",
+    "risks",
+    "task_profile",
+    "planner_invoked",
+    "variant_count"
+  ],
+  "properties": {
+    "status": { "type": "string", "enum": ["PLAN_READY"] },
+    "complexity_score": { "type": "integer", "minimum": 0, "maximum": 10 },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "mechanical": { "type": "boolean" },
+    "selected_executor": { "type": "string", "enum": ["luna", "terra", "sol"] },
+    "selected_evaluator": { "type": "string", "enum": ["terra", "sol"] },
+    "summary": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step", "purpose"],
+        "properties": {
+          "step": { "type": "string" },
+          "purpose": { "type": "string" }
+        }
+      }
+    },
+    "work_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "objective", "target_files", "target_symbols", "prerequisites", "allowed_actions", "forbidden_actions", "context_files", "acceptance_checks", "required_evidence", "failure_policy"],
+        "properties": {
+          "id": { "type": "string" },
+          "objective": { "type": "string" },
+          "target_files": { "type": "array", "items": { "type": "string" } },
+          "target_symbols": { "type": "array", "items": { "type": "string" } },
+          "prerequisites": { "type": "array", "items": { "type": "string" } },
+          "allowed_actions": { "type": "array", "items": { "type": "string" } },
+          "forbidden_actions": { "type": "array", "items": { "type": "string" } },
+          "context_files": { "type": "array", "items": { "type": "string" } },
+          "acceptance_checks": { "type": "array", "items": { "type": "string" } },
+          "required_evidence": { "type": "array", "items": { "type": "string" } },
+          "failure_policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["same_error", "repeated_error", "plan_conflict"],
+            "properties": {
+              "same_error": { "type": "string" },
+              "repeated_error": { "type": "string" },
+              "plan_conflict": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "affected_files": { "type": "array", "items": { "type": "string" } },
+    "test_commands": { "type": "array", "items": { "type": "string" } },
+    "acceptance_criteria": { "type": "array", "items": { "type": "string" } },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "task_profile": { "type": "string", "enum": ["generic", "experiment-record", "html-ui"] },
+    "planner_invoked": { "type": "boolean" },
+    "variant_count": { "type": "integer", "minimum": 0, "maximum": 20 }
+  }
+}

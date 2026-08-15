@@ -38,11 +38,28 @@ Every run should have stable Chinese properties `实验编号` and `实验归档
 ## Workflow
 
 1. Resolve the run and its external `实验归档路径`. If the path is missing or ambiguous, ask; do not invent a run directory.
-2. If the result belongs to `01-Project`, use `azf-obsidian-project-record` to resolve the target experiment/debug role and invoke the current Vault template. The default template root is `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板`; if no matching role is found there, let the project skill inspect the active Templater configuration.
-3. Read evidence in this order when present: `manifest.md`, configuration, dataset summary, training logs, metrics, figures/predictions, checkpoints, environment record, and a user-specified baseline.
-4. Fill only the generated note structure. Preserve existing user-written content and mark missing artifacts explicitly.
-5. Reread the finished note and verify every reported number, external link, figure reference, and conclusion against the source files.
-6. If An Zhaofeng explicitly requests project synchronization, pass the run conclusion and relevant links to `azf-obsidian-project-record`; otherwise leave total/mainline notes unchanged.
+2. Run `scripts/azf-experiment-scan.ps1` first for a new or changed run. Read the generated `experiment-evidence.json` and only inspect changed files plus the manifest and abnormal excerpts unless the task explicitly requests a full reread.
+3. If the result belongs to `01-Project`, use `azf-obsidian-project-record` to resolve the target experiment/debug role and invoke the current Vault template. The default template root is `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\2_模板`; if no matching role is found there, let the project skill inspect the active Templater configuration.
+4. Read evidence in this order when present: `manifest.md`, configuration, dataset summary, training logs, metrics, figures/predictions, checkpoints, environment record, and a user-specified baseline. Avoid rereading unchanged bulky artifacts.
+5. Fill only the generated note structure. Preserve existing user-written content and mark missing artifacts explicitly.
+6. Reread the finished note and verify every reported number, external link, figure reference, and conclusion against the source files and their hashes.
+7. If An Zhaofeng explicitly requests project synchronization, pass the run conclusion and relevant links to `azf-obsidian-project-record`; otherwise leave total/mainline notes unchanged.
+
+## Incremental evidence scan
+
+Use the bundled PowerShell scanner as a deterministic preprocessor:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  "$env:USERPROFILE\.skills-manager\skills\azf-deep-learning-experiment-record\scripts\azf-experiment-scan.ps1" `
+  -RunPath "D:\Postgraduate_JilinUniversity\02_Project\project\experiments\run-001"
+```
+
+It records modification time, size, SHA-256, changed files, missing artifacts,
+and common metadata fields without copying raw logs or checkpoints into the
+Vault. Keep `.azf-experiment-state.json` with the external run artifacts or in
+the run-evidence directory. Do not treat regex-extracted fields as verified
+scientific conclusions; the model must link every conclusion to source files.
 
 ## Evidence Reading Rules
 

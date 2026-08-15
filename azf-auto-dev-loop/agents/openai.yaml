@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "AZF Auto Dev Loop"
+  short_description: "DS Flash/Luna-first execution with Terra/DS Pro/Sol escalation and independent review"
+  default_prompt: "Use $azf-auto-dev-loop (@azf-auto-dev-loop) to route this local repository task through typed Work Items, cheap execution, deterministic checks, and independent evaluation."

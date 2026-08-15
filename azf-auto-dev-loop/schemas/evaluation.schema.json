@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "checks", "summary", "rework_required", "replan_required", "remaining_risks", "task_profile", "variant_comparison", "screenshots"],
+  "properties": {
+    "verdict": { "type": "string", "enum": ["PASS", "REWORK"] },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "result", "evidence"],
+        "properties": {
+          "name": { "type": "string" },
+          "result": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "summary": { "type": "string" },
+    "rework_required": { "type": "array", "items": { "type": "string" } },
+    "replan_required": { "type": "boolean" },
+    "remaining_risks": { "type": "array", "items": { "type": "string" } },
+    "task_profile": { "type": "string" },
+    "variant_comparison": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["variant_id", "summary", "strengths", "weaknesses", "technical_issues"],
+        "properties": {
+          "variant_id": { "type": "string" },
+          "summary": { "type": "string" },
+          "strengths": { "type": "array", "items": { "type": "string" } },
+          "weaknesses": { "type": "array", "items": { "type": "string" } },
+          "technical_issues": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "screenshots": { "type": "array", "items": { "type": "string" } }
+  }
+}

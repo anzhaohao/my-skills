@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "experiment_id", "source_files", "file_hashes", "changed_files", "missing_artifacts", "processed_at"],
+  "properties": {
+    "status": { "const": "EVIDENCE_READY" },
+    "experiment_id": { "type": "string" },
+    "date": { "type": ["string", "null"] },
+    "git_commit": { "type": ["string", "null"] },
+    "dataset": { "type": ["string", "null"] },
+    "model": { "type": ["string", "null"] },
+    "config": { "type": ["string", "null"] },
+    "device": { "type": ["string", "null"] },
+    "start_time": { "type": ["string", "null"] },
+    "end_time": { "type": ["string", "null"] },
+    "best_metric": { "type": ["string", "null"] },
+    "final_metric": { "type": ["string", "null"] },
+    "error_summary": { "type": ["string", "null"] },
+    "source_files": { "type": "array", "items": { "type": "string" } },
+    "file_hashes": { "type": "array", "items": { "type": "object", "required": ["path", "sha256"], "properties": { "path": { "type": "string" }, "sha256": { "type": "string" } }, "additionalProperties": false } },
+    "changed_files": { "type": "array", "items": { "type": "string" } },
+    "missing_artifacts": { "type": "array", "items": { "type": "string" } },
+    "processed_at": { "type": "string" }
+  }
+}
