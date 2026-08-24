@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Skills backup synced by Skills Manager",
-    "version": "2026.08.15"
+    "version": "2026.08.24"
   },
   "name": "my-skills",
   "owner": {
@@ -180,6 +180,24 @@
       "strict": false
     },
     {
+      "description": "Prepare evidence-bounded, constructive peer-review drafts and structured manuscript assessments, including education-research manuscripts. Use for authorized review of scientific manuscripts, protocols, preprints, or research proposals; reporting-guideline selection; claim–evidence checks; methods, statistics, reproducibility, ethics, figure/table, and citation critique; revision-response planning; or Chinese requests to 审查、评审、检查教育论文初稿.",
+      "name": "azq-peer-review",
+      "skills": [
+        "./"
+      ],
+      "source": "./azq-peer-review",
+      "strict": false
+    },
+    {
+      "description": "网文去AI味。检测并清除文本中的AI写作痕迹，让文字回归自然、非模板化。触发方式：/azq-story-deslop、/去AI味、「去AI味」「这篇太AI了」「网文去AI味」。",
+      "name": "azq-story-deslop",
+      "skills": [
+        "./"
+      ],
+      "source": "./azq-story-deslop",
+      "strict": false
+    },
+    {
       "description": "Run a model-diverse subagent council to investigate the same problem from multiple perspectives, compare findings, and produce a final recommendation. Use this skill whenever the user asks for a council, second opinions, multiple agents/models to evaluate one question, parallel investigation, red-team/blue-team comparison, or help deciding between competing technical approaches.",
       "name": "council",
       "skills": [
@@ -222,6 +240,24 @@
         "./"
       ],
       "source": "./find-skills",
+      "strict": false
+    },
+    {
+      "description": "A relentless interview to sharpen a plan or design.",
+      "name": "grill-me",
+      "skills": [
+        "./"
+      ],
+      "source": "./grill-me",
+      "strict": false
+    },
+    {
+      "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+      "name": "grilling",
+      "skills": [
+        "./"
+      ],
+      "source": "./grilling",
       "strict": false
     },
     {
@@ -303,6 +339,15 @@
         "./"
       ],
       "source": "./html-ppt",
+      "strict": false
+    },
+    {
+      "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
+      "name": "impeccable",
+      "skills": [
+        "./"
+      ],
+      "source": "./impeccable",
       "strict": false
     },
     {
@@ -420,6 +465,15 @@
         "./"
       ],
       "source": "./officecli",
+      "strict": false
+    },
+    {
+      "description": "Create a clean, vertical editorial artwork that preserves an uploaded photograph as the original image and pairs it with a restrained, photo-derived abstract memory panel and poetic English title. Use when asked to transform a photo into an abstract editorial diptych, photo-plus-abstraction composition, visual memory panel, or minimalist archival poster without redrawing or stylizing the source photo.",
+      "name": "photo-abstract-editorial",
+      "skills": [
+        "./"
+      ],
+      "source": "./photo-abstract-editorial",
       "strict": false
     },
     {

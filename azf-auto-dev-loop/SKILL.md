@@ -84,6 +84,11 @@ ordinary work.
 - `harness=claude-code`: automatically start the Claude Code adapter in
   non-interactive mode. The adapter resolves the requested model and effort and
   records both requested and resolved values.
+- `harness=deepseek`: run the whole chain on DeepSeek only. Planner and Evaluator
+  use DS v4 Pro; the Executor starts on DS v4 Flash and escalates to DS v4 Pro
+  after a same-tier retry (never Sol/GPT unless the Harness is explicitly
+  switched back to `codex`). Reasoning effort is auto-resolved per stage: Flash
+  low/medium, Pro high, Planner medium (Sol tier) / high, Evaluator high.
 - `executor=luna|terra|sol`: explicitly pin the Executor. Never silently
   replace an explicitly pinned model.
 
@@ -168,6 +173,23 @@ non-deterministic.
     adapter. Record `requested_model`, `resolved_model`, `requested_effort`,
     `resolved_effort`, `harness`, `permission_mode`, and `route_reason`.
 
+## Full-DeepSeek chain (`harness=deepseek`)
+
+When the user selects `-Harness deepseek` (or the request is framed as
+"Claude Code + DeepSeek" / "DSH + DeepSeek" and asks to stay on DeepSeek), the
+controller keeps the entire loop on DeepSeek instead of mixing Codex GPT tiers:
+
+```text
+Planner  -> DS v4 Pro  (effort medium, or high on Sol-tier planning)
+Executor -> DS v4 Flash (effort low/medium), retry once, then DS v4 Pro (effort high)
+Evaluator-> DS v4 Pro  (effort high)
+```
+
+The Executor never escalates to Terra/Sol/GPT in this mode. The only way to
+reach GPT tiers is to switch `-Harness` back to `codex` explicitly. This is the
+default cost-saving configuration for a Claude Code or DSH session wired to
+DeepSeek.
+
 ## Routing rubric
 
 Score each dimension from 0 to 2:
@@ -242,6 +264,17 @@ Report:
 - task profile, planner invocation decision, and approval status;
 - unverified items and remaining risks;
 - explicit statement that no commit or push was performed.
+
+Always include a standalone `模型调用链条` section in the user-facing final
+response. Build it only from the run's route, resolution, and agent-event
+evidence, and list every Planner, Executor, Evaluator, retry, and upgrade in
+actual chronological order. For each stage, report the Harness,
+`requested_model`, `resolved_model`, `requested_effort`, and
+`resolved_effort`. Mark any skipped Planner or Evaluator as `skipped` or
+`not_invoked`; when no additional model was called, explicitly state
+`无额外模型调用`. Use `unverified` for values the runtime did not verify. This
+section exposes auditable routing metadata only and must never claim to reveal
+hidden chain-of-thought.
 
 For schema and deterministic execution details, read the bundled files
 `schemas/plan.schema.json`, `schemas/execution.schema.json`,

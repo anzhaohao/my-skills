@@ -20,7 +20,7 @@ param(
     [ValidateSet('auto', 'always', 'never')]
     [string]$PlannerMode = 'auto',
 
-    [ValidateSet('auto', 'codex', 'claude-code')]
+    [ValidateSet('auto', 'codex', 'claude-code', 'deepseek')]
     [string]$Harness = 'auto',
 
     [ValidateSet('claude-ds-v4-flash', 'claude-ds-v4-pro', 'claude-ds-flash', 'claude-ds-pro-hybrid', 'claude-ds-pro-all')]
@@ -327,7 +327,8 @@ function Resolve-ExternalEffort {
 function ConvertFrom-ClaudeResult {
     param(
         [Parameter(Mandatory = $true)][string]$RawText,
-        [Parameter(Mandatory = $true)][string]$ExpectedStatus
+        [string]$StatusField = 'status',
+        [string]$ExpectedStatus = ''
     )
     $wrapper = $null
     try { $wrapper = $RawText | ConvertFrom-Json } catch { $wrapper = $null }
@@ -354,11 +355,11 @@ function ConvertFrom-ClaudeResult {
             $candidate = $text.Substring($start, $end - $start + 1) | ConvertFrom-Json
         }
     }
-    if ($null -eq $candidate -or -not ($candidate.PSObject.Properties.Name -contains 'status')) {
-        throw 'Claude Code 结构化结果缺少 status。'
+    if ($null -eq $candidate -or -not ($candidate.PSObject.Properties.Name -contains $StatusField)) {
+        throw "Claude Code 结构化结果缺少 $StatusField。"
     }
-    if ([string]$candidate.status -ne $ExpectedStatus) {
-        throw "Claude Code status=$($candidate.status)，预期为 $ExpectedStatus。"
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedStatus) -and [string]$candidate.$StatusField -ne $ExpectedStatus) {
+        throw "Claude Code $StatusField=$($candidate.$StatusField)，预期为 $ExpectedStatus。"
     }
     return $candidate
 }
@@ -372,7 +373,10 @@ function Invoke-ClaudeCodeStage {
         [Parameter(Mandatory = $true)][string]$SchemaPath,
         [Parameter(Mandatory = $true)][string]$OutputPath,
         [Parameter(Mandatory = $true)][string]$RunDirectory,
-        [string]$ExpectedStatus = 'EXECUTION_COMPLETE'
+        [ValidateSet('planner', 'executor', 'evaluator')][string]$Role = 'executor',
+        [string]$StatusField = 'status',
+        [string]$ExpectedStatus = '',
+        [string]$HarnessLabel = 'claude-code'
     )
     if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
         throw '找不到 claude 命令，无法运行 Claude Code adapter。'
@@ -401,7 +405,7 @@ function Invoke-ClaudeCodeStage {
         '--dangerously-skip-permissions',
         '--no-session-persistence'
     )
-    Write-AgentEvent -Role 'executor' -Stage $Stage -Status 'STARTED' -Harness 'claude-code' -RequestedModel $Model -RequestedEffort $Effort -Reason 'controller_route' -Summary 'Claude Code 非交互 adapter 已自动启动；权限为 full-trust。'
+    Write-AgentEvent -Role $Role -Stage $Stage -Status 'STARTED' -Harness $HarnessLabel -RequestedModel $Model -RequestedEffort $Effort -Reason 'controller_route' -Summary 'Claude Code 非交互 adapter 已自动启动；权限为 full-trust。'
     $previousErrorActionPreference = $ErrorActionPreference
     Push-Location -LiteralPath $RepoPath
     try {
@@ -418,7 +422,7 @@ function Invoke-ClaudeCodeStage {
         throw "Claude Code 阶段失败，退出码=$exitCode。$errorText"
     }
     $raw = Get-Content -LiteralPath $stdoutPath -Raw -Encoding utf8
-    $result = ConvertFrom-ClaudeResult -RawText $raw -ExpectedStatus $ExpectedStatus
+    $result = ConvertFrom-ClaudeResult -RawText $raw -StatusField $StatusField -ExpectedStatus $ExpectedStatus
     Write-JsonFile -Value $result -Path $OutputPath
     $resolvedModel = Get-ResolvedModelFromText -Text $raw -RequestedModel $Model
     $usage = Get-UsageSummary -EventsPath $stdoutPath
@@ -429,9 +433,9 @@ function Invoke-ClaudeCodeStage {
         resolved_model = $resolvedModel
         requested_effort = $Effort
         resolved_effort = if ($resolvedModel -eq 'unverified') { 'unverified' } else { $Effort }
-        harness = 'claude-code'
+        harness = $HarnessLabel
     }) -Path (Join-Path $RunDirectory ('{0}.resolution.json' -f $Stage))
-    Write-AgentEvent -Role 'executor' -Stage $Stage -Status 'COMPLETE' -Harness 'claude-code' -RequestedModel $Model -ResolvedModel $resolvedModel -RequestedEffort $Effort -ResolvedEffort $(if ($resolvedModel -eq 'unverified') { 'unverified' } else { $Effort }) -Reason 'stage_complete' -Summary 'Claude Code 返回了可解析的结构化执行结果。'
+    Write-AgentEvent -Role $Role -Stage $Stage -Status 'COMPLETE' -Harness $HarnessLabel -RequestedModel $Model -ResolvedModel $resolvedModel -RequestedEffort $Effort -ResolvedEffort $(if ($resolvedModel -eq 'unverified') { 'unverified' } else { $Effort }) -Reason 'stage_complete' -Summary 'Claude Code 返回了可解析的结构化执行结果。'
 }
 
 function Get-ModelName {
@@ -467,6 +471,20 @@ function Resolve-InitialRoute {
             requested_effort = Resolve-ExternalEffort -Plan $Plan -Profile $ExternalProfile
             route_stage = 0
             route_reason = 'explicit_claude_code'
+        }
+    }
+    if ($Harness -eq 'deepseek') {
+        # 全 DS 链路：规划/评估走 DS Pro，执行走 DS Flash；硬风险或高复杂度执行升到 DS Pro。
+        # 纯 DeepSeek 模式不上 Sol/GPT，除非显式切换 harness=codex。
+        $dsProfile = if ($Mode -eq 'quality' -or $highRisk -or $score -ge 6) { 'claude-ds-v4-pro' } else { 'claude-ds-v4-flash' }
+        $dsSpec = Get-ExternalProfileSpec -Profile $dsProfile
+        return [pscustomobject][ordered]@{
+            harness = 'deepseek'
+            executor_tier = if ($dsSpec.capability_tier -eq 'pro') { 'terra' } else { 'luna' }
+            external_profile = $dsProfile
+            requested_effort = Resolve-ExternalEffort -Plan $Plan -Profile $dsProfile
+            route_stage = 0
+            route_reason = 'explicit_deepseek_harness'
         }
     }
     if ($Harness -eq 'codex') {
@@ -521,6 +539,16 @@ function Get-NextRoute {
     $stage = [int]$CurrentRoute.route_stage
     $harness = [string]$CurrentRoute.harness
     $profile = [string]$CurrentRoute.external_profile
+    if ($harness -eq 'deepseek') {
+        # 全 DS 升级链：Flash → Flash 定向重试 → Pro。纯 DeepSeek 模式不升级到 Sol/GPT。
+        if ($profile -eq 'claude-ds-v4-flash') {
+            if ($stage -eq 0) {
+                return [pscustomobject][ordered]@{ harness = 'deepseek'; executor_tier = 'luna'; external_profile = 'claude-ds-v4-flash'; requested_effort = 'high'; route_stage = 1; route_reason = 'same_ds_flash_targeted_retry' }
+            }
+            return [pscustomobject][ordered]@{ harness = 'deepseek'; executor_tier = 'terra'; external_profile = 'claude-ds-v4-pro'; requested_effort = 'high'; route_stage = 3; route_reason = 'upgrade_to_ds_v4_pro' }
+        }
+        return [pscustomobject][ordered]@{ harness = 'deepseek'; executor_tier = 'terra'; external_profile = 'claude-ds-v4-pro'; requested_effort = 'high'; route_stage = 3; route_reason = 'ds_pro_final_rework' }
+    }
     if ($harness -eq 'claude-code' -and $profile -eq 'claude-ds-v4-flash') {
         if ($stage -eq 0) {
             return [pscustomobject][ordered]@{ harness = 'claude-code'; executor_tier = 'luna'; external_profile = 'claude-ds-v4-flash'; requested_effort = 'high'; route_stage = 1; route_reason = 'same_ds_flash_targeted_retry' }
@@ -617,16 +645,17 @@ function Write-RouteRecord {
         [Parameter(Mandatory = $true)]$RouteState
     )
     $effectiveHarness = [string]$RouteState.harness
-    $profile = if ($effectiveHarness -eq 'claude-code') { [string]$RouteState.external_profile } else { $null }
-    $executorModel = if ($effectiveHarness -eq 'claude-code') { (Get-ExternalProfileSpec -Profile $profile).requested_model } else { Get-ModelName -Tier $ExecutorTier }
+    $isExternal = $effectiveHarness -in @('claude-code', 'deepseek')
+    $profile = if ($isExternal) { [string]$RouteState.external_profile } else { $null }
+    $executorModel = if ($isExternal) { (Get-ExternalProfileSpec -Profile $profile).requested_model } else { Get-ModelName -Tier $ExecutorTier }
     $resolvedModel = 'pending_stage_resolution'
     $requestedEffort = [string]$RouteState.requested_effort
     $record = [ordered]@{
         run_id = $RunId
         round = $Round
-        planner_profile = if ($PlannerInvoked) { ('azf_{0}_planner' -f $PlannerTier) } else { 'deterministic_preflight' }
-        planner_model = if ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
-        planner_effort = if ($PlannerInvoked) { 'high' } else { 'not_invoked' }
+        planner_profile = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_planner' } else { ('azf_{0}_planner' -f $PlannerTier) } } else { 'deterministic_preflight' }
+        planner_model = if ($Harness -eq 'deepseek') { $DsProModel } elseif ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
+        planner_effort = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { if ($PlannerTier -eq 'sol') { 'high' } else { 'medium' } } else { 'high' } } else { 'not_invoked' }
         planner_invoked = [bool]$PlannerInvoked
         task_profile = $TaskProfile
         harness = $effectiveHarness
@@ -634,11 +663,11 @@ function Write-RouteRecord {
         complexity_score = [int]$Plan.complexity_score
         risk_level = [string]$Plan.risk_level
         mechanical = [bool]$Plan.mechanical
-        executor_profile = if ($effectiveHarness -eq 'claude-code') { $ExternalProfile } else { ('azf_{0}_executor' -f $ExecutorTier) }
+        executor_profile = if ($isExternal) { $profile } else { ('azf_{0}_executor' -f $ExecutorTier) }
         executor_model = $executorModel
         executor_effort = $requestedEffort
-        evaluator_profile = if ($effectiveHarness -eq 'claude-code') { 'fresh_codex_evaluator' } else { ('azf_{0}_evaluator' -f $EvaluatorTier) }
-        evaluator_model = if ($effectiveHarness -eq 'claude-code') { Get-ModelName -Tier $EvaluatorTier } else { Get-ModelName -Tier $EvaluatorTier }
+        evaluator_profile = if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_evaluator' } elseif ($effectiveHarness -eq 'claude-code') { 'fresh_codex_evaluator' } else { ('azf_{0}_evaluator' -f $EvaluatorTier) }
+        evaluator_model = if ($Harness -eq 'deepseek') { $DsProModel } else { Get-ModelName -Tier $EvaluatorTier }
         evaluator_effort = 'high'
         requested_model = $executorModel
         resolved_model = $resolvedModel
@@ -688,8 +717,13 @@ $AdditionalContext
     只输出符合所给 JSON Schema 的 JSON，status 必须为 PLAN_READY。Schema 中的所有字段都必须输出；没有内容的数组输出 []，没有内容的字符串输出空字符串，planner_invoked 和 variant_count 也必须填写。
 "@
     $path = Join-Path $RunDirectory 'plan.json'
-    $plannerModel = if ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
-    Invoke-CodexStage -Stage 'planner' -Prompt $prompt -Model $plannerModel -Effort 'high' -Role 'planner' -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory
+    if ($Harness -eq 'deepseek') {
+        $plannerEffort = if ($PlannerTier -eq 'sol') { 'high' } else { 'medium' }
+        Invoke-ClaudeCodeStage -Stage 'planner' -Prompt $prompt -Model $DsProModel -Effort $plannerEffort -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'planner' -StatusField 'status' -ExpectedStatus 'PLAN_READY' -HarnessLabel 'deepseek'
+    } else {
+        $plannerModel = if ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
+        Invoke-CodexStage -Stage 'planner' -Prompt $prompt -Model $plannerModel -Effort 'high' -Role 'planner' -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory
+    }
     return (Read-JsonFile -Path $path)
 }
 
@@ -842,9 +876,9 @@ $ReworkContext
 "@
     $path = Join-Path $RunDirectory ('execution-r{0}.json' -f $Round)
     $stage = 'executor-r{0}' -f $Round
-    if ([string]$RouteState.harness -eq 'claude-code') {
+    if ([string]$RouteState.harness -in @('claude-code', 'deepseek')) {
         $spec = Get-ExternalProfileSpec -Profile ([string]$RouteState.external_profile)
-        Invoke-ClaudeCodeStage -Stage $stage -Prompt $prompt -Model $spec.requested_model -Effort ([string]$RouteState.requested_effort) -SchemaPath $ExecutionSchema -OutputPath $path -RunDirectory $RunDirectory
+        Invoke-ClaudeCodeStage -Stage $stage -Prompt $prompt -Model $spec.requested_model -Effort ([string]$RouteState.requested_effort) -SchemaPath $ExecutionSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'executor' -StatusField 'status' -ExpectedStatus 'EXECUTION_COMPLETE' -HarnessLabel ([string]$RouteState.harness)
     } else {
         Invoke-CodexStage -Stage $stage -Prompt $prompt -Model (Get-ModelName -Tier $ExecutorTier) -Effort ([string]$RouteState.requested_effort) -Role 'executor' -SchemaPath $ExecutionSchema -OutputPath $path -RunDirectory $RunDirectory
     }
@@ -890,7 +924,11 @@ $executionText
     只输出符合 JSON Schema 的 JSON。Schema 中的所有字段都必须输出；没有内容的数组输出 []，没有内容的字符串输出空字符串。variant_comparison 的每项都必须包含 variant_id、summary、strengths、weaknesses、technical_issues。
 "@
     $path = Join-Path $RunDirectory ('evaluation-r{0}.json' -f $Round)
-    Invoke-CodexStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model (Get-ModelName -Tier $EvaluatorTier) -Effort 'high' -Role 'evaluator' -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory
+    if ($Harness -eq 'deepseek') {
+        Invoke-ClaudeCodeStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model $DsProModel -Effort 'high' -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'evaluator' -StatusField 'verdict' -HarnessLabel 'deepseek'
+    } else {
+        Invoke-CodexStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model (Get-ModelName -Tier $EvaluatorTier) -Effort 'high' -Role 'evaluator' -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory
+    }
     return (Read-JsonFile -Path $path)
 }
 
@@ -941,7 +979,11 @@ $PlannerTier = 'terra'
 $exitCode = 0
 
 try {
-    if (-not (Get-Command codex -ErrorAction SilentlyContinue)) {
+    if ($Harness -in @('claude-code', 'deepseek')) {
+        if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
+            throw '找不到 claude 命令，请先确认 Claude Code CLI 在 PATH 中。'
+        }
+    } elseif (-not (Get-Command codex -ErrorAction SilentlyContinue)) {
         throw '找不到 codex 命令，请先确认 Codex CLI 在 PATH 中。'
     }
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -989,8 +1031,8 @@ try {
         task_profile = $TaskProfile
         planner_mode = $PlannerMode
         harness = if ($Harness -eq 'auto') { 'codex' } else { $Harness }
-        external_profile = if ($Harness -eq 'claude-code') { $ExternalProfile } else { $null }
-        requested_model = if ($Harness -eq 'claude-code') { (Get-ExternalProfileSpec -Profile $ExternalProfile).requested_model } else { 'auto' }
+        external_profile = if ($Harness -in @('claude-code', 'deepseek')) { $ExternalProfile } else { $null }
+        requested_model = if ($Harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $ExternalProfile).requested_model } else { 'auto' }
         requested_effort = $ExternalEffort
         permission_mode = 'full-trust'
         default_executor_weights = [ordered]@{ claude_ds_v4_flash = 0.60; luna = 0.40 }
@@ -1020,7 +1062,7 @@ try {
     $executorTier = [string]$routeState.executor_tier
     $evaluatorTier = Resolve-EvaluatorTier -ExecutorTier $executorTier -Plan $plan
     $route = Write-RouteRecord -Plan $plan -ExecutorTier $executorTier -EvaluatorTier $evaluatorTier -Round 0 -RouteState $routeState
-    $routeModel = if ($routeState.harness -eq 'claude-code') { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
+    $routeModel = if ($routeState.harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
     Write-Host ("[PLAN_READY] score={0} risk={1} harness={2} model={3} effort={4} executor={5} evaluator={6}" -f $plan.complexity_score, $plan.risk_level, $routeState.harness, $routeModel, $routeState.requested_effort, $executorTier, $evaluatorTier)
 
     if ($Mode -eq 'dry-run' -or ($Mode -eq 'reviewed' -and -not $Approve)) {
@@ -1099,7 +1141,7 @@ try {
             $executorTier = [string]$routeState.executor_tier
             $evaluatorTier = Resolve-EvaluatorTier -ExecutorTier $executorTier -Plan $plan
             $route = Write-RouteRecord -Plan $plan -ExecutorTier $executorTier -EvaluatorTier $evaluatorTier -Round ($round + 1) -RouteState $routeState
-            $nextModel = if ($routeState.harness -eq 'claude-code') { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
+            $nextModel = if ($routeState.harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
             Write-Host ("[REWORK] round={0} next_harness={1} next_model={2} next_effort={3} reason={4} evaluator={5}" -f ($round + 1), $routeState.harness, $nextModel, $routeState.requested_effort, $routeState.route_reason, $evaluatorTier)
         }
 

@@ -30,6 +30,7 @@
 - 所有子代理使用 full-trust，主要依靠提示词约束和前后审计；禁止自动 `git add`、`commit`、`push` 或删除用户原有修改；
 - PowerShell 控制器把基线、路由、Work Item、执行、确定性 Gate、验收、代理事件、usage 和最终报告保存到用户级运行目录。
 - `route-history-before.json` 按任务档案、Harness 和请求模型累计样本；样本不足 20 条时只记录，不据此自动声称 cost_per_pass。
+- 最终答复必须单独显示“模型调用链条”：按实际顺序列出 Planner、Executor、Evaluator、重试和升级，并包含各阶段的 Harness、请求/解析模型与 effort；跳过阶段和无额外模型调用也要明确说明。只能使用运行证据，未知值写 `unverified`，不得展示或声称展示隐藏思维链。
 - API key 登录时，控制器阶段调用会关闭插件初始化以绕过 ChatGPT 会话专属的远程插件目录；本地 Skill 仍从 Skill 根目录加载。Codex 的非致命 stderr 会保留在证据目录，不会单独导致阶段失败。
 
 ## 入口和资源
@@ -65,6 +66,24 @@ Harness、权限和路由原因保存在 `agent-events.jsonl` 与对应的 route
 Claude Code 的实际模型别名可以用 `-DsFlashModel`、`-DsProModel` 覆盖；
 如果 CLI 没有返回实际模型，记录会标为 `unverified`，不会假装完成解析。
 
+## DeepSeek 全链路（`harness=deepseek`）
+
+想让 Claude Code + DeepSeek 或 DSH + DeepSeek 整条链路都不碰 GPT 时，用
+`-Harness deepseek`：Planner / Evaluator 固定走 DS v4 Pro，Executor 从 DS v4
+Flash 起步、同档重试一次后升到 DS v4 Pro，不会再升到 Terra / Sol / GPT。
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  $controller `
+  -Harness deepseek `
+  -Task "修复当前项目的保存失败问题" `
+  -RepoPath (Get-Location).Path
+```
+
+思维强度按阶段自动解析：Flash 低/中、Pro 高、Planner 中（Sol 档为高）、
+Evaluator 高。这是纯 DeepSeek 会话默认的省钱配置；只有显式切回
+`-Harness codex` 才会重新启用 GPT 分层。
+
 ## 维护、验证与删除
 
 - 唯一维护源：`C:\Users\anzhaofeng\.skills-manager\skills\azf-auto-dev-loop`。
@@ -75,5 +94,9 @@ Claude Code 的实际模型别名可以用 `-DsFlashModel`、`-DsProModel` 覆�
 - 不要使用宽泛递归删除、环境变量展开后的不确定路径，或顺手删除用户级代理 TOML。是否删除 `azf-sol-planner`、`azf-*-executor`、`azf-*-evaluator` 必须单独确认，因为其它工作流也可能复用它们。
 
 ## 最近维护
+
+2026-08-21：新增 `harness=deepseek` 全 DS 链路 —— Planner / Evaluator 固定 DS v4 Pro，Executor 用 DS v4 Flash 起步并只升到 DS v4 Pro，思维强度按阶段自动解析；纯 DeepSeek 会话不再回退 GPT。
+
+2026-08-17：要求最终答复新增独立的“模型调用链条”段落，展示可审计的实际模型与 Harness 路由，并明确跳过或未验证的阶段。
 
 2026-08-15：将 Claude Code + DS v4 Flash 接入自动执行；增加 DS Flash/Luna 60/40 初始池、Terra → DS v4 Pro → Sol 升级链、typed Work Item、确定性 Gate、full-trust 提示词约束与审计、代理模型/强度事件记录，并新增 Terra Planner。

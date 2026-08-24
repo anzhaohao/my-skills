@@ -52,6 +52,28 @@ authentication failure, unresolved model, or an out-of-scope external effect)
 returns `BLOCKED` with evidence. Full-trust is a requested execution mode, not a
 preventive sandbox; prompt constraints and before/after audit remain mandatory.
 
+## Full-DeepSeek harness (`harness=deepseek`)
+
+`harness=deepseek` is a full-DS chain distinct from the mixed `claude-code`
+adapter. It keeps Planner, Executor, and Evaluator all on DeepSeek, so a Claude
+Code or DSH session wired to DeepSeek never falls back to Codex GPT tiers.
+
+```yaml
+planner:
+  model: deepseek-v4-pro
+  effort: medium          # high when the planning tier is Sol
+executor:
+  model: deepseek-v4-flash  # low/medium effort
+  upgrade_after_retry: deepseek-v4-pro  # high effort
+evaluator:
+  model: deepseek-v4-pro
+  effort: high
+```
+
+The Executor escalation chain in this mode is `DS v4 Flash → DS v4 Flash retry
+→ DS v4 Pro`. It does not upgrade to Terra or Sol. GPT tiers are reachable only
+by switching `-Harness` back to `codex`.
+
 ## Cost and upgrade policy
 
 For a new task class, use the configured DS Flash/Luna 60/40 default. Only after
