@@ -1,0 +1,10 @@
+﻿# Python 字节码与常见噪音（skill 内的 MCP server 会生成）
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 编辑器/系统噪音
+.DS_Store
+Thumbs.db
+desktop.ini
