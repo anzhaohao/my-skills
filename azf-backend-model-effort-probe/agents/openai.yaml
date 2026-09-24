@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF Backend Model Effort Probe"
+  short_description: "Report the model and reasoning_effort the backend actually received this turn"
+  default_prompt: "Use $azf-backend-model-effort-probe to query the local backend-model-effort-probe proxy and append the backend-measured model and reasoning_effort as the last line of the answer."

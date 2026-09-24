@@ -1,0 +1,85 @@
+{
+  "release": "0.3.0",
+  "gitTag": "v0.3.0",
+  "platform": {
+    "os": "Windows 10 or 11 x64",
+    "powershell": ">=5.1",
+    "python": ">=3.11,<3.15",
+    "illustrator": "2026 (30.x)",
+    "illustratorProgId": "Illustrator.Application.30"
+  },
+  "pythonDependencies": {
+    "fonttools": "4.61.1"
+  },
+  "core": {
+    "harnessNeutral": true,
+    "runtimeRoot": "runtime/",
+    "skillRoot": "skills/universal/cell-lct",
+    "cli": "runtime/powershell/cell-lct.ps1",
+    "mcp": "mcp/server.py"
+  },
+  "adapters": {
+    "codex": {
+      "skillId": "cell-lct",
+      "defaultImageEditProvider": "codex-agent",
+      "skillDestination": "user-defined; Codex convention ~/.codex/skills is only a suggestion"
+    },
+    "dsh": {
+      "skillId": "cell-lct",
+      "defaultImageEditProvider": "codex-agent",
+      "skillDestination": "user-defined; follows existing DSH skill location when present"
+    },
+    "claude": {
+      "skillId": "cell-lct",
+      "defaultImageEditProvider": "openai-compatible",
+      "skillDestination": "user-defined; no fabricated default directory"
+    }
+  },
+  "providers": {
+    "imageEdit": {
+      "default": "codex-agent",
+      "supported": [
+        "codex-agent",
+        "dsh-image-gen",
+        "openai-compatible",
+        "gemini (reserved)",
+        "custom"
+      ],
+      "contract": "text-only cleanup; never vectorizes"
+    },
+    "vectorize": {
+      "default": "xiaomiao",
+      "supported": [
+        "xiaomiao",
+        "custom-vector-api (via -AdapterPath)"
+      ],
+      "contract": "true-vector SVG from a text-cleaned reference"
+    }
+  },
+  "configHome": "~/.cell-lct",
+  "mcp": {
+    "server": "mcp/server.py",
+    "protocol": "stdio JSON-RPC 2.0",
+    "tools": [
+      "cell_lct_health",
+      "cell_lct_verify",
+      "cell_lct_vectorize",
+      "cell_lct_prepare",
+      "cell_lct_draw",
+      "cell_lct_reconstruct"
+    ]
+  },
+  "runtimeContracts": {
+    "geometryCacheSchema": "1.0",
+    "textManifestSchema": "1.0",
+    "ordinaryBatchMin": 20,
+    "ordinaryBatchMax": 50,
+    "illustratorConnections": 1
+  },
+  "credentials": {
+    "storage": "Windows DPAPI",
+    "defaultPath": "~/.cell-lct/secrets/xiaomiao-api-key.dpapi",
+    "legacyFallback": "~/.codex/secrets/xiaomiao-api-key.dpapi",
+    "includedInPackage": false
+  }
+}

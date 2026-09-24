@@ -40,7 +40,7 @@ def test_chinese_source_merges_mineru_into_chinese_fulltext(tmp_path: Path) -> N
             mode="reuse",
             reuse_markdown=str(mineru),
             reuse_raw_output=str(raw),
-            docker_image="mineru:latest",
+            docker_image="mineru:4.0.2-vllm0.21.0",
             allow_preview=False,
         )
     )

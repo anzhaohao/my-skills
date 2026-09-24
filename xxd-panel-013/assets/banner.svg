@@ -1,0 +1,85 @@
+<svg width="1200" height="400" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>XXD Panel 013</title>
+  <desc>Healing watercolour collectible ticket: one source-bound subject-and-environment scene, a strict approximately 74/26 information split, ivory whitespace, matte paper, perforation, and five-language documentation.</desc>
+  <defs>
+    <clipPath id="frame"><rect width="1200" height="400" rx="30"/></clipPath>
+    <clipPath id="scene"><rect x="695" y="106" width="298" height="184"/></clipPath>
+    <pattern id="paper" width="29" height="25" patternUnits="userSpaceOnUse">
+      <path d="M3 8L12 7M18 20L27 19M8 24L13 23" stroke="#2E302D" stroke-opacity=".035" stroke-width=".7"/>
+      <circle cx="22" cy="5" r=".5" fill="#2E302D" fill-opacity=".045"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#695F51" flood-opacity=".16"/>
+    </filter>
+    <filter id="wash" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="400" fill="#F4F0E6"/>
+    <rect width="1200" height="400" fill="url(#paper)"/>
+
+    <g filter="url(#shadow)">
+      <path d="M681 94L1122 94L1127 99L1123 104L1127 109L1123 114L1127 119L1123 124L1127 129L1123 134L1127 139L1123 144L1127 149L1123 154L1127 159L1123 164L1127 169L1123 174L1127 179L1123 184L1127 189L1123 194L1127 199L1123 204L1127 209L1123 214L1127 219L1123 224L1127 229L1123 234L1127 239L1123 244L1127 249L1123 254L1127 259L1123 264L1127 269L1123 274L1127 279L1123 284L1127 289L1123 294L1127 299L1123 304L1127 309L1122 314H681L676 309L680 304L676 299L680 294L676 289L680 284L676 279L680 274L676 269L680 264L676 259L680 254L676 249L680 244L676 239L680 234L676 229L680 224L676 219L680 214L676 209L680 204L676 199L680 194L676 189L680 184L676 179L680 174L676 169L680 164L676 159L680 154L676 149L680 144L676 139L680 134L676 129L680 124L676 119L680 114L676 109L680 104L676 99L681 94Z" fill="#FAF7EF"/>
+    </g>
+
+    <g clip-path="url(#scene)">
+      <rect x="695" y="106" width="298" height="184" fill="#F9F5EA"/>
+      <ellipse cx="807" cy="175" rx="106" ry="68" fill="#A9C2B0" fill-opacity=".46" filter="url(#wash)"/>
+      <ellipse cx="889" cy="145" rx="92" ry="58" fill="#A8C8D4" fill-opacity=".44" filter="url(#wash)"/>
+      <ellipse cx="933" cy="243" rx="86" ry="48" fill="#E8C982" fill-opacity=".34" filter="url(#wash)"/>
+      <path d="M695 235C749 217 790 225 829 207C866 190 900 198 930 184C954 173 976 172 993 177V290H695V235Z" fill="#B4C5A8" fill-opacity=".56"/>
+      <path d="M695 259C746 243 792 257 837 238C876 222 923 231 993 213V290H695V259Z" fill="#D7B183" fill-opacity=".42"/>
+      <path d="M824 233C832 205 848 187 871 178C892 170 912 176 925 191C938 205 939 224 928 241C913 263 881 270 854 258C840 252 830 244 824 233Z" fill="#D77D63" fill-opacity=".78"/>
+      <path d="M846 208C854 192 866 184 880 184C895 184 906 193 910 207" stroke="#6A786E" stroke-width="3" stroke-linecap="round" opacity=".68"/>
+      <path d="M713 141C747 128 780 128 812 138M724 159C760 147 792 150 820 160" stroke="#7197A5" stroke-width="2.2" stroke-linecap="round" opacity=".42"/>
+      <circle cx="783" cy="208" r="11" fill="#F0D78A" fill-opacity=".75"/>
+    </g>
+
+    <path d="M993 106V290" stroke="#77766F" stroke-width="1.5" stroke-dasharray="5 6"/>
+    <g fill="#F4F0E6">
+      <circle cx="993" cy="111" r="3.2"/><circle cx="993" cy="123" r="3.2"/><circle cx="993" cy="135" r="3.2"/><circle cx="993" cy="147" r="3.2"/>
+      <circle cx="993" cy="159" r="3.2"/><circle cx="993" cy="171" r="3.2"/><circle cx="993" cy="183" r="3.2"/><circle cx="993" cy="195" r="3.2"/>
+      <circle cx="993" cy="207" r="3.2"/><circle cx="993" cy="219" r="3.2"/><circle cx="993" cy="231" r="3.2"/><circle cx="993" cy="243" r="3.2"/>
+      <circle cx="993" cy="255" r="3.2"/><circle cx="993" cy="267" r="3.2"/><circle cx="993" cy="279" r="3.2"/>
+    </g>
+
+    <g transform="translate(1012 116)" fill="#343733" font-family="Arial, sans-serif">
+      <text x="0" y="0" font-size="8" font-weight="700" letter-spacing="2">MOMENT</text>
+      <text x="0" y="20" font-size="12" font-weight="800">SOFT ARRIVAL</text>
+      <path d="M0 31H87" stroke="#343733" stroke-opacity=".35"/>
+      <text x="0" y="50" font-size="8" font-weight="700" letter-spacing="2">FIELD</text>
+      <text x="0" y="68" font-size="10" font-weight="700">SOURCE / 013</text>
+      <path d="M0 79H87" stroke="#343733" stroke-opacity=".35"/>
+      <text x="0" y="99" font-size="8" font-weight="700" letter-spacing="2">NO.</text>
+      <text x="0" y="118" font-size="18" font-weight="800" letter-spacing="2">013</text>
+      <circle cx="64" cy="139" r="27" stroke="#C66F59" stroke-width="2" fill="none" opacity=".72"/>
+      <circle cx="64" cy="139" r="21" stroke="#C66F59" stroke-width="1" fill="none" opacity=".55"/>
+      <text x="64" y="143" text-anchor="middle" fill="#C66F59" font-size="7" font-weight="800" letter-spacing="1">KEPT</text>
+    </g>
+
+    <text x="1160" y="36" text-anchor="end" fill="#343733" fill-opacity=".58" font-family="Arial, sans-serif" font-size="11" font-weight="700">中文 · EN · 日本語 · 한국어 ·</text>
+    <text x="1160" y="53" text-anchor="end" direction="rtl" fill="#343733" fill-opacity=".58" font-family="Arial, sans-serif" font-size="11" font-weight="700">العربية</text>
+  </g>
+
+  <g transform="translate(64 54)">
+    <text x="0" y="20" fill="#343733" font-family="Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2.4">🦁 XXD / IMAGE SKILL</text>
+    <text x="0" y="111" fill="#343733" font-family="Arial Black, Arial, sans-serif" font-size="72" font-weight="900" letter-spacing="-4">PANEL <tspan fill="#C66F59">013</tspan></text>
+    <text x="2" y="151" fill="#343733" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing=".95">ONE TICKET · SOURCE-BOUND MEMORY · 74 / 26</text>
+    <text x="2" y="193" fill="#343733" font-family="sans-serif" font-size="18" font-weight="700">治愈水彩收藏票根 · 把关系妥帖收进纸里</text>
+    <text x="2" y="222" fill="#343733" fill-opacity=".72" font-family="sans-serif" font-size="14" font-weight="600">癒やし系水彩チケット · 치유 수채화 소장 티켓</text>
+    <text x="2" y="251" fill="#343733" fill-opacity=".72" font-family="Arial, sans-serif" font-size="14" font-weight="600">تذكرة مائية هادئة قابلة للاقتناء</text>
+  </g>
+
+  <g transform="translate(64 327)">
+    <rect width="138" height="37" rx="7" fill="#343733"/>
+    <text x="69" y="24" text-anchor="middle" fill="#F4F0E6" font-family="Courier New, monospace" font-size="12" font-weight="900">ONE TICKET</text>
+    <rect x="150" width="106" height="37" rx="7" fill="#C66F59"/>
+    <text x="203" y="24" text-anchor="middle" fill="#F4F0E6" font-family="Courier New, monospace" font-size="12" font-weight="900">4 MODES</text>
+    <rect x="268" width="142" height="37" rx="7" fill="#A9C2B0"/>
+    <text x="339" y="24" text-anchor="middle" fill="#343733" font-family="Courier New, monospace" font-size="12" font-weight="900">74 / 26 GRID</text>
+    <rect x="422" width="147" height="37" rx="7" fill="#F4F0E6" stroke="#343733" stroke-width="1.5"/>
+    <text x="495.5" y="24" text-anchor="middle" fill="#343733" font-family="Courier New, monospace" font-size="12" font-weight="900">RASTER ONLY</text>
+  </g>
+</svg>

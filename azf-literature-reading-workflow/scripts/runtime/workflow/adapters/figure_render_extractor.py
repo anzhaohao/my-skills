@@ -62,7 +62,7 @@ def run_pdf_figure_render_extractor(
     mode: str = "existing",
     mineru_output: Path | None = None,
     clarity: str = "4k",
-    docker_image: str = "mineru:latest",
+    docker_image: str = "mineru:4.0.2-vllm0.21.0",
 ) -> subprocess.CompletedProcess:
     if not EXTRACT_SCRIPT.exists():
         raise FileNotFoundError(EXTRACT_SCRIPT)

@@ -72,7 +72,8 @@ Runs local Docker MinerU or attaches existing local MinerU output.
 - `pdf_path`
 - `mode`: `docker-run`, `docker`, or `existing`
 - `container`: optional, default `mineru-gradio` for running-container mode
-- `docker_image`: optional, default `mineru:latest`
+- `docker_image`: optional, default `mineru:4.0.2-vllm0.21.0`
+- `tier`: optional, MinerU 4.x quality tier `flash|basic|standard|advanced`, default `standard`
 
 **Outputs**
 

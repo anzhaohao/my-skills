@@ -12,8 +12,9 @@ quality_report_name: "quality-report.json"
 source_anchor_name: "source-anchors.json"
 figure_manifest_name: "figure_extraction_manifest.json"
 mineru:
-  docker_image: "mineru:latest"
-  container: "mineru-gradio"
+  docker_image: "mineru:4.0.2-vllm0.21.0"
+  tier: "standard"
+  container: "mineru-api"
   mode: "docker-run"
 figures:
   clarity: "4k"

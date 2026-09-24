@@ -83,7 +83,12 @@ def run(args) -> int:
 
     docker = docker_status()
     if docker.get("available"):
-        result = run_mineru_docker(pdf_path, mineru_run_dir, image=args.docker_image)
+        result = run_mineru_docker(
+            pdf_path,
+            mineru_run_dir,
+            image=args.docker_image,
+            tier=getattr(args, "mineru_tier", "standard"),
+        )
         (logs_dir / f"mineru-{command_stamp}-stdout.txt").write_text(result.stdout or "", encoding="utf-8")
         (logs_dir / f"mineru-{command_stamp}-stderr.txt").write_text(result.stderr or "", encoding="utf-8")
         if result.returncode == 0:

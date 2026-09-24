@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell-lct 配置</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --card: #ffffff; --line: #e3e8ef; --text: #1f2937;
+    --muted: #6b7280; --accent: #2457C5; --accent-soft: #eaf0fd;
+    --ok: #16a34a; --warn: #d97706; --fail: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; padding: 28px 16px 60px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  h1 { font-size: 20px; font-weight: 700; }
+  .home { color: var(--muted); font-size: 12px; font-family: Consolas, monospace; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; }
+  .card h2 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .row:last-child { border-bottom: none; }
+  .row .label { flex: 0 0 44%; padding-right: 8px; }
+  .row .label .desc { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .row .control { flex: 1; min-width: 0; display: flex; justify-content: flex-end; }
+  select, input[type="text"], input[type="password"] { width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 7px; font-size: 13px; background: #fff; color: var(--text); }
+  input:focus, select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  /* toggle */
+  .switch { position: relative; width: 40px; height: 22px; flex: 0 0 40px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 22px; transition: .2s; cursor: pointer; }
+  .slider::before { content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+  .switch input:checked + .slider { background: var(--accent); }
+  .switch input:checked + .slider::before { transform: translateX(18px); }
+  /* key area */
+  .key-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 10px; border-radius: 999px; }
+  .key-status.ok { background: #e8f7ee; color: var(--ok); }
+  .key-status.warn { background: #fdf3e3; color: var(--warn); }
+  .key-status.fail { background: #fdecec; color: var(--fail); }
+  .key-block { border-bottom: 1px dashed var(--line); padding: 10px 0; }
+  .key-block:first-of-type { padding-top: 0; }
+  .key-block:last-of-type { border-bottom: none; }
+  .key-title { font-weight: 600; margin-bottom: 6px; }
+  .key-input { display: flex; gap: 8px; margin-top: 10px; }
+  .key-input input { flex: 1; }
+  .btn { padding: 8px 18px; border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--accent); color: #fff; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+  .btn.danger { background: #fff; color: var(--fail); border: 1px solid #f3c6c6; }
+  .actions { display: flex; gap: 10px; margin-top: 4px; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 9px 18px; border-radius: 8px; font-size: 13px; opacity: 0; transition: .25s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  #doctor-out { margin-top: 12px; font-size: 12px; font-family: Consolas, monospace; max-height: 240px; overflow: auto; white-space: pre-wrap; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Cell-lct 配置</h1>
+    <span class="home" id="home-path"></span>
+  </header>
+
+  <div class="card">
+    <h2>图像编辑后端</h2>
+    <div class="row">
+      <div class="label">清理文字的后端<span class="desc">只删文字，不参与矢量化</span></div>
+      <div class="control"><select id="image_edit_provider">
+        <option value="codex-agent">codex-agent（Codex 内置 Image 2）</option>
+        <option value="dsh-image-gen">dsh-image-gen（DSH 生图能力）</option>
+        <option value="openai-compatible">openai-compatible（HTTP API）</option>
+        <option value="custom">custom（自定义命令模板）</option>
+      </select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>矢量化服务</h2>
+    <div class="row">
+      <div class="label">Provider<span class="desc">远程 API，无需本地部署</span></div>
+      <div class="control"><select id="vectorize_provider">
+        <option value="xiaomiao">xiaomiao（默认）</option>
+      </select></div>
+    </div>
+    <div class="row">
+      <div class="label">服务地址</div>
+      <div class="control"><input type="text" id="xiaomiao_base_url"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>通用</h2>
+    <div class="row">
+      <div class="label">输出根目录<span class="desc">留空 = 跟随任务目录</span></div>
+      <div class="control"><input type="text" id="output_root" placeholder="例如 D:\figures"></div>
+    </div>
+    <div class="row">
+      <div class="label">Skill 安装位置<span class="desc">安装器默认遵循此项，可被 -SkillDestination 覆盖</span></div>
+      <div class="control"><input type="text" id="skill_destination" placeholder="例如 C:\Users\xxx\.skills-manager\skills"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>开关</h2>
+    <div class="row">
+      <div class="label">上传前额度确认<span class="desc">预计消耗超过 1 额度时先询问</span></div>
+      <div class="control"><label class="switch"><input type="checkbox" id="credit_gate_enabled"><span class="slider"></span></label></div>
+    </div>
+    <div class="row">
+      <div class="label">安装时自动诊断<span class="desc">setup 结束时运行 doctor</span></div>
+      <div class="control"><label class="switch"><input type="checkbox" id="setup_run_doctor"><span class="slider"></span></label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>API 密钥</h2>
+
+    <div class="key-block">
+      <div class="key-title">Xiaomiao（矢量化服务）</div>
+      <span class="key-status" id="key-status">加载中…</span>
+      <div class="key-input">
+        <input type="password" id="key-input" placeholder="img_live_ 开头的 API Key（DPAPI 加密保存）" autocomplete="off">
+        <button class="btn" id="key-save">保存</button>
+        <button class="btn danger" id="key-remove">删除</button>
+      </div>
+    </div>
+
+    <div class="key-block" id="oai-block">
+      <div class="key-title">OpenAI-compatible（生图后端）</div>
+      <span class="key-status" id="oai-key-status">加载中…</span>
+      <div class="key-input" id="oai-key-input">
+        <input type="password" id="oai-key" placeholder="sk- 开头的 API Key（DPAPI 加密保存）" autocomplete="off">
+        <button class="btn" id="oai-key-save">保存</button>
+        <button class="btn danger" id="oai-key-remove">删除</button>
+      </div>
+      <div class="hint" id="oai-hint">当前生图后端不是 openai-compatible，此密钥不会被使用；选择该后端后即可配置。</div>
+    </div>
+
+    <div class="hint">密钥只在本地 127.0.0.1 传输，以 Windows DPAPI 加密落盘，不会出现在命令行、日志或聊天中。</div>
+  </div>
+
+  <div class="card">
+    <h2>操作</h2>
+    <div class="actions">
+      <button class="btn" id="save">保存配置</button>
+      <button class="btn ghost" id="doctor">运行诊断</button>
+    </div>
+    <div id="doctor-out"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let toastTimer = null;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  return res.json();
+}
+
+async function load() {
+  const data = await api("/api/config");
+  $("home-path").textContent = "配置目录: " + data.home + "\\config.json";
+  const c = data.config;
+  $("image_edit_provider").value = c.image_edit_provider;
+  $("vectorize_provider").value = c.vectorize_provider;
+  $("xiaomiao_base_url").value = c.xiaomiao_base_url || "";
+  $("output_root").value = c.output_root || "";
+  $("skill_destination").value = (c.skill_install && c.skill_install.preferred_destination) || "";
+  $("credit_gate_enabled").checked = !!c.credit_gate_enabled;
+  $("setup_run_doctor").checked = !!c.setup_run_doctor;
+  await loadKeyStatus("xiaomiao", "key-status");
+  await loadKeyStatus("openai-compatible", "oai-key-status");
+  updateOaiBlock();
+}
+
+async function loadKeyStatus(name, elementId) {
+  const s = await api("/api/secret/status?name=" + name);
+  const el = $(elementId);
+  if (s.configured) {
+    el.textContent = "已配置（" + (s.source === "legacy-codex" ? "旧 Codex 位置" : "默认位置") + "）";
+    el.className = "key-status ok";
+  } else {
+    el.textContent = "未配置";
+    el.className = "key-status fail";
+  }
+  el.title = s.path;
+}
+
+function updateOaiBlock() {
+  const active = $("image_edit_provider").value === "openai-compatible";
+  $("oai-key-input").style.display = active ? "flex" : "none";
+  $("oai-hint").textContent = active
+    ? "此密钥用于 openai-compatible 生图后端的文字清理请求。"
+    : "当前生图后端不是 openai-compatible，此密钥不会被使用；选择该后端后即可配置。";
+}
+
+$("image_edit_provider").addEventListener("change", updateOaiBlock);
+
+$("save").onclick = async () => {
+  const config = {
+    image_edit_provider: $("image_edit_provider").value,
+    vectorize_provider: $("vectorize_provider").value,
+    xiaomiao_base_url: $("xiaomiao_base_url").value.trim(),
+    output_root: $("output_root").value.trim(),
+    credit_gate_enabled: $("credit_gate_enabled").checked,
+    setup_run_doctor: $("setup_run_doctor").checked,
+    skill_install: { preferred_destination: $("skill_destination").value.trim() }
+  };
+  const r = await api("/api/config", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ config })
+  });
+  toast(r.ok ? "配置已保存" : "保存失败: " + (r.error || ""));
+};
+
+async function saveSecret(name, inputId, statusId) {
+  const key = $(inputId).value.trim();
+  if (!key) { toast("请先粘贴 API Key"); return; }
+  const r = await api("/api/secret", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, key })
+  });
+  if (r.ok) {
+    toast("密钥已保存（DPAPI）");
+    $(inputId).value = "";
+    await loadKeyStatus(name, statusId);
+  } else {
+    toast("失败: " + (r.error || ""));
+  }
+}
+
+async function removeSecret(name, statusId) {
+  const r = await api("/api/secret/remove", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name })
+  });
+  toast(r.ok ? "密钥已删除" : "失败");
+  await loadKeyStatus(name, statusId);
+}
+
+$("key-save").onclick = () => saveSecret("xiaomiao", "key-input", "key-status");
+$("key-remove").onclick = () => removeSecret("xiaomiao", "key-status");
+$("oai-key-save").onclick = () => saveSecret("openai-compatible", "oai-key", "oai-key-status");
+$("oai-key-remove").onclick = () => removeSecret("openai-compatible", "oai-key-status");
+
+$("doctor").onclick = async () => {
+  const out = $("doctor-out");
+  out.textContent = "诊断中…";
+  const r = await api("/api/doctor");
+  if (!r.ok || !r.doctor) { out.textContent = "诊断不可用"; return; }
+  if (r.doctor.error) { out.textContent = "诊断失败: " + r.doctor.error; return; }
+  const lines = (r.doctor.checks || []).map(c =>
+    (c.status === "PASS" ? "✅" : c.status === "WARN" ? "⚠️" : "❌") + " " + c.name + " — " + c.message
+  );
+  out.textContent = lines.join("\n") + "\n结果: " + (r.doctor.ok ? "OK" : "FAIL");
+};
+
+load();
+</script>
+</body>
+</html>
