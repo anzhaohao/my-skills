@@ -89,6 +89,12 @@ ordinary work.
   after a same-tier retry (never Sol/GPT unless the Harness is explicitly
   switched back to `codex`). Reasoning effort is auto-resolved per stage: Flash
   low/medium, Pro high, Planner medium (Sol tier) / high, Evaluator high.
+- `harness=kimi-qwen`: run the whole chain on Kimi + Qwen. Planner and Evaluator
+  use Kimi (`k3-256k` by default, `-KimiModel` to override); the Executor is
+  pinned to Qwen (`qwen3.8-27b` by default, `-QwenModel` to override). Reasoning
+  effort is left to the models themselves (`auto` — no `--effort` flag is sent);
+  pass `-ExternalEffort` only to pin an explicit level. The Executor never
+  escalates to GPT tiers in this mode.
 - `executor=luna|terra|sol`: explicitly pin the Executor. Never silently
   replace an explicitly pinned model.
 
@@ -97,6 +103,8 @@ External Harness profiles are optional adapters, not Skill dependencies:
 ```text
 claude-ds-v4-flash
 claude-ds-v4-pro
+claude-kimi
+claude-qwen
 claude-ds-flash (legacy alias)
 claude-ds-pro-hybrid (legacy alias)
 claude-ds-pro-all (legacy alias)
@@ -189,6 +197,23 @@ The Executor never escalates to Terra/Sol/GPT in this mode. The only way to
 reach GPT tiers is to switch `-Harness` back to `codex` explicitly. This is the
 default cost-saving configuration for a Claude Code or DSH session wired to
 DeepSeek.
+
+## Kimi + Qwen chain (`harness=kimi-qwen`)
+
+When the user selects `-Harness kimi-qwen` (or asks for a "Kimi planning/eval,
+Qwen execution" chain), the controller keeps the whole loop on Kimi and Qwen:
+
+```text
+Planner  -> Kimi (k3-256k)     effort auto (model self-decides)
+Executor -> Qwen (qwen3.8-27b) effort auto (model self-decides), same-model retry once
+Evaluator-> Kimi (k3-256k)     effort auto (model self-decides)
+```
+
+Unlike `harness=deepseek`, reasoning effort is NOT auto-resolved by the
+controller: the `--effort` flag is omitted entirely, so each stage decides its
+own thinking depth. `-KimiModel`, `-QwenModel`, and `-ExternalEffort` can
+override the models or pin an explicit effort. The Executor never escalates to
+Terra/Sol/GPT in this mode; rework retries Qwen once more, then stops.
 
 ## Routing rubric
 

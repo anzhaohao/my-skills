@@ -15,6 +15,14 @@ claude-ds-v4-pro:
   primary: deepseek-v4-pro
   role: upgraded complex execution after Terra
 
+claude-kimi:
+  primary: k3-256k
+  role: planner and evaluator in harness=kimi-qwen
+
+claude-qwen:
+  primary: qwen3.8-27b
+  role: pinned executor in harness=kimi-qwen
+
 legacy_aliases:
   claude-ds-flash: claude-ds-v4-flash
   claude-ds-pro-hybrid: claude-ds-v4-pro
@@ -73,6 +81,28 @@ evaluator:
 The Executor escalation chain in this mode is `DS v4 Flash → DS v4 Flash retry
 → DS v4 Pro`. It does not upgrade to Terra or Sol. GPT tiers are reachable only
 by switching `-Harness` back to `codex`.
+
+## Kimi + Qwen harness (`harness=kimi-qwen`)
+
+`harness=kimi-qwen` keeps the whole loop on Kimi and Qwen:
+
+```yaml
+planner:
+  model: k3-256k          # -KimiModel to override
+  effort: auto            # model self-decides; no --effort flag sent
+executor:
+  model: qwen3.8-27b      # -QwenModel to override
+  effort: auto            # model self-decides; retry once, same model
+evaluator:
+  model: k3-256k          # -KimiModel to override
+  effort: auto            # model self-decides
+```
+
+Unlike `harness=deepseek`, the controller does NOT resolve an effort per stage:
+when `requested_effort` is `auto` (the default, i.e. `-ExternalEffort auto`),
+the Claude Code adapter omits `--effort` entirely and lets each model choose
+its own thinking depth. Pass an explicit `-ExternalEffort` to pin a level. The
+Executor never escalates to Terra/Sol/GPT in this mode.
 
 ## Cost and upgrade policy
 

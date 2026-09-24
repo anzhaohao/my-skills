@@ -664,6 +664,15 @@
       ],
       "source": "./understand-onboard",
       "strict": false
+    },
+    {
+      "description": "Academic-grade scientific figure creation for Nature/Cell/Science journals. Use for publication-ready scientific figures, multi-panel plots, journal typography/color/layout, and vector PDF or 300dpi PNG export.",
+      "name": "academic-figure-skill",
+      "skills": [
+        "./"
+      ],
+      "source": "./academic-figure-skill",
+      "strict": false
     }
   ]
 }

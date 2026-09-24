@@ -84,6 +84,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File `
 Evaluator 高。这是纯 DeepSeek 会话默认的省钱配置；只有显式切回
 `-Harness codex` 才会重新启用 GPT 分层。
 
+## Kimi + Qwen 链路（`harness=kimi-qwen`）
+
+想让规划与评估走 Kimi、执行走 Qwen 时，用 `-Harness kimi-qwen`：Planner /
+Evaluator 固定 Kimi（默认 `k3-256k`），Executor 固定 Qwen（默认
+`qwen3.8-27b`），思维强度全部交给模型自决（不向 CLI 传 `--effort`，CLI 侧
+`effort=auto`），失败只做一次同档 Qwen 定向重试，不升级 GPT。
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  $controller `
+  -Harness kimi-qwen `
+  -Task "修复当前项目的保存失败问题" `
+  -RepoPath (Get-Location).Path
+```
+
+可用 `-KimiModel`、`-QwenModel` 覆盖默认模型；只有想显式钉住某档强度时才传
+`-ExternalEffort`（如 `high`），否则保持 `auto`。
+
 ## 维护、验证与删除
 
 - 唯一维护源：`C:\Users\anzhaofeng\.skills-manager\skills\azf-auto-dev-loop`。
@@ -94,6 +112,8 @@ Evaluator 高。这是纯 DeepSeek 会话默认的省钱配置；只有显式切
 - 不要使用宽泛递归删除、环境变量展开后的不确定路径，或顺手删除用户级代理 TOML。是否删除 `azf-sol-planner`、`azf-*-executor`、`azf-*-evaluator` 必须单独确认，因为其它工作流也可能复用它们。
 
 ## 最近维护
+
+2026-08-25：新增 `harness=kimi-qwen` —— Planner / Evaluator 固定 Kimi（`k3-256k`），Executor 固定 Qwen（`qwen3.8-27b`），思维强度全部交给模型自决（不传 `--effort`，`effort=auto`），Executor 失败只做一次同档重试、不升级 GPT；新增 `-KimiModel` / `-QwenModel` 参数。
 
 2026-08-21：新增 `harness=deepseek` 全 DS 链路 —— Planner / Evaluator 固定 DS v4 Pro，Executor 用 DS v4 Flash 起步并只升到 DS v4 Pro，思维强度按阶段自动解析；纯 DeepSeek 会话不再回退 GPT。
 

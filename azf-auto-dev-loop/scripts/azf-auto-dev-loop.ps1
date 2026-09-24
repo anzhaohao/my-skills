@@ -20,10 +20,10 @@ param(
     [ValidateSet('auto', 'always', 'never')]
     [string]$PlannerMode = 'auto',
 
-    [ValidateSet('auto', 'codex', 'claude-code', 'deepseek')]
+    [ValidateSet('auto', 'codex', 'claude-code', 'deepseek', 'kimi-qwen')]
     [string]$Harness = 'auto',
 
-    [ValidateSet('claude-ds-v4-flash', 'claude-ds-v4-pro', 'claude-ds-flash', 'claude-ds-pro-hybrid', 'claude-ds-pro-all')]
+    [ValidateSet('claude-ds-v4-flash', 'claude-ds-v4-pro', 'claude-ds-flash', 'claude-ds-pro-hybrid', 'claude-ds-pro-all', 'claude-kimi', 'claude-qwen')]
     [string]$ExternalProfile = 'claude-ds-v4-flash',
 
     [ValidateSet('auto', 'low', 'medium', 'high', 'xhigh', 'max')]
@@ -32,6 +32,10 @@ param(
     [string]$DsFlashModel = 'deepseek-v4-flash',
 
     [string]$DsProModel = 'deepseek-v4-pro',
+
+    [string]$KimiModel = 'k3-256k',
+
+    [string]$QwenModel = 'qwen3.8-27b',
 
     [ValidateRange(1, 20)]
     [int]$VariantCount = 4,
@@ -305,6 +309,20 @@ function Get-ExternalProfileSpec {
                 capability_tier = 'pro'
             }
         }
+        'claude-kimi' {
+            return [pscustomobject][ordered]@{
+                profile = 'claude-kimi'
+                requested_model = $KimiModel
+                capability_tier = 'pro'
+            }
+        }
+        'claude-qwen' {
+            return [pscustomobject][ordered]@{
+                profile = 'claude-qwen'
+                requested_model = $QwenModel
+                capability_tier = 'cheap'
+            }
+        }
         default { throw "未知 Claude Code profile：$Profile" }
     }
 }
@@ -369,7 +387,7 @@ function Invoke-ClaudeCodeStage {
         [Parameter(Mandatory = $true)][string]$Stage,
         [Parameter(Mandatory = $true)][string]$Prompt,
         [Parameter(Mandatory = $true)][string]$Model,
-        [Parameter(Mandatory = $true)][ValidateSet('low', 'medium', 'high', 'xhigh', 'max')][string]$Effort,
+        [Parameter(Mandatory = $true)][ValidateSet('auto', 'low', 'medium', 'high', 'xhigh', 'max')][AllowEmptyString()][string]$Effort,
         [Parameter(Mandatory = $true)][string]$SchemaPath,
         [Parameter(Mandatory = $true)][string]$OutputPath,
         [Parameter(Mandatory = $true)][string]$RunDirectory,
@@ -395,17 +413,20 @@ function Invoke-ClaudeCodeStage {
     # Windows PowerShell strips embedded quotes when forwarding JSON to a native
     # executable. Preserve them for Claude Code's --json-schema parser.
     $schemaArg = '"' + $schemaRaw.Replace('"', '\"') + '"'
-    $args = @(
-        '--print',
-        '--output-format', 'json',
-        '--json-schema', $schemaArg,
-        '--model', $Model,
-        '--effort', $Effort,
+    # effort=auto（或空）表示思维强度交给模型自决：不向 CLI 传 --effort。
+    if ([string]::IsNullOrWhiteSpace($Effort) -or $Effort -eq 'auto') {
+        $effortLabel = 'auto'
+        $effortArgs = @()
+    } else {
+        $effortLabel = $Effort
+        $effortArgs = @('--effort', $Effort)
+    }
+    $args = @('--print', '--output-format', 'json', '--json-schema', $schemaArg, '--model', $Model) + $effortArgs + @(
         '--permission-mode', 'bypassPermissions',
         '--dangerously-skip-permissions',
         '--no-session-persistence'
     )
-    Write-AgentEvent -Role $Role -Stage $Stage -Status 'STARTED' -Harness $HarnessLabel -RequestedModel $Model -RequestedEffort $Effort -Reason 'controller_route' -Summary 'Claude Code 非交互 adapter 已自动启动；权限为 full-trust。'
+    Write-AgentEvent -Role $Role -Stage $Stage -Status 'STARTED' -Harness $HarnessLabel -RequestedModel $Model -RequestedEffort $effortLabel -Reason 'controller_route' -Summary 'Claude Code 非交互 adapter 已自动启动；权限为 full-trust。'
     $previousErrorActionPreference = $ErrorActionPreference
     Push-Location -LiteralPath $RepoPath
     try {
@@ -431,11 +452,11 @@ function Invoke-ClaudeCodeStage {
     Write-JsonFile -Value ([ordered]@{
         requested_model = $Model
         resolved_model = $resolvedModel
-        requested_effort = $Effort
-        resolved_effort = if ($resolvedModel -eq 'unverified') { 'unverified' } else { $Effort }
+        requested_effort = $effortLabel
+        resolved_effort = if ($resolvedModel -eq 'unverified') { 'unverified' } else { $effortLabel }
         harness = $HarnessLabel
     }) -Path (Join-Path $RunDirectory ('{0}.resolution.json' -f $Stage))
-    Write-AgentEvent -Role $Role -Stage $Stage -Status 'COMPLETE' -Harness $HarnessLabel -RequestedModel $Model -ResolvedModel $resolvedModel -RequestedEffort $Effort -ResolvedEffort $(if ($resolvedModel -eq 'unverified') { 'unverified' } else { $Effort }) -Reason 'stage_complete' -Summary 'Claude Code 返回了可解析的结构化执行结果。'
+    Write-AgentEvent -Role $Role -Stage $Stage -Status 'COMPLETE' -Harness $HarnessLabel -RequestedModel $Model -ResolvedModel $resolvedModel -RequestedEffort $effortLabel -ResolvedEffort $(if ($resolvedModel -eq 'unverified') { 'unverified' } else { $effortLabel }) -Reason 'stage_complete' -Summary 'Claude Code 返回了可解析的结构化执行结果。'
 }
 
 function Get-ModelName {
@@ -485,6 +506,18 @@ function Resolve-InitialRoute {
             requested_effort = Resolve-ExternalEffort -Plan $Plan -Profile $dsProfile
             route_stage = 0
             route_reason = 'explicit_deepseek_harness'
+        }
+    }
+    if ($Harness -eq 'kimi-qwen') {
+        # Kimi + Qwen 链路：Planner/Evaluator 走 Kimi（$KimiModel），Executor 固定 Qwen（$QwenModel）。
+        # 思维强度默认交给模型自决（auto）；可用 -ExternalEffort 显式覆盖。
+        return [pscustomobject][ordered]@{
+            harness = 'kimi-qwen'
+            executor_tier = 'luna'
+            external_profile = 'claude-qwen'
+            requested_effort = $ExternalEffort
+            route_stage = 0
+            route_reason = 'explicit_kimi_qwen_harness'
         }
     }
     if ($Harness -eq 'codex') {
@@ -548,6 +581,13 @@ function Get-NextRoute {
             return [pscustomobject][ordered]@{ harness = 'deepseek'; executor_tier = 'terra'; external_profile = 'claude-ds-v4-pro'; requested_effort = 'high'; route_stage = 3; route_reason = 'upgrade_to_ds_v4_pro' }
         }
         return [pscustomobject][ordered]@{ harness = 'deepseek'; executor_tier = 'terra'; external_profile = 'claude-ds-v4-pro'; requested_effort = 'high'; route_stage = 3; route_reason = 'ds_pro_final_rework' }
+    }
+    if ($harness -eq 'kimi-qwen') {
+        # Kimi + Qwen 升级链：Executor 固定 Qwen，只做一次同档定向重试（effort 仍 auto），不升级 GPT。
+        if ($stage -eq 0) {
+            return [pscustomobject][ordered]@{ harness = 'kimi-qwen'; executor_tier = 'luna'; external_profile = 'claude-qwen'; requested_effort = 'auto'; route_stage = 1; route_reason = 'same_qwen_targeted_retry' }
+        }
+        return [pscustomobject][ordered]@{ harness = 'kimi-qwen'; executor_tier = 'luna'; external_profile = 'claude-qwen'; requested_effort = 'auto'; route_stage = 3; route_reason = 'qwen_final_rework' }
     }
     if ($harness -eq 'claude-code' -and $profile -eq 'claude-ds-v4-flash') {
         if ($stage -eq 0) {
@@ -645,7 +685,7 @@ function Write-RouteRecord {
         [Parameter(Mandatory = $true)]$RouteState
     )
     $effectiveHarness = [string]$RouteState.harness
-    $isExternal = $effectiveHarness -in @('claude-code', 'deepseek')
+    $isExternal = $effectiveHarness -in @('claude-code', 'deepseek', 'kimi-qwen')
     $profile = if ($isExternal) { [string]$RouteState.external_profile } else { $null }
     $executorModel = if ($isExternal) { (Get-ExternalProfileSpec -Profile $profile).requested_model } else { Get-ModelName -Tier $ExecutorTier }
     $resolvedModel = 'pending_stage_resolution'
@@ -653,9 +693,9 @@ function Write-RouteRecord {
     $record = [ordered]@{
         run_id = $RunId
         round = $Round
-        planner_profile = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_planner' } else { ('azf_{0}_planner' -f $PlannerTier) } } else { 'deterministic_preflight' }
-        planner_model = if ($Harness -eq 'deepseek') { $DsProModel } elseif ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
-        planner_effort = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { if ($PlannerTier -eq 'sol') { 'high' } else { 'medium' } } else { 'high' } } else { 'not_invoked' }
+        planner_profile = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_planner' } elseif ($Harness -eq 'kimi-qwen') { 'azf_kimi_planner' } else { ('azf_{0}_planner' -f $PlannerTier) } } else { 'deterministic_preflight' }
+        planner_model = if ($Harness -eq 'deepseek') { $DsProModel } elseif ($Harness -eq 'kimi-qwen') { $KimiModel } elseif ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
+        planner_effort = if ($PlannerInvoked) { if ($Harness -eq 'deepseek') { if ($PlannerTier -eq 'sol') { 'high' } else { 'medium' } } elseif ($Harness -eq 'kimi-qwen') { $ExternalEffort } else { 'high' } } else { 'not_invoked' }
         planner_invoked = [bool]$PlannerInvoked
         task_profile = $TaskProfile
         harness = $effectiveHarness
@@ -666,9 +706,9 @@ function Write-RouteRecord {
         executor_profile = if ($isExternal) { $profile } else { ('azf_{0}_executor' -f $ExecutorTier) }
         executor_model = $executorModel
         executor_effort = $requestedEffort
-        evaluator_profile = if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_evaluator' } elseif ($effectiveHarness -eq 'claude-code') { 'fresh_codex_evaluator' } else { ('azf_{0}_evaluator' -f $EvaluatorTier) }
-        evaluator_model = if ($Harness -eq 'deepseek') { $DsProModel } else { Get-ModelName -Tier $EvaluatorTier }
-        evaluator_effort = 'high'
+        evaluator_profile = if ($Harness -eq 'deepseek') { 'azf_ds_v4_pro_evaluator' } elseif ($Harness -eq 'kimi-qwen') { 'azf_kimi_evaluator' } elseif ($effectiveHarness -eq 'claude-code') { 'fresh_codex_evaluator' } else { ('azf_{0}_evaluator' -f $EvaluatorTier) }
+        evaluator_model = if ($Harness -eq 'deepseek') { $DsProModel } elseif ($Harness -eq 'kimi-qwen') { $KimiModel } else { Get-ModelName -Tier $EvaluatorTier }
+        evaluator_effort = if ($Harness -eq 'kimi-qwen') { $ExternalEffort } else { 'high' }
         requested_model = $executorModel
         resolved_model = $resolvedModel
         requested_effort = $requestedEffort
@@ -720,6 +760,9 @@ $AdditionalContext
     if ($Harness -eq 'deepseek') {
         $plannerEffort = if ($PlannerTier -eq 'sol') { 'high' } else { 'medium' }
         Invoke-ClaudeCodeStage -Stage 'planner' -Prompt $prompt -Model $DsProModel -Effort $plannerEffort -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'planner' -StatusField 'status' -ExpectedStatus 'PLAN_READY' -HarnessLabel 'deepseek'
+    } elseif ($Harness -eq 'kimi-qwen') {
+        # Kimi 规划：思维强度交给模型自决（effort auto，可被 -ExternalEffort 覆盖）。
+        Invoke-ClaudeCodeStage -Stage 'planner' -Prompt $prompt -Model $KimiModel -Effort $ExternalEffort -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'planner' -StatusField 'status' -ExpectedStatus 'PLAN_READY' -HarnessLabel 'kimi-qwen'
     } else {
         $plannerModel = if ($PlannerTier -eq 'sol') { 'gpt-5.6-sol' } else { 'gpt-5.6-terra' }
         Invoke-CodexStage -Stage 'planner' -Prompt $prompt -Model $plannerModel -Effort 'high' -Role 'planner' -SchemaPath $PlanSchema -OutputPath $path -RunDirectory $RunDirectory
@@ -876,7 +919,7 @@ $ReworkContext
 "@
     $path = Join-Path $RunDirectory ('execution-r{0}.json' -f $Round)
     $stage = 'executor-r{0}' -f $Round
-    if ([string]$RouteState.harness -in @('claude-code', 'deepseek')) {
+    if ([string]$RouteState.harness -in @('claude-code', 'deepseek', 'kimi-qwen')) {
         $spec = Get-ExternalProfileSpec -Profile ([string]$RouteState.external_profile)
         Invoke-ClaudeCodeStage -Stage $stage -Prompt $prompt -Model $spec.requested_model -Effort ([string]$RouteState.requested_effort) -SchemaPath $ExecutionSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'executor' -StatusField 'status' -ExpectedStatus 'EXECUTION_COMPLETE' -HarnessLabel ([string]$RouteState.harness)
     } else {
@@ -926,6 +969,9 @@ $executionText
     $path = Join-Path $RunDirectory ('evaluation-r{0}.json' -f $Round)
     if ($Harness -eq 'deepseek') {
         Invoke-ClaudeCodeStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model $DsProModel -Effort 'high' -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'evaluator' -StatusField 'verdict' -HarnessLabel 'deepseek'
+    } elseif ($Harness -eq 'kimi-qwen') {
+        # Kimi 评估：思维强度交给模型自决（effort auto，可被 -ExternalEffort 覆盖）。
+        Invoke-ClaudeCodeStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model $KimiModel -Effort $ExternalEffort -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory -Role 'evaluator' -StatusField 'verdict' -HarnessLabel 'kimi-qwen'
     } else {
         Invoke-CodexStage -Stage ('evaluator-r{0}' -f $Round) -Prompt $prompt -Model (Get-ModelName -Tier $EvaluatorTier) -Effort 'high' -Role 'evaluator' -SchemaPath $EvaluationSchema -OutputPath $path -RunDirectory $RunDirectory
     }
@@ -979,7 +1025,7 @@ $PlannerTier = 'terra'
 $exitCode = 0
 
 try {
-    if ($Harness -in @('claude-code', 'deepseek')) {
+    if ($Harness -in @('claude-code', 'deepseek', 'kimi-qwen')) {
         if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
             throw '找不到 claude 命令，请先确认 Claude Code CLI 在 PATH 中。'
         }
@@ -1031,8 +1077,8 @@ try {
         task_profile = $TaskProfile
         planner_mode = $PlannerMode
         harness = if ($Harness -eq 'auto') { 'codex' } else { $Harness }
-        external_profile = if ($Harness -in @('claude-code', 'deepseek')) { $ExternalProfile } else { $null }
-        requested_model = if ($Harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $ExternalProfile).requested_model } else { 'auto' }
+        external_profile = if ($Harness -eq 'kimi-qwen') { 'claude-qwen' } elseif ($Harness -in @('claude-code', 'deepseek')) { $ExternalProfile } else { $null }
+        requested_model = if ($Harness -eq 'kimi-qwen') { $QwenModel } elseif ($Harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $ExternalProfile).requested_model } else { 'auto' }
         requested_effort = $ExternalEffort
         permission_mode = 'full-trust'
         default_executor_weights = [ordered]@{ claude_ds_v4_flash = 0.60; luna = 0.40 }
@@ -1062,7 +1108,7 @@ try {
     $executorTier = [string]$routeState.executor_tier
     $evaluatorTier = Resolve-EvaluatorTier -ExecutorTier $executorTier -Plan $plan
     $route = Write-RouteRecord -Plan $plan -ExecutorTier $executorTier -EvaluatorTier $evaluatorTier -Round 0 -RouteState $routeState
-    $routeModel = if ($routeState.harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
+    $routeModel = if ($routeState.harness -in @('claude-code', 'deepseek', 'kimi-qwen')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
     Write-Host ("[PLAN_READY] score={0} risk={1} harness={2} model={3} effort={4} executor={5} evaluator={6}" -f $plan.complexity_score, $plan.risk_level, $routeState.harness, $routeModel, $routeState.requested_effort, $executorTier, $evaluatorTier)
 
     if ($Mode -eq 'dry-run' -or ($Mode -eq 'reviewed' -and -not $Approve)) {
@@ -1141,7 +1187,7 @@ try {
             $executorTier = [string]$routeState.executor_tier
             $evaluatorTier = Resolve-EvaluatorTier -ExecutorTier $executorTier -Plan $plan
             $route = Write-RouteRecord -Plan $plan -ExecutorTier $executorTier -EvaluatorTier $evaluatorTier -Round ($round + 1) -RouteState $routeState
-            $nextModel = if ($routeState.harness -in @('claude-code', 'deepseek')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
+            $nextModel = if ($routeState.harness -in @('claude-code', 'deepseek', 'kimi-qwen')) { (Get-ExternalProfileSpec -Profile $routeState.external_profile).requested_model } else { Get-ModelName -Tier $executorTier }
             Write-Host ("[REWORK] round={0} next_harness={1} next_model={2} next_effort={3} reason={4} evaluator={5}" -f ($round + 1), $routeState.harness, $nextModel, $routeState.requested_effort, $routeState.route_reason, $evaluatorTier)
         }
 
