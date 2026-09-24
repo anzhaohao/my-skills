@@ -7,6 +7,7 @@
 ## 什么时候触发
 
 - 开始为 An Zhaofeng 做编程、前端页面/应用、文档、实验记录、项目规划或调试任务。
+- 收到 Windows 本地路径，尤其是含下划线的文件夹名（如 `D:\Postgraduate_JilinUniversity\...`）。
 - 任务涉及 Git 分支、提交、推送、回滚、备份或交接记录。
 - 创建、补充、优化任何 skill。
 - 新建项目、部署服务、开发较大功能、引入工具或替换工作流，需要先寻找本地和网络上的可复用方案。
@@ -28,6 +29,7 @@
 - Edge 关闭时由预检脚本最小化启动 Default profile；扩展仍未连接时只重启一次 daemon。仍失败就快速切换 agent-reach 的备用后端，禁止直接进入约 20 秒的无界等待，也禁止借 Codex IAB/browser-use 修复 OpenCLI。
 - OpenCLI 原始输出必须限量。优先通过 `scripts/opencli_guard.py run` 调用，默认限制结果条目和输出字符数，避免 quoted tweet、长文或嵌套正文挤满上下文并造成任务看似“截断”。
 - Codex 内置浏览器/IAB/browser-use 在当前机器上属于 P0 闪退风险路径。默认不得用它做本地 HTML 预览、响应式验收、截图或普通页面读取；优先使用独立 headless Playwright，需要可见界面、现有登录态或扩展时改用 Edge/Chrome。
+- Windows 下划线路径纪律：用户给的 `D:\Postgraduate_JilinUniversity\03_Sundries\...` 这类路径里，`Postgraduate_JilinUniversity` 是**一个**文件夹名，下划线不是路径分隔符。禁止拆成 `Postgraduate\_JilinUniversity` 并凭空建出一整套平行目录。操作前必须先 `Test-Path` 验证原样路径；失败时用 `Get-ChildItem D:\ -Directory | ? Name -match '<关键词>'` 找真实目录名，不要猜。开发项目的默认根目录是 `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab`，每个项目在其下建一个子文件夹，命名仿照现有同级：`YYYYMMDD-英文短名`，英文优先，名字部分用短的小写 kebab-case（如 `20260918-AgentFigureGallery`、`20260904-scientific-color-assistant`）。如果新机器上连 `02_DevLab` 都不存在，不要猜路径、不要凭空建平行目录树；先和我确认一个默认项目根目录，记入本 skill，下一轮再开始。
 - OpenCLI 与 IAB 必须分开处理：OpenCLI 搜索继续执行 Edge/Browser Bridge 预检；独立 headless Playwright 不需要 OpenCLI 预检；OpenCLI 断连时禁止回退到 IAB。
 - 如果我明确要求使用 IAB，Agent 必须在真正创建 browser-use 标签前提醒它可能直接结束 Codex 进程并再次确认。看到 `No ChatGPT browser route`、`Sign in to ChatGPT`、`hidden-browser-use`、`ResizeObserver` 或 PiP 写入失败时停止重试，切换独立浏览器路径。
 - 用户正式事实与边界不在本 skill 中维护完整版本；本 skill 只保留行为层规则和指向 `agent-memory` 的说明。
@@ -59,6 +61,19 @@
 - 通过代码运行的 QuickAdd UserScript 统一放在 `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\3_Plugin Mods\QuickAdd\Scripts`；移动或修改时同步更新 `.obsidian/plugins/quickadd/data.json`，并同步维护该目录下的 `QuickAdd脚本说明.md`，然后重新加载 QuickAdd。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
+- 部署或接手一个本地项目时，先扫它有没有管理器/托管机制（识别清单与要排除的噪音见 `azf-manager-builder`）：**有长驻进程但没有真管理器**（只有 `.bat`/`.ps1`/`.vbs` 这类"启动一次就不管"的脚本）时，先停下来问我"要不要顺手建一个 .exe 管理器"，得到同意再交给 `azf-manager-builder` 生成；没有长驻进程（一次性脚本、纯 CLI 工具、Docker 已托管）就一句话说明"无需管理器"继续。未经我同意不得自行新建管理器，也不得为了让托管更方便去改被托管项目的源码。
+
+- **skill 规范库的收纳规则（2026-09-24）**：`C:\Users\anzhaofeng\.skills-manager\skills` 只收两类 skill——第三方（ClawHub / skills.sh 等市场或公开仓库装来的）和自建（`azf-` / `azq-` 前缀）。**harness 自带的默认 skill 不放这里**，它们只留在该 harness 自己的默认目录（Codex 系统 skill 在 `~/.codex/skills/.system/`，运行时的 `pdf` / `documents` 插件在 `~/.cache/codex-runtimes/...`）。判断线索：skill 文档引用该 harness 的私有路径或专有 frontmatter（`.cursor/rules/`、`.cursor/hooks.json`、`~/.cursor/cli-config.json`、`disable-model-invocation`）。发现混入时三步走：**移出**到 `E:\software\AI改前备份\<时间戳>_skill库移出<harness>自带skill_<harness>\skills\`（移动而非删除）→ **删链接**（各 agent 目录里指向它的 junction，避免悬空）→ **提交**该仓库。规则同时写在 `skills\README.md`，但那份 README 会被 Skills Manager 重新生成，以本 skill 为准。
+
+## 部署新项目时的托管检查（→ azf-manager-builder）
+
+为什么有这个习惯：2026-09-24 扫了一遍 DevLab 的 24 个项目，只有 `20260922-codex-router` 有真正的进程管理器（`local\manager\CodexRouterManager.exe`），其余大多是"挂了要手动重启"的启动脚本。所以部署新项目时顺手判断一次，值得就建一个。
+
+- **触发时机**：部署、接手、或"帮我托管/守护/开机自启"一个本地项目时（常与 `azf-reuse-first` 在同一轮）。
+- **怎么判断**：`manager\` 目录或 `*Manager.exe`、nssm/WinSW 配置、pm2/`ecosystem.config.js`、`supervisord.conf`、带 restart 策略的 `docker-compose.yml`、指向该项目的计划任务 → 已托管，只报告；只有启动器 `.bat`/`.ps1`/`.vbs` → 目标场景；`.venv\Scripts\activate.bat`、`.vscode\launch.json`、`node_modules\**` 一律不算。
+- **行为**：目标场景下**先问**"要不要顺手建一个 .exe 管理器"，把要托管的进程与端口、会生成的文件、回滚方式一并说清；同意后再交给 `azf-manager-builder`。
+- **产物形态**：`<项目>\manager\` 下的零依赖单文件托盘 exe（无窗口、端口级健康检查、退避自愈、托盘菜单、`--status/--stop/--restart/--fix-*` CLI），旧启动方式停用但保留用于回滚。
+- **不适用**：一次性脚本、纯 CLI 工具、Docker 已托管、要求做成 Windows 服务（session 0 无桌面）的场景。
 
 ## 项目缓存归属习惯
 
@@ -113,6 +128,11 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 
 ## 最近维护
 
+- 2026-09-24：加入 **skill 规范库收纳规则**（只收第三方与自建 skill，harness 自带的一律移出）。同日按此规则把 Cursor 自带的 9 个 skill（`canvas`、`create-hook`、`create-rule`、`create-skill`、`create-subagent`、`statusline`、`update-cli-config`、`update-cursor-settings`、`migrate-to-skills`）从规范库移出到 `E:\software\AI改前备份\20260924_161220_skill库移出Cursor自带skill_codex\`，删除 `~/.codex`、`~/.trae`、`~/.antigravity` 下指向 `create-skill` 的 3 个 junction，并在 skills 仓库提交 `74eaf95`；规则同时写入 `skills\README.md`。
+- 2026-09-24：新增「部署新项目时的托管检查」习惯，并路由到新 skill `azf-manager-builder`（名字由你选定，替代我原先倾向的 `azf-win-tray-supervisor`）。触发点：部署/接手项目时先扫有没有管理器，只有启动脚本、且有长驻进程时，**先问你要不要建**再动手。同时把散落在 skill 目录里的 `SKILL.md.bak-20260914` 挪到 `E:\software\AI改前备份\20260924_155845_skill维护前备份_codex\`，保持 skill 目录干净。
+
+- 2026-09-21：把 DevLab 默认项目根目录规则补全为三部分——目录本身已用下划线连写相关于 2026-09-18 固定；新增“每个项目在 `02_DevLab` 下建一个子文件夹”与`YYYYMMDD-英文短名`（英文优先）的命名规范；并加上新机器兜底：路径不存在时不猜、不建平行目录树，先确认一个默认根目录并记入本 skill，下一轮再开始。
+
 - 2026-08-16：将 AI 回滚备份默认根目录统一为 `E:\software\AI改前备份`（原 `E:\software\CodexPlusPlus\Codex备份` 保留不动），子目录命名在 `YYYYMMDD_HHMMSS_任务名_修改前备份` 末尾追加 harness 来源 `_codex` / `_claude-code`。
 
 - 2026-08-11：新增 `azf-reuse-first` 路由。新项目、部署、较大功能、工具替换和工作流重建先查本地、再查网络，第一轮只读并等待二次确认后实施。
@@ -134,7 +154,9 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 2026-07-18：归档逐句精读 Skill；“精读文献”“精读论文”“论文精读”继续进入 `azf-literature-reading-workflow`，明确逐句或逐段时参考论文精读工作流目录下的已归档 PDF++ 定位方法。
 
 - 2026-07-28：短 Wikilink 规则扩展到笔记、PDF、图片和其它附件，取消旧的资源/附件路径例外；文件名冲突时先重命名目标资产。
-- 2026-07-17：加入 Obsidian 库内笔记短 wikilink 规则。其“资源和附件可保留路径”的旧例外已被 2026-07-28 规则覆盖。
+- 2026-07-17：加入 Obsidian 库内笔记短 wikilink 规则。其"资源和附件可保留路径"的旧例外已被 2026-07-28 规则覆盖。
+
+- 2026-09-18：加入 Windows 下划线路径纪律。用户给的 `D:\Postgraduate_JilinUniversity\...` 这类路径，下划线是文件夹名的一部分，禁止拆成 `Postgraduate\_JilinUniversity` 并新建平行目录树；操作前必须 `Test-Path` 验证，失败时列出真实目录名而不是猜测。同时把 `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab` 固化为开发项目的默认根目录。
 
 - 2026-07-16：加入 Codex IAB P0 闪退保护。当前便携 Gate-off `26.707.12708.0` 在无可用 ChatGPT browser route 时，创建 `hidden-browser-use` WebView 后可于页面加载完成后直接退出；以后本地 HTML 验收默认使用独立 headless Playwright，OpenCLI 与 IAB 的门禁和回退路径严格分离。
 
