@@ -38,6 +38,8 @@ Browse all available skills with `/plugin` after adding the marketplace, or see 
 ### 已按此规则移出的记录
 
 - **2026-09-24 · Cursor 自带 9 个**：`canvas`、`create-hook`、`create-rule`、`create-skill`、`create-subagent`、`statusline`、`update-cli-config`、`update-cursor-settings`、`migrate-to-skills`（证据：文档里引用 `.cursor/` 路径与 `disable-model-invocation`）。同时删除了 `~/.codex/skills`、`~/.trae/skills`、`~/.antigravity/skills` 里指向 `create-skill` 的 3 个 junction。备份在 `E:\software\AI改前备份\20260924_161220_skill库移出Cursor自带skill_codex\`。
+- **2026-09-24 · harness 厂商一方 2 个**：`chatgpt-apps`（OpenAI 一方内容：ChatGPT Apps SDK 主题，并要求先调用 Codex 系统 skill `openai-docs`）与 `pdf`（`pdf` 这个 skill 名由 Codex 自带——`~/.codex/plugins/cache/openai-primary-runtime/pdf/<版本>/skills/pdf/`；库内那份虽为另一版本，但属同类厂商内容）。已删除 `~/.codex/skills` 下指向这两个的 junction。备份在 `E:\software\AI改前备份\20260924_162943_skill库移出一方vendor skill_codex\`。
+  > 判定口径（2026-09-24 明确）：**"第三方" = harness 厂商以外的人/组织发布的 skill**（如 GreenSock 的 `gsap-*`、Cloudflare 的 `cloudflare-deploy`、社区的 `nature-*` / `xxd-panel-*` 都算第三方，可收）；**harness 厂商自家发布的**（OpenAI/Cursor/Anthropic/DeepSeek 为自家 harness 出的 skill）不算第三方，一律只放在该 harness 自己的目录里。
 
 > 说明：本文档由 Skills Manager 自动生成，上面的收纳规则是手工追加的；如果某次同步把它覆盖掉，用仓库提交历史把这一段找回来，或直接问 An Zhaofeng 要这条规则（它会同时记录在 `azf-personal-habits` 里）。
 
