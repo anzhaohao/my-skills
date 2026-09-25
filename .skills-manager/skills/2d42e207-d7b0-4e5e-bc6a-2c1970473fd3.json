@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "2d42e207-d7b0-4e5e-bc6a-2c1970473fd3",
+  "path": "nature-citation",
+  "path_key": "nature-citation",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

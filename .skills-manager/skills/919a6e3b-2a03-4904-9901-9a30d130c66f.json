@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "919a6e3b-2a03-4904-9901-9a30d130c66f",
+  "path": "azf-research-tutor",
+  "path_key": "azf-research-tutor",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

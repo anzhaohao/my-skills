@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "939505cf-a927-4c01-85ac-19bc0f500e87",
+  "path": "azf-personal-habits",
+  "path_key": "azf-personal-habits",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

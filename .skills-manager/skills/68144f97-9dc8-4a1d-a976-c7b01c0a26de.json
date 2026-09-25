@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "68144f97-9dc8-4a1d-a976-c7b01c0a26de",
+  "path": "azf-paper-zh-reading-translator",
+  "path_key": "azf-paper-zh-reading-translator",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f2bccf1a-c4df-440e-a573-2fd699386d66",
+  "path": "azq-story-deslop",
+  "path_key": "azq-story-deslop",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

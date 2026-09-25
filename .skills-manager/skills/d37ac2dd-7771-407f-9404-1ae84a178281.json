@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "d37ac2dd-7771-407f-9404-1ae84a178281",
+  "path": "scientific-illustrator/skills/design-scientific-figure",
+  "path_key": "scientific-illustrator/skills/design-scientific-figure",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c17a105b-f487-4e61-ab4a-7c87857b2962",
+  "path": "azf-literature-reading-workflow",
+  "path_key": "azf-literature-reading-workflow",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

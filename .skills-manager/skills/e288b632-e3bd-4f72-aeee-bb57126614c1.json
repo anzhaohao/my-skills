@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e288b632-e3bd-4f72-aeee-bb57126614c1",
+  "path": "nature-paper2ppt",
+  "path_key": "nature-paper2ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

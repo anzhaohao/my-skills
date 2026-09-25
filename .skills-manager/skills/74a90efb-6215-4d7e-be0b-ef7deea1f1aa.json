@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "74a90efb-6215-4d7e-be0b-ef7deea1f1aa",
+  "path": "azf-manager-builder",
+  "path_key": "azf-manager-builder",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

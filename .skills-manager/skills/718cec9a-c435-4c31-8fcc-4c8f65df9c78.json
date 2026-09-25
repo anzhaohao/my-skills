@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "718cec9a-c435-4c31-8fcc-4c8f65df9c78",
+  "path": "azf-agent-memory",
+  "path_key": "azf-agent-memory",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "894362e7-9f34-4722-98b1-8bad1972deda",
+  "path": "azf-pdf-figure-render-extractor",
+  "path_key": "azf-pdf-figure-render-extractor",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

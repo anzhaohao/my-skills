@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3ba0af28-7d61-4cfb-8783-054a31e05d43",
+  "path": "ccgui-plugin-creator",
+  "path_key": "ccgui-plugin-creator",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

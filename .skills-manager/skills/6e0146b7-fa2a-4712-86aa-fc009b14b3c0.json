@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "6e0146b7-fa2a-4712-86aa-fc009b14b3c0",
+  "path": "officecli/skills/officecli-data-dashboard",
+  "path_key": "officecli/skills/officecli-data-dashboard",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

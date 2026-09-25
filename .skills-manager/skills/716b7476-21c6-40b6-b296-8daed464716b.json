@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "716b7476-21c6-40b6-b296-8daed464716b",
+  "path": "azf-auto-dev-loop",
+  "path_key": "azf-auto-dev-loop",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

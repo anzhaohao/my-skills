@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "9be2d5db-8cc1-423b-8506-f2d4a9dd7e31",
+  "path": "speckit-tasks",
+  "path_key": "speckit-tasks",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

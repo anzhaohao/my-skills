@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "11d9de2a-6042-4af9-856b-6f7c8ffb7a2c",
+  "path": "nature-downloader",
+  "path_key": "nature-downloader",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "2927b2e9-a021-4571-a180-2fa44f29ebcb",
+  "path": "scientific-illustrator/skills/recreate-scientific-figure-in-drawio",
+  "path_key": "scientific-illustrator/skills/recreate-scientific-figure-in-drawio",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

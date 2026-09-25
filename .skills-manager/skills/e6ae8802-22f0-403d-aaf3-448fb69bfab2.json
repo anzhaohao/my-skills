@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e6ae8802-22f0-403d-aaf3-448fb69bfab2",
+  "path": "azf-reuse-first",
+  "path_key": "azf-reuse-first",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

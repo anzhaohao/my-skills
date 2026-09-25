@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "d2eff9b1-5cb4-42fd-a31e-3547bd684df2",
+  "path": "officecli/skills/officecli-academic-paper",
+  "path_key": "officecli/skills/officecli-academic-paper",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "05e3c1ed-0529-4905-a2ab-735eef7cbd83",
+  "path": "babysit",
+  "path_key": "babysit",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

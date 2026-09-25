@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "5d530c0b-cf43-44e1-a0d9-26a18638a20c",
+  "path": "officecli/skills/officecli-docx",
+  "path_key": "officecli/skills/officecli-docx",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

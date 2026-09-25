@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "bbca2d52-1ce8-405b-a1a7-d7202c8b5dc2",
+  "path": "azf-obsidian-project-record",
+  "path_key": "azf-obsidian-project-record",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

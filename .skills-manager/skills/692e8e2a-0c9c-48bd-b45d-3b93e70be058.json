@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "692e8e2a-0c9c-48bd-b45d-3b93e70be058",
+  "path": "academic-figure-skill",
+  "path_key": "academic-figure-skill",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

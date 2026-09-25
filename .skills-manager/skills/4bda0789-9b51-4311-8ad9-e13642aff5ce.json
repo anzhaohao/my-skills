@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "4bda0789-9b51-4311-8ad9-e13642aff5ce",
+  "path": "officecli/skills/officecli-word-form",
+  "path_key": "officecli/skills/officecli-word-form",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "2a52f1c9-366c-4a38-b757-6b4fcff63e43",
+  "path": "photo-abstract-editorial",
+  "path_key": "photo-abstract-editorial",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

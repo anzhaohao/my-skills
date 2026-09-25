@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "862a19b4-5104-47e3-86b9-e6b46d599349",
+  "path": "nature-paper-card",
+  "path_key": "nature-paper-card",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

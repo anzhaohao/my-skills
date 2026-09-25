@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "86799e92-aeb1-406d-88a7-189f8c471b85",
+  "path": "understand-knowledge",
+  "path_key": "understand-knowledge",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

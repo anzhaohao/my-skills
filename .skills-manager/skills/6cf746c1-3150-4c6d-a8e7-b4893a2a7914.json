@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "6cf746c1-3150-4c6d-a8e7-b4893a2a7914",
+  "path": "nature-statistics",
+  "path_key": "nature-statistics",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

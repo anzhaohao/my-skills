@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "70c5e76f-7364-40d7-8c95-11a2b4f6f922",
+  "path": "azf-html-ui-loop",
+  "path_key": "azf-html-ui-loop",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

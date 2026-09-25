@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "87e8cb07-2fda-4997-925f-2bc85ef73294",
+  "path": "nature-data",
+  "path_key": "nature-data",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

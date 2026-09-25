@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "448af8a2-0629-4288-b414-ec1cbd106d20",
+  "path": "azf-server-deploy",
+  "path_key": "azf-server-deploy",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

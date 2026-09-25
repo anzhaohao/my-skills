@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e3c9793d-38d5-4cc3-a37c-9c1e92d1707c",
+  "path": "nature-shared",
+  "path_key": "nature-shared",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

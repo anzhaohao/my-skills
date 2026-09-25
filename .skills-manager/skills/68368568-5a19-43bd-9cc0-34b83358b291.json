@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "68368568-5a19-43bd-9cc0-34b83358b291",
+  "path": "officecli/skills/officecli-pptx",
+  "path_key": "officecli/skills/officecli-pptx",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

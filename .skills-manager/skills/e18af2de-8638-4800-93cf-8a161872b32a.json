@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e18af2de-8638-4800-93cf-8a161872b32a",
+  "path": "officecli/skills/officecli-pitch-deck",
+  "path_key": "officecli/skills/officecli-pitch-deck",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

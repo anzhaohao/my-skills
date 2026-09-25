@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "bbf50e9d-0782-4ed5-ba23-1707a772af1f",
+  "path": "statistical-analysis",
+  "path_key": "statistical-analysis",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

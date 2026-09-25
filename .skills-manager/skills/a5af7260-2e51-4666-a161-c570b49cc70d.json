@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "a5af7260-2e51-4666-a161-c570b49cc70d",
+  "path": "officecli/skills/officecli-financial-model",
+  "path_key": "officecli/skills/officecli-financial-model",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "7ede1ede-aa6c-4c42-b400-fe867a52dfb5",
+  "path": "speckit-converge",
+  "path_key": "speckit-converge",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

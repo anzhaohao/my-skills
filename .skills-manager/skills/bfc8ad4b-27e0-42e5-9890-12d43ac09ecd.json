@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "bfc8ad4b-27e0-42e5-9890-12d43ac09ecd",
+  "path": "nature-paper-to-patent",
+  "path_key": "nature-paper-to-patent",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f8334eb7-4cd1-468c-93f3-6adeb3f44450",
+  "path": "cell-lct",
+  "path_key": "cell-lct",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "552fe277-f1ea-4a8a-b94b-99e206867a19",
+  "path": "nature-polishing",
+  "path_key": "nature-polishing",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

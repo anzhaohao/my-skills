@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3031f2e4-77b1-44d0-84b4-ea1e79552aa4",
+  "path": "scientific-illustrator",
+  "path_key": "scientific-illustrator",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

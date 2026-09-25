@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c107875c-b91a-4897-8bc6-25b47ca36324",
+  "path": "nature-image2ppt",
+  "path_key": "nature-image2ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

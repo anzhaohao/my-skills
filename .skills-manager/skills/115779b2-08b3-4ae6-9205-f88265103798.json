@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "115779b2-08b3-4ae6-9205-f88265103798",
+  "path": "azf-paper-weekly",
+  "path_key": "azf-paper-weekly",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

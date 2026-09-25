@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "9b7d999b-39fb-4247-90b4-51dbfbdbe832",
+  "path": "nature-literature-pipeline",
+  "path_key": "nature-literature-pipeline",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "b169d382-2360-4397-b6c1-dd4ce68bac1d",
+  "path": "azf-backend-model-effort-probe",
+  "path_key": "azf-backend-model-effort-probe",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

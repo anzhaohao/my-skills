@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "b55ddcd3-8f57-4bd7-ba43-d4bbff2350c3",
+  "path": "azf-meme-reply",
+  "path_key": "azf-meme-reply",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

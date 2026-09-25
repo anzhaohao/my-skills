@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "4401d24f-be5c-4d00-915f-ed3561746e4b",
+  "path": "eli5",
+  "path_key": "eli5",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

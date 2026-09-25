@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "4ba2e6f0-04fb-4c1b-a29e-f1aaea72fc9b",
+  "path": "scientific-illustrator/skills/correct-scientific-figure",
+  "path_key": "scientific-illustrator/skills/correct-scientific-figure",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

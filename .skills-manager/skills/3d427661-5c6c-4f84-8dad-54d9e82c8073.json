@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3d427661-5c6c-4f84-8dad-54d9e82c8073",
+  "path": "exploratory-data-analysis",
+  "path_key": "exploratory-data-analysis",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "dfc23e84-e31f-4980-92b7-c4dc54b71016",
+  "path": "experimental-design",
+  "path_key": "experimental-design",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

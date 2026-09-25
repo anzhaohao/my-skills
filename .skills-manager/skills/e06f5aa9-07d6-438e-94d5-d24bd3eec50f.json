@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e06f5aa9-07d6-438e-94d5-d24bd3eec50f",
+  "path": "officecli/skills/morph-ppt-3d",
+  "path_key": "officecli/skills/morph-ppt-3d",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

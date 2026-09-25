@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "52139e7d-891d-4ca2-9db7-87733c3af58e",
+  "path": "azf-x-opencli-reading",
+  "path_key": "azf-x-opencli-reading",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

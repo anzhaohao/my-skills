@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "d198d3b1-c5e1-4de8-963f-997576f0aa39",
+  "path": "xxd-panel-009",
+  "path_key": "xxd-panel-009",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

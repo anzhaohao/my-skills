@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "74a3a7c6-0397-4bdb-a6b2-4d14580400c7",
+  "path": "nature-reader",
+  "path_key": "nature-reader",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

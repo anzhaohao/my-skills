@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "29261972-9425-400c-ab5e-b665dc611727",
+  "path": "azf-deep-learning-experiment-record",
+  "path_key": "azf-deep-learning-experiment-record",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3730525a-5f43-4a01-aebc-fb0f4fb7036d",
+  "path": "anti-vibe-writing",
+  "path_key": "anti-vibe-writing",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

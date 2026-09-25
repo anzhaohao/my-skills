@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "12cb8304-551e-4ac7-9b0a-663365b43eb0",
+  "path": "codexhost-delegation",
+  "path_key": "codexhost-delegation",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

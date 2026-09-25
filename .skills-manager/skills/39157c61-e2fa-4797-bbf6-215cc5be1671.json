@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "39157c61-e2fa-4797-bbf6-215cc5be1671",
+  "path": "council",
+  "path_key": "council",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

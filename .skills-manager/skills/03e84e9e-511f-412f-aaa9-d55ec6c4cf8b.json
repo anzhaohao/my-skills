@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "03e84e9e-511f-412f-aaa9-d55ec6c4cf8b",
+  "path": "lazy-senior-dev",
+  "path_key": "lazy-senior-dev",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}
