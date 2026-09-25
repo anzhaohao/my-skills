@@ -42,7 +42,7 @@
 - 小里程碑完成后提醒本地提交，重要节点提醒推送 GitHub，稳定成果提醒打 tag。
 - 当 Codex 帮我创建分支、提交、合并、rebase、打 tag 或整理 Git 状态时，默认生成或更新 Git 分支/提交可视化交接记录；提交后优先生成 Mermaid `gitGraph`，并在图上标出当前本地 HEAD。
 - 多步骤任务要留下可接手的进度线索。
-- 创建或修改任何 Markdown/Obsidian 文档时，必须先读取并应用 `azf-personal-habits`，再叠加其它相关 skill，例如 `azf-server-deploy` 或论文精读类 skill；硬件事实统一写入 `03-Academic Toolkit/2_资源与档案/仪器设备资产`；不能因为任务表面上是硬件、服务器、密钥、代码或部署，就跳过本 skill。
+- 创建或修改任何 Markdown/Obsidian 文档时，必须先读取并应用 `azf-personal-habits`，再按实际任务叠加相关 skill；硬件事实统一写入 `03-Academic Toolkit/2_资源与档案/仪器设备资产`；不能因为任务表面上是硬件、服务器、密钥、代码或部署，就跳过本 skill。
 - 创建 Markdown 文档时，默认不要在正文重复写文件标题。
 - 如果 Markdown 正文没有单独标题，正文里的主要章节要从 `# 一级标题` 开始，不要直接从 `##` 开始。
 - 创建或修改 Obsidian 笔记属性时，只允许文件最开头有一个 YAML frontmatter；第一行必须是纯 `---`，不能有 UTF-8 BOM 或隐藏字符。`创建时间`、`修改时间`、`项目`、`类型`、`状态`、`aliases`、`tags` 等字段必须合并在同一个属性块里，不能在正文再补一个属性块。
@@ -127,6 +127,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-09-25：移除个人习惯中容易把普通 Docker 或本地部署误引导至服务器的默认路由；明确以用户指定的本机项目位置为准，只有明确要求服务器部署时才应用服务器约定。独立的 `azf-server-deploy` skill 保留。
 
 - 2026-09-24：加入 **skill 规范库收纳规则**（只收第三方与自建 skill，harness 自带的一律移出）。同日按此规则把 Cursor 自带的 9 个 skill（`canvas`、`create-hook`、`create-rule`、`create-skill`、`create-subagent`、`statusline`、`update-cli-config`、`update-cursor-settings`、`migrate-to-skills`）从规范库移出到 `E:\software\AI改前备份\20260924_161220_skill库移出Cursor自带skill_codex\`，删除 `~/.codex`、`~/.trae`、`~/.antigravity` 下指向 `create-skill` 的 3 个 junction，并在 skills 仓库提交 `74eaf95`；规则同时写入 `skills\README.md`。
 - 2026-09-24：新增「部署新项目时的托管检查」习惯，并路由到新 skill `azf-manager-builder`（名字由你选定，替代我原先倾向的 `azf-win-tray-supervisor`）。触发点：部署/接手项目时先扫有没有管理器，只有启动脚本、且有长驻进程时，**先问你要不要建**再动手。同时把散落在 skill 目录里的 `SKILL.md.bak-20260914` 挪到 `E:\software\AI改前备份\20260924_155845_skill维护前备份_codex\`，保持 skill 目录干净。
