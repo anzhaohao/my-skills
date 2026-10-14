@@ -107,7 +107,7 @@ Clash Verge 的执行顺序是：
 
 **症状特征**：节点列表还在（`proxies` 正常），但代理组里只剩组名和 `DIRECT`。
 
-**怎么排查**：看 `profiles.yaml` 里当前订阅的 `option.script` 指向哪个文件，再看 `profiles/<那个文件>` 是不是空模板。清空前先备份到 `E:\software\AI改前备份\`。
+**怎么排查**：看 `profiles.yaml` 里当前订阅的 `option.script` 指向哪个文件，再看 `profiles/<那个文件>` 是不是空模板。清空前先备份到你自己的备份目录。
 
 **原则**：全局脚本做了某件事，订阅级脚本就别再做同一件事。
 
