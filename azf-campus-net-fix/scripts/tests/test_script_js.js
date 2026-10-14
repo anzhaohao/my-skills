@@ -47,7 +47,19 @@ console.log('=== 1. 脚本结构与语法 ===');
 check(typeof sandbox.main === 'function', '导出 main(config, profileName)');
 check(/function main\(config, profileName\)/.test(src), '函数签名正确');
 check(/reality-opts/.test(src), '启发式规则含 REALITY 排除');
-check(/CF_FIPS|CF_IPS/.test(src), '含 CF_IPS 常量');
+check(/CF_IPS/.test(src), '含 CF_IPS 常量');
+
+// 剔除开关默认必须是 false（2026-10-14 事故后改为默认关闭）
+const filterOn = /ENABLE_DEAD_FILTER\s*=\s*false/.test(src);
+check(filterOn, '剔除开关默认关闭（ENABLE_DEAD_FILTER = false）');
+
+// 造一个「启用剔除」的变体用于验证该逻辑仍然正确
+const srcOn = src.replace(/ENABLE_DEAD_FILTER\s*=\s*false/, 'ENABLE_DEAD_FILTER = true');
+check(srcOn !== src, '能生成启用剔除的变体用于测试');
+
+const sandboxOn = { console: { log: () => {} } };
+vm.createContext(sandboxOn);
+vm.runInContext(srcOn, sandboxOn);
 
 // --- 取出所有订阅，逐个跑 ---
 const dumpFile = path.join(os.tmpdir(), 'cnfx_dump.json');
@@ -93,25 +105,53 @@ for (const item of dumps) {
   }
   check(realityChanged === 0, 'REALITY 节点未被改写（' + realityChanged + ' 个被误改）');
 
-  // 4) 分组：无空组、内置项保留
+  // 4) 默认关闭时：代理组必须**原样不动**（这是安全基线）
   const BUILTIN = ['DIRECT', 'REJECT', 'REJECT-DROP', 'PASS', 'COMPATIBLE', 'GLOBAL'];
   const gnames = new Set(before['proxy-groups'].map((g) => g.name));
-  let empty = 0, brokenKept = 0;
+  let empty = 0;
+  const groupsUnchanged =
+    JSON.stringify(before['proxy-groups'].map((g) => g.proxies)) ===
+    JSON.stringify(out['proxy-groups'].map((g) => g.proxies));
+  check(groupsUnchanged, '【默认】代理组原样不动');
   for (const g of out['proxy-groups']) {
     if (!g.proxies || !g.proxies.length) empty++;
-    for (const n of g.proxies || []) {
-      if (typeof n !== 'string') continue;
-      if (BUILTIN.includes(n) || gnames.has(n)) continue;
-      // 组内不得残留本订阅的死节点
-      if ((item.dead || []).includes(n)) brokenKept++;
-    }
   }
-  check(empty === 0, '无空分组');
-  check(brokenKept === 0, '组内无残留死节点（' + brokenKept + ' 个残留）');
+  check(empty === 0, '【默认】无空分组');
 
   // 5) 幂等：连跑两次结果一致
   const twice = sandbox.main(JSON.parse(JSON.stringify(before)), name);
   check(JSON.stringify(twice) === JSON.stringify(out), '幂等（两次运行结果一致）');
+
+  // 6) 启用剔除时：只剔死节点、绝不出现空组、绝不回退成 DIRECT
+  const outOn = sandboxOn.main(JSON.parse(JSON.stringify(before)), name);
+  let onEmpty = 0, brokenKept = 0, illegalDirect = 0;
+  for (let i = 0; i < before['proxy-groups'].length; i++) {
+    const a = before['proxy-groups'][i];
+    const b = outOn['proxy-groups'][i];
+    const bp = b.proxies || [];
+    if (!bp.length) onEmpty++;
+    // 本来有节点、剔除后变成只有 DIRECT —— 这是 2026-10-14 事故的特征，必须禁止
+    const aNodes = (a.proxies || []).filter(
+      (n) => typeof n === 'string' && !BUILTIN.includes(n) && !gnames.has(n));
+    if (aNodes.length > 0 && bp.length === 1 && bp[0] === 'DIRECT') illegalDirect++;
+    for (const n of bp) {
+      if (typeof n !== 'string') continue;
+      if (BUILTIN.includes(n) || gnames.has(n)) continue;
+      if ((item.dead || []).includes(n)) brokenKept++;
+    }
+  }
+  check(onEmpty === 0, '【启用】无空分组');
+  check(illegalDirect === 0, '【启用】没有组被回退成 ["DIRECT"]');
+  check(brokenKept === 0, '【启用】组内无残留死节点（' + brokenKept + ' 个残留）');
+
+  // 7) 启用剔除后仍不得改动节点本身
+  let onErrs = 0;
+  for (let i = 0; i < before.proxies.length; i++) {
+    const a = before.proxies[i], b = outOn.proxies[i];
+    if (a.name !== b.name || a.type !== b.type) onErrs++;
+    if ((a.servername || a.sni || '') !== (b.servername || b.sni || '')) onErrs++;
+  }
+  check(onErrs === 0, '【启用】节点名称/类型/SNI 未被改动');
 }
 
 console.log('\n' + (failures === 0 ? '全部通过' : failures + ' 项失败'));

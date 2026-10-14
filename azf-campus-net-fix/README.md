@@ -20,16 +20,43 @@
 
 ## 怎么用
 
-在 skill 目录下（Claude Code / Codex / DSH 里一般直接说需求即可）：
+### 前提
+
+| 要求 | 说明 |
+|---|---|
+| 操作系统 | **Windows**（v1 只做 Windows；网卡探测与绑定用了 Windows API） |
+| 客户端 | **Clash Verge**（Rev 分支，2.x）。原版 Clash Verge 理论上也能跑，但未验证 |
+| Python | **Python 3.9+**。PyYAML 已内置在 `scripts/vendor/`，**不需要 pip 安装任何东西** |
+
+### 安装
+
+把整个 `azf-campus-net-fix` 文件夹放到你的 agent 技能目录里，例如：
+
+```
+C:\Users\<你>\.claude\skills\azf-campus-net-fix\      # Claude Code
+C:\Users\<你>\.codex\skills\azf-campus-net-fix\       # Codex
+C:\Users\<你>\.dsh\skills\azf-campus-net-fix\         # DSH
+```
+
+没有技能目录也可以直接用命令行，不装技能照样能跑（`scripts\campus-net-fix.py` 是独立的）。
+
+### 首次使用
 
 ```powershell
-python scripts\campus-net-fix.py doctor            # 体检：环境还在不在、有没有漂移
-python scripts\campus-net-fix.py probe             # 第一次用：探测本机 Clash Verge 环境
-python scripts\campus-net-fix.py run               # 日常：画像 → 修复 → 验证（约 80 秒）
-python scripts\campus-net-fix.py verify --simulate # 不改你的 Clash，直接验证修复后的配置能不能用
+cd <技能目录>\scripts
+python campus-net-fix.py probe      # 探测本机 Clash Verge 环境，写出机器档案
+python campus-net-fix.py run        # 画像 → 修复 → 验证
 ```
 
 跑完 `run` 之后，去 Clash Verge 的订阅卡片上**右键 →「刷新」**（或重启 Clash Verge）让配置生效。
+
+### 日常命令
+
+```powershell
+python scripts\campus-net-fix.py doctor            # 体检：环境还在不在、有没有漂移
+python scripts\campus-net-fix.py run               # 日常：画像 → 修复 → 验证（约 80 秒）
+python scripts\campus-net-fix.py verify --simulate # 不改你的 Clash，直接验证修复后的配置能不能用
+```
 
 > ⚠️ **Clash Verge 不会自动重载全局扩展脚本**（实测：写入后运行时配置的时间戳不变）。所以：
 > - 想看「修复本身有没有用」→ 用 `verify --simulate`（不需要你操作 GUI）
@@ -62,6 +89,27 @@ python scripts\campus-net-fix.py verify --simulate # 不改你的 Clash，直接
 | L2 改内核代码 | **AI + `azf-auto-dev-loop`** | 需要独立评估与自动返工 |
 
 一句话：**机械的活交给脚本，判断的活交给 AI。**
+
+## ⚠ 一个必须知道的坑：扩展脚本会叠加执行
+
+Clash Verge 的执行顺序是：
+
+```
+订阅原文 → 应用设置 → 全局扩展配置 → 全局扩展脚本 → 订阅扩展配置 → 订阅扩展脚本 → 应用设置回写
+```
+
+**全局脚本和订阅级脚本是串联的** —— 后跑的那个能看到前一个的改动。2026-10-14 踩过一次：
+
+1. 全局脚本把 29 个节点的入口 IP 换成 Cloudflare **裸 IP**
+2. 订阅级还留着一个**旧脚本**，它的判定是「server 不在硬编码的域名表里 → 判为死节点」
+3. 此时那 29 个节点已经是裸 IP，域名全部失配；其余直连节点本来也不是 CF
+4. **70 个节点全被判死并踢出所有代理组 → 所有流量回退到 DIRECT**
+
+**症状特征**：节点列表还在（`proxies` 正常），但代理组里只剩组名和 `DIRECT`。
+
+**怎么排查**：看 `profiles.yaml` 里当前订阅的 `option.script` 指向哪个文件，再看 `profiles/<那个文件>` 是不是空模板。清空前先备份到 `E:\software\AI改前备份\`。
+
+**原则**：全局脚本做了某件事，订阅级脚本就别再做同一件事。
 
 ## 当前保存的关键事实
 

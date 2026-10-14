@@ -17,8 +17,9 @@ STRATEGIES = {
         "why": "存在可达的 Cloudflare anycast IP，且订阅里有 Cloudflare 前置节点，"
                "换入口 IP 能绕过 IP 层封锁。",
         "does": ["把 CF 前置节点的入口 IP 换成实测可达的优选 IP",
-                 "把实测确认连不通的节点从所有代理组剔除",
                  "写入 Clash Verge 全局扩展脚本（对以后新增订阅也生效）"],
+        "optional": ["用 --filter-dead 可额外把实测连不通的节点从代理组剔除"
+                     "（默认关闭：2026-10-14 该功能出过一次清空代理组的事故，根因未定位）"],
     },
     "B": {
         "name": "report-sni-blocked",
@@ -95,6 +96,7 @@ def choose(profile: dict) -> dict:
         "implementable": implementable,
         "why": spec["why"],
         "does": spec.get("does") or [],
+        "optional": spec.get("optional") or [],
         "advice": spec.get("advice") or [],
         "blockers": blockers,
         "facts": {
@@ -118,6 +120,10 @@ def summarize(decision: dict) -> str:
     if decision["does"]:
         L.append("  将执行:")
         for x in decision["does"]:
+            L.append("    - %s" % x)
+    if decision.get("optional"):
+        L.append("  可选:")
+        for x in decision["optional"]:
             L.append("    - %s" % x)
     if decision["advice"]:
         L.append("  建议:")

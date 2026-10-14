@@ -169,7 +169,8 @@ def summarize(res: dict) -> str:
         L.append("  订阅          : %s" % res.get("subscription"))
         L.append("  出口节点      : %s" % res.get("exit_node"))
         L.append("  使用优选 IP   : %d 个" % res.get("cf_ips_used", 0))
-        L.append("  剔除死节点    : %d 个" % res.get("dead_removed", 0))
+        L.append("  测试组排除死节点: %d 个（仅为让模拟出口可用，正式配置里是否剔除由 --filter-dead 决定）"
+                 % res.get("dead_removed", 0))
     else:
         L = ["端到端验证（经 %s）" % res["proxy"]]
     for c in res["checks"]:

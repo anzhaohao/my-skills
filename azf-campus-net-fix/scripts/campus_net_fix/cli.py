@@ -242,6 +242,8 @@ def build_parser():
     ap = sub.add_parser("apply", help="按画像选策略并实施")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="只生成，不写入 Clash Verge")
+    ap.add_argument("--filter-dead", action="store_true",
+                    help="同时把实测连不通的节点从代理组剔除（默认关闭，见脚本头说明）")
     ap.set_defaults(func=cmd_apply)
 
     vf = sub.add_parser("verify", help="端到端验证（经真实代理请求）")
