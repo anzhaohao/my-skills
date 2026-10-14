@@ -23,12 +23,26 @@
 在 skill 目录下（Claude Code / Codex / DSH 里一般直接说需求即可）：
 
 ```powershell
-python scripts\campus-net-fix.py doctor     # 体检：环境还在不在、有没有漂移
-python scripts\campus-net-fix.py probe      # 第一次用：探测本机 Clash Verge 环境
-python scripts\campus-net-fix.py run        # 日常：画像 → 修复 → 验证（约 80 秒）
+python scripts\campus-net-fix.py doctor            # 体检：环境还在不在、有没有漂移
+python scripts\campus-net-fix.py probe             # 第一次用：探测本机 Clash Verge 环境
+python scripts\campus-net-fix.py run               # 日常：画像 → 修复 → 验证（约 80 秒）
+python scripts\campus-net-fix.py verify --simulate # 不改你的 Clash，直接验证修复后的配置能不能用
 ```
 
 跑完 `run` 之后，去 Clash Verge 的订阅卡片上**右键 →「刷新」**（或重启 Clash Verge）让配置生效。
+
+> ⚠️ **Clash Verge 不会自动重载全局扩展脚本**（实测：写入后运行时配置的时间戳不变）。所以：
+> - 想看「修复本身有没有用」→ 用 `verify --simulate`（不需要你操作 GUI）
+> - 想看「我的 Clash 现在到底通不通」→ 先点刷新，再跑 `verify`
+
+### 两种验证模式的差别
+
+| 命令 | 测的是什么 | 什么时候用 |
+|---|---|---|
+| `verify` | 经你 Clash 的 7897 端口发请求 —— 反映**你当前的实际状态** | 点过刷新之后 |
+| `verify --simulate` | 把修复后的配置交给一个临时 mihomo 实例跑 —— 反映**修复本身是否有效** | `apply` 之后立刻确认 |
+
+没刷新就跑默认 `verify`，测的是**旧配置**，结果通过与否都不能说明修复生效没有。
 
 ### 退出码的含义
 

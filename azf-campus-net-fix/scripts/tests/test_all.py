@@ -439,6 +439,33 @@ class TestEndToEnd(unittest.TestCase):
         self.assertTrue(res.get("checks"), res)
         print("\n" + verify.summarize(res))
 
+    def test_verify_simulate(self):
+        """自主验证：不经用户 Clash，直接跑修复后的配置。"""
+        if "--e2e" not in sys.argv:
+            self.skipTest("需要 --e2e 显式开启（会启动临时 mihomo 并请求外网）")
+        from campus_net_fix import profiling, verify
+        env = _live_env()
+        if not env:
+            self.skipTest("无机器档案")
+        prof = profiling.load_profile(env.get("host"))
+        if not prof:
+            self.skipTest("无网络画像")
+        res = verify.simulate(env, prof)
+        print("\n" + verify.summarize(res))
+        self.assertTrue(res.get("ok"), res)
+
+    def test_verify_modes_are_distinguishable(self):
+        """两种验证模式的输出必须能区分，避免把旧配置的结果误当修复成功。"""
+        from campus_net_fix import verify
+        fake = {"ok": True, "passed": 1, "total": 1, "mode": "simulate",
+                "subscription": "X", "exit_node": "N", "cf_ips_used": 3,
+                "dead_removed": 2, "checks": [
+                    {"name": "t", "desc": "d", "url": "u", "status": 204,
+                     "bytes": 0, "ok": True}]}
+        text = verify.summarize(fake)
+        self.assertIn("模拟模式", text)
+        self.assertIn("不经用户 Clash", text)
+
 
 if __name__ == "__main__":
     # 容许 -k 过滤与 --e2e 透传

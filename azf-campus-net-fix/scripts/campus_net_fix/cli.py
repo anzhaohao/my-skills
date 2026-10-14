@@ -246,6 +246,8 @@ def build_parser():
 
     vf = sub.add_parser("verify", help="端到端验证（经真实代理请求）")
     vf.add_argument("--json", action="store_true")
+    vf.add_argument("--simulate", action="store_true",
+                    help="模拟模式：不经用户 Clash，直接跑修复后的配置验证")
     vf.set_defaults(func=cmd_verify)
 
     rn = sub.add_parser("run", help="profile → apply → verify（日常入口）")

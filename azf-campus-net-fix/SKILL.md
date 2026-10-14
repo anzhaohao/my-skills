@@ -38,10 +38,22 @@ python $py doctor                   # 环境体检 + 漂移检测
 python $py probe                    # 探测本机 Clash Verge 环境
 python $py profile                  # 网络画像（约 80 秒）
 python $py apply                    # 按画像实施（写全局扩展脚本）
-python $py verify                   # 端到端验证
+python $py verify                   # 端到端验证（经用户 Clash 的代理端口）
+python $py verify --simulate        # 端到端验证（不经用户 Clash，直接跑修复后的配置）
 python $py run                      # profile → apply → verify（L0 入口）
 python $py env client.install_dir   # 读已探明事实，避免重复探测
 ```
+
+**`verify` 有两种模式，必须分清**：
+
+| 模式 | 测什么 | 什么时候用 |
+|---|---|---|
+| 默认 | 经用户 Clash 的 `mixed-port` 发请求 —— 反映**用户当前实际状态** | 用户已经点过「刷新」之后 |
+| `--simulate` | 把修复后的配置交给临时 mihomo 实例跑 —— 反映**修复本身是否有效** | `apply` 之后立刻验证，不必等用户去 GUI 操作 |
+
+**判定顺序很重要**：如果用户还没刷新 Clash Verge，默认 `verify` 测的是**旧配置**，可能通过也可能失败，两种结果都不能说明修复有没有生效。此时应改用 `--simulate`，或先让用户刷新再跑默认模式。
+
+**`apply` 之后 Clash Verge 不会自动重载**（实测：写入全局扩展脚本后运行时配置时间戳不变）。必须提醒用户在订阅卡片上右键 →「刷新」，或重启 Clash Verge。
 
 退出码是**分层决策的接口**，必须读：
 
