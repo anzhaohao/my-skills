@@ -1,0 +1,115 @@
+# AZF 校园网代理修复
+
+## 这个 skill 解决什么问题
+
+校园网对境外 IP 做封锁时，Clash Verge 里的节点会大面积超时。这个 skill 负责：
+
+1. **诊断** —— 判断封锁发生在哪一层（IP 层 / SNI 层 / 协议端口层 / portal 认证），而不是一上来就乱改配置
+2. **修复** —— 如果是「IP 层黑名单且机场节点套了 Cloudflare」，就把入口 IP 换成当前网络实测可达的优选 IP
+3. **善后** —— 把实测确认连不通的节点从代理组里剔除，避免误选
+4. **诚实** —— 判断不了或修不了的时候，给报告和建议，不硬改
+
+## 什么时候应该触发
+
+- 校园网下节点全部 / 大面积超时
+- 新加了机场订阅，希望修复逻辑自动生效
+- 之前能用的优选 IP 失效了
+- 想知道「这个网络到底封在哪一层」
+
+**不适用**：需要 portal 认证的网络、非 Clash Verge 客户端、macOS / Linux（v1 只做 Windows）。
+
+## 怎么用
+
+在 skill 目录下（Claude Code / Codex / DSH 里一般直接说需求即可）：
+
+```powershell
+python scripts\campus-net-fix.py doctor     # 体检：环境还在不在、有没有漂移
+python scripts\campus-net-fix.py probe      # 第一次用：探测本机 Clash Verge 环境
+python scripts\campus-net-fix.py run        # 日常：画像 → 修复 → 验证（约 80 秒）
+```
+
+跑完 `run` 之后，去 Clash Verge 的订阅卡片上**右键 →「刷新」**（或重启 Clash Verge）让配置生效。
+
+### 退出码的含义
+
+| 码 | 意思 | 怎么办 |
+|---|---|---|
+| 0 | 成功 | 完事 |
+| 3 | 环境找不到 / 变了 | 先跑 `probe` |
+| 4 | 这个网络形态超出内置策略 | 把画像 JSON 交给 AI 诊断 |
+| 5 | 缺 Python / PyYAML / 内核 | 按提示装 |
+
+## 三层分工（为什么不是全都交给 AI）
+
+| 层 | 谁来做 | 为什么 |
+|---|---|---|
+| L0 日常维护 | **确定性内核** | 80 秒、0 模型成本、结果可复现可验证 |
+| L1 新封锁形态诊断 | **AI** | 要从证据反推，这是模型擅长的 |
+| L2 改内核代码 | **AI + `azf-auto-dev-loop`** | 需要独立评估与自动返工 |
+
+一句话：**机械的活交给脚本，判断的活交给 AI。**
+
+## 当前保存的关键事实
+
+这些都是 2026-10-14 在本校园网实测得到的，排查时可以直接用：
+
+- **TUN 模式会污染测量**：开启后所有 UDP/53 返回同一个 fake-ip（`198.18.0.75`），早就确认被丢包的 IP 也「连得上」。内核用 `IP_UNICAST_IF` 把探测 socket 绑到物理网卡绕过 —— 实测绑定后本地地址从 `198.18.0.1` 变回 `192.168.1.110`，结果才与真实封锁一致。
+- **「Google 的 SNI 被拦」不等于「节点不能用」**：那是国家级过滤，手机热点上一样有。真正相关的判据是**节点自己的 SNI**。
+- **DNS 服务器可用性因网络而异**：这个校园网里 `223.5.5.5` 和 `8.8.8.8` 被丢包，`119.29.29.29` / `223.6.6.6` / `114.114.114.114` 正常。所以不能硬编码。
+- **校园网放行 QUIC (UDP 443)**：实测 QUIC Version Negotiation 能收到回应。
+- **WireGuard 端口是否被封不可观测**：没有对端时 WireGuard 对非法握手静默丢弃，所以画像里这一项老实标 `untested`，不编。
+- **`dialer-proxy` 链式代理救不了 REALITY 节点**：链式机制本身是好的（两个 CF 节点互链 108ms 成功），但 REALITY 握手会失败；Hysteria2 的 UDP 中继也走不通。所以直连型 REALITY 节点在 IP 被封时没救。
+- **一元机场这类没有 CF 前置节点的订阅**：换不了入口 IP，只能靠可达性剔组；实测它 19 个节点当前全部不可达。
+
+## 换电脑 / 换校园网
+
+- **换电脑**：把 `probe` 重跑一遍即可。内核的网卡/进程/路径探测全部走 Python 标准库（ctypes），不依赖 PowerShell，不依赖 psutil，不需要管理员权限。遇到找不到的情况，用 `probe --install-dir <P> --data-dir <P>` 显式指定。
+- **换校园网**：必须重跑 `run`。优选 IP 集合是**本网络实测结果**，一定不通用；域名名单和启发式规则才是通用的。
+
+## 目录结构
+
+```
+azf-campus-net-fix/
+├── SKILL.md                    # 给 agent 的指令
+├── README.md                   # 本文件
+├── data/                       # 机器档案与画像（按主机名分文件）
+│   ├── env.<主机名>.json
+│   ├── profile.<主机名>.json
+│   └── Script.latest.js        # 生成的脚本副本
+└── scripts/
+    ├── campus-net-fix.py       # CLI 入口
+    ├── campus_net_fix/         # 确定性内核
+    │   ├── cli.py              # 命令与退出码
+    │   ├── netif.py            # 物理网卡探测 + 绕过 TUN 的绑定
+    │   ├── clashverge.py       # Clash Verge 适配层
+    │   ├── envprobe.py         # 环境探测 / 漂移体检
+    │   ├── profiling.py        # 网络画像（通用性核心）
+    │   ├── strategy.py         # 策略矩阵
+    │   ├── cfip.py             # Cloudflare 优选 IP 实测
+    │   ├── reach.py            # 节点可达性实测
+    │   ├── override.py         # 生成并写入扩展脚本
+    │   ├── verify.py           # 端到端验证
+    │   └── vendor/yaml/        # 内置 PyYAML（免 pip）
+    └── tests/
+        ├── test_all.py         # 37 项单元 / 集成测试
+        └── test_script_js.js   # 跨语言一致性测试（Node）
+```
+
+## 自检
+
+```powershell
+python scripts\tests\test_all.py           # 37 项，约 1 秒
+python scripts\tests\test_all.py --e2e     # 追加经真实代理的端到端验证
+node scripts\tests\test_script_js.js       # 需要先 apply --dry-run 和 dump
+```
+
+## 最近维护
+
+2026-10-14：新建。把当天一次性排查出的临时脚本沉淀为可移植技能。相比临时版本的关键改进：
+
+- **TUN 污染问题**（最重要）：临时版没有意识到 TUN 会污染测量，导致画像完全失真。现在用 `IP_UNICAST_IF` 绑定物理网卡，并加了通道自检。
+- **判定逻辑修正**：临时版可能因「知名被封 SNI 被拦」把可行方案误判为不可行。现在区分「节点 SNI」与「通用知名 SNI」。
+- **去 shell 化**：不再调 PowerShell 管理探测进程（改为持有 Popen 句柄），换机器后不依赖 shell。
+- **内置 PyYAML**：不需要 pip、不需要联网。
+- **策略矩阵化**：从「一种修法」变成「画像 → 策略」的映射，不支持的形态诚实报告。
+- **可移植的网卡探测**：ctypes 直调 Windows API，不依赖 psutil。

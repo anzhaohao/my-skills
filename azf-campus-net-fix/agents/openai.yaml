@@ -1,0 +1,4 @@
+interface:
+  display_name: "AZF Campus Net Fix"
+  short_description: "诊断校园网对代理的封锁层级，并按实测结果修复 Clash Verge 节点"
+  default_prompt: "用 $azf-campus-net-fix 诊断当前校园网下 Clash Verge 节点超时的原因；先运行 doctor，再按退出码决定是否 probe / run。"
