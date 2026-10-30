@@ -22,7 +22,7 @@ Turn "only starts from a command line" into "always running, self-healing, tray-
 |---|---|
 | `<Project>\manager\<Name>Manager.exe` | single-file, windowless, tray supervisor (built with the in-box .NET Framework `csc`, no SDK / no NuGet) |
 | `manager.json` (or `manager.ini`) | declares the child processes, their ports, env file, guards, tray URL |
-| `build-manager.ps1` | rebuild the exe from source |
+| `build-manager.ps1` | rebuild the exe from source (embed `icon.ico` via `/win32icon:` when present — see hardening rule 14) |
 | `make-icon.py` | optional: PNG → multi-size `.ico` for the tray |
 | `README.md` inside `manager\` | how to run, tray menu, CLI, rollback |
 | Scheduled task `<Name>Manager` | logon-triggered autostart (registered only after the smoke test passes) |
@@ -67,6 +67,7 @@ Then change every project-specific value:
 | `Supervisor` constructor | the children: name, exe, args, ports (one or more), plus their env |
 | Project-specific guards | delete the tunnel-bearer / catalog guards, or replace them with this project's own `file-prefix` / `run-script` guards |
 | Tray identity | window/tooltip title and `icon.png` — give every project a **distinct** icon, otherwise the tray icons are indistinguishable |
+| **Embedded exe icon** | also pass `/win32icon:icon.ico` to `csc` so the exe file itself carries the same icon in Explorer / taskbar / Task Manager (rule 14) |
 | **Unique identity** | exe name (`<X>Manager.exe`), singleton mutex name, scheduled task name, status file path, log file path — two managers that share a mutex or task name will fight each other |
 | `build-manager.ps1` | output exe name; keep `/target:winexe` + the in-box .NET Framework `csc` compile |
 
@@ -113,6 +114,8 @@ Full trap-by-trap detail: `reference/hardening-checklist.md`.
 10. When killing processes by command-line pattern, exclude the current PID — a self-match kills the running command itself.
 11. Secrets live in `.env`/environment only; scrub them before logging.
 12. After any change, re-run the kill drill and write the evidence into `PROGRESS.md`.
+13. One exe per project ⇒ the six identities must be unique per project (exe name, singleton mutex, scheduled task name, status file, log file, tray icon), or two managers will fight.
+14. Embed the icon into the exe too (`csc /win32icon:icon.ico`) — the side-loaded `icon.png` only dresses the tray; the PE resource is what Explorer / taskbar / Task Manager show. Verify with `ExtractAssociatedIcon` and the exe-size jump.
 
 ## Do not
 

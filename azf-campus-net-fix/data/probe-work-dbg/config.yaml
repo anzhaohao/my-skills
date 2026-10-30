@@ -1,0 +1,146 @@
+allow-lan: false
+mode: global
+log-level: debug
+ipv6: false
+unified-delay: true
+proxies:
+- name: xs00
+  type: vless
+  server: x-hg01.xueshan168.cc
+  port: 16000
+  uuid: ee7dd31a-0749-4a27-935c-88966af1ab8a
+  alterId: 0
+  cipher: auto
+  udp: true
+  flow: xtls-rprx-vision
+  encryption: none
+  tls: true
+  skip-cert-verify: false
+  servername: s0.awsstatic.com
+  reality-opts:
+    public-key: wTDp8GLmm9-e84raeixo46WniotkQIsPBqcYoa-Tqy4
+    short-id: null
+  client-fingerprint: chrome
+  network: tcp
+- name: xs01
+  type: vless
+  server: hg002.xueshan168.cc
+  port: 16000
+  uuid: ee7dd31a-0749-4a27-935c-88966af1ab8a
+  alterId: 0
+  cipher: auto
+  udp: true
+  flow: xtls-rprx-vision
+  encryption: none
+  tls: true
+  skip-cert-verify: false
+  servername: s0.awsstatic.com
+  reality-opts:
+    public-key: wTDp8GLmm9-e84raeixo46WniotkQIsPBqcYoa-Tqy4
+    short-id: null
+  client-fingerprint: chrome
+  network: tcp
+- name: xs02
+  type: vless
+  server: hg002.xueshan168.cc
+  port: 16000
+  uuid: ee7dd31a-0749-4a27-935c-88966af1ab8a
+  alterId: 0
+  cipher: auto
+  udp: true
+  flow: xtls-rprx-vision
+  encryption: none
+  tls: true
+  skip-cert-verify: false
+  servername: s0.awsstatic.com
+  reality-opts:
+    public-key: wTDp8GLmm9-e84raeixo46WniotkQIsPBqcYoa-Tqy4
+    short-id: null
+  client-fingerprint: chrome
+  network: tcp
+- name: xs03
+  type: vless
+  server: x-xjp.xueshan168.cc
+  port: 443
+  uuid: ee7dd31a-0749-4a27-935c-88966af1ab8a
+  alterId: 0
+  cipher: auto
+  udp: true
+  flow: xtls-rprx-vision
+  encryption: none
+  tls: true
+  skip-cert-verify: false
+  servername: s0.awsstatic.com
+  reality-opts:
+    public-key: dzSZgKH3Da66x3Z_Btbw0vsLLGZ-GfgGMGMCGkKTbBY
+    short-id: null
+  client-fingerprint: chrome
+  network: tcp
+- name: xs04
+  type: vless
+  server: x-am.xueshan168.cc
+  port: 443
+  uuid: ee7dd31a-0749-4a27-935c-88966af1ab8a
+  alterId: 0
+  cipher: auto
+  udp: true
+  flow: xtls-rprx-vision
+  encryption: none
+  tls: true
+  skip-cert-verify: false
+  servername: s0.awsstatic.com
+  reality-opts:
+    public-key: CuqzBeQR_1VIdOGOgn5v8-t-X-YzURF9b3wtKVVyKQ8
+    short-id: null
+  client-fingerprint: chrome
+  network: tcp
+- name: ctl00
+  type: vless
+  server: pq.aws51.yydjc.top
+  port: 443
+  uuid: ba3ab7c3-f3fa-446e-bf65-8dec20a678c4
+  udp: true
+  tls: true
+  skip-cert-verify: false
+  flow: xtls-rprx-vision
+  client-fingerprint: ios
+  servername: cdn-dynmedia-1.microsoft.com
+  reality-opts:
+    public-key: FrLhPuCVfzdM5rppzxHXQ5BZSGf1YHrXgo-cCtecGSo
+    short-id: f3b38af2
+- name: ctl01
+  server: pq-hinet.tw3.yydjc.top
+  port: 60000
+  ports: 60000-63000
+  mport: 60000-63000
+  udp: true
+  skip-cert-verify: true
+  sni: www.apple.com
+  type: hysteria2
+  password: ba3ab7c3-f3fa-446e-bf65-8dec20a678c4
+  fingerprint: a91ce9f040060a5de6ea338f0f08699b9b0874a42f42cef0c9a09abe96baa61f
+proxy-groups:
+- name: G
+  type: select
+  proxies:
+  - xs00
+  - xs01
+  - xs02
+  - xs03
+  - xs04
+  - ctl00
+  - ctl01
+  - DIRECT
+rules:
+- MATCH,G
+mixed-port: 7476
+external-controller: 127.0.0.1:7475
+interface-name: WLAN
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: normal
+  nameserver:
+  - 119.29.29.29
+  - 223.6.6.6
+  - 114.114.114.114

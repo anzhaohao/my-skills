@@ -80,3 +80,27 @@ principal 沿用本机既有任务的形态：`<用户名> / Interactive / Limit
 | 托盘图标 | `icon.png` / `icon.ico` | 换一张能一眼区分的图 |
 
 配套习惯：托盘悬浮提示里写清"管的是哪个项目 + 哪些端口"，这样托盘里并排几个图标时不会认错。
+
+## 14. 把图标同时**嵌进 exe**（`/win32icon:`），不要只放在旁边
+
+托盘运行时读 `icon.png` / `icon.ico` 没问题，但那只影响托盘那一小块；exe 文件本身在资源管理器、任务栏跳转列表、任务管理器、「打开方式」对话框里显示什么，是由**嵌进 PE 资源的图标**决定的。csc 默认不带图标 → exe 是空白程序图标，几个管理器并排时完全认不出谁是谁。
+
+做法（LibreTVManager 2026-10-13 实测）：
+
+- `make-icon.py` 已经产出多尺寸 `icon.ico`（16–256 共 9 帧，务必 `bitmap_format="bmp"`，PNG 压缩帧 GDI+ 会画成彩噪）；
+- 在 `build-manager.ps1` 里加：
+
+```powershell
+$iconArgs = @()
+if (Test-Path $ico) { $iconArgs = @("/win32icon:$ico") }
+& $csc /nologo /target:winexe /out:$exe `
+  /r:System.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll @iconArgs $cs
+```
+
+- 验证：编译后 exe 体积应明显变大（本次 27 KB → 388 KB，差额 ≈ icon.ico 大小）；
+- 实证：用 `[System.Drawing.Icon]::ExtractAssociatedIcon($exe)` 提取并 `ToBitmap().Save(...)` 一张 PNG 确认内容。
+
+注意：
+
+- 重新编译前要先停掉正在运行的实例（脚本里已有对应逻辑），否则 exe 被占用会编译失败；
+- 托盘图标逻辑保持不变（运行时仍优先读旁边的 `icon.png` 叠加状态点），嵌入 exe 只解决"文件本身长什么样"。
