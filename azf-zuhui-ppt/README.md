@@ -19,7 +19,9 @@
 
 | 项 | 值 |
 |---|---|
-| 组会文件夹 | `D:\Postgraduate_JilinUniversity\03_Sundries\00_组会\<日期_主题>\` |
+| 交付根目录（**每次人工确认**） | `D:\Postgraduate_JilinUniversity\03_Sundries\00_组会` |
+| 交付子文件夹 | `<交付根>\<YYYYMMDD>-<名字>\`，只放最终 `.pptx` |
+| 项目工作区（完整输出） | `<ppt-master>\output\<YYYYMMDD>-<名字>\` |
 | ppt-master | `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260429-ppt-master` |
 | Python | `<ppt-master>\.venv\Scripts\python.exe`（有 pptx / PIL / lxml / fitz） |
 | 画布 | 1280×720 px（13.333×7.5 in，16:9） |
@@ -39,18 +41,25 @@ references/page-recipes.md    各类页面的坐标与片段
 scripts/svg_kit.py            绘图工具箱（颜色/字号常量、text/band/bar/slab/grid…）
 scripts/deck_template.py      可直接跑的五页骨架，复制改文案
 scripts/finalize.py           加备注 → 拆分组 → 柔化边缘 → 自检
+scripts/workspace.py          双根目录准备、最终 pptx 发布、交付区检查
 ```
 
 ## 怎么用（最短路径）
 
-1. 读 `references/style-guide.md`（一遍就够，后面按清单走）。
-2. 复制 `scripts/deck_template.py`，改 `PROJECT` 和文案，跑一遍出页面。
-3. `svg_quality_checker.py` → `svg_to_pptx.py` → `finalize.py`。
-4. 逐页 `officecli` 渲染截图，用眼睛看一遍再交付。
+1. 问清目标根目录、组会日期、名字；`workspace.py prepare --confirm` 建工作区和交付区。
+2. 读 `references/style-guide.md`（一遍就够，后面按清单走）。
+3. 复制 `scripts/deck_template.py`，把 `PROJECT` 指到工作区、改文案，跑一遍出页面。
+4. `svg_quality_checker.py` → `svg_to_pptx.py` → `finalize.py`（输出到工作区 `exports\`）。
+5. 逐页 `officecli` 渲染截图，用眼睛看一遍。
+6. `workspace.py publish` + `check --expect-one`，交付区只留最终 `.pptx`。
 
 ## 最近一次维护
 
-**2026-10-30**：首版。由 2026-10-30 FROG-CNN 组会汇报这一轮的实测数据整理：
+**2026-10-30 第二版**：改成双根目录。完整项目输出放
+`<ppt-master>\output\<YYYYMMDD>-<名字>\`，交付文件夹只放最终 pptx；新增
+`scripts/workspace.py` 固化“人工确认目标根 + 只交付 pptx”的规则。
+
+**2026-10-30 首版**：由 2026-10-30 FROG-CNN 组会汇报这一轮的实测数据整理：
 原稿 17 页的 OOXML 尺寸/颜色/透明度/柔化边缘参数、迭代出的 44 px 标题与无边框规则、
 以及 13 页的最终页序。同时把当时踩到的坑（组边界重叠、tspan 括号、拆组、柔化边缘）
 写进了 SKILL.md。

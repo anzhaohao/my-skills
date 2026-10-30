@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from svg_kit import *  # noqa
 
-PROJECT = r"D:\Postgraduate_JilinUniversity\03_Sundries\00_组会\2026-xx-xx_模板示例\ppt-master-demo"
+PROJECT = r"D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260429-ppt-master\output\20261030-模板示例"
 FIG = "fig_example.png"          # 放在 <PROJECT>/images/ 下；不存在则跳过图页
 
 d = Deck(PROJECT)

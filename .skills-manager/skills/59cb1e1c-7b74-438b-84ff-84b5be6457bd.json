@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "59cb1e1c-7b74-438b-84ff-84b5be6457bd",
+  "path": "azf-zuhui-ppt",
+  "path_key": "azf-zuhui-ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}
