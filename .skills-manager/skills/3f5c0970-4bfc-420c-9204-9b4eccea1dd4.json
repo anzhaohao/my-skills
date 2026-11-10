@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3f5c0970-4bfc-420c-9204-9b4eccea1dd4",
+  "path": "video-summarizer",
+  "path_key": "video-summarizer",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}
