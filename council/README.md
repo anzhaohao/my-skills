@@ -44,3 +44,5 @@ Council 负责发现问题定义、风险、取舍和失败条件；Spec Kit 负
 # 最近维护
 
 - 2026-07-03：从 `0xNyk/council-of-high-intelligence` 安装 Codex 版 skill，并同步到 Skills Manager 统一目录；补充本 README，明确它作为 Spec Kit 工作流的前置评审工具。
+
+- 2026-11-10：统一使用 E 盘中央库，Codex 目录仅保留链接。保留原有 Codex 命令参数、persona 和讨论流程，并将中央库已有的模型多样性定制完整保存在 `references/azf-model-diversity.md`，由统一入口明确读取。

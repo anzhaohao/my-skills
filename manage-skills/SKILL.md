@@ -78,6 +78,21 @@ Keep these three states separate:
 
 Internally, presets are still stored as scenarios for backward-compatible Git Backup. The CLI and UI call them presets.
 
+### Local installation policy
+
+On this computer, every newly installed third-party skill and personal `azf-` /
+`azq-` skill must belong to the `通用技能` preset. Install real files only under
+`E:/software/skills-manager/skills`; agent directories contain links back here.
+Never keep an independent Codex copy or recreate the former C-drive library.
+
+The local database trigger `azf_auto_general_preset_after_insert` adds eligible new
+records to that preset for both GUI and CLI installs. Its definition and recovery
+notes are under `E:/software/skills-manager/maintenance/`. After installing or
+adopting a skill, verify membership and use `presets add-skill "通用技能" <skill>`
+if it is missing. Harness-bundled skills remain native to their own harness and
+must not be added. Preset membership does not authorize deploying to more agents;
+use only the agent scope requested by the user.
+
 ## Install
 
 ```bash
@@ -96,7 +111,10 @@ Internally, presets are still stored as scenarios for backward-compatible Git Ba
 "$SM" skills install ./looks-like/owner-repo --local
 ```
 
-**Default is library-only** — the skill enters the DB but doesn't appear in any agent yet. Prefer an explicit follow-up deployment so scope is unambiguous:
+**Upstream defaults to library-only.** On this computer, eligible installs also
+join `通用技能` automatically under the local policy above, but do not appear in
+an agent until deployed. Prefer an explicit follow-up deployment so scope is
+unambiguous:
 
 ```bash
 "$SM" skills deploy <skill> --agent claude_code --agent codex
