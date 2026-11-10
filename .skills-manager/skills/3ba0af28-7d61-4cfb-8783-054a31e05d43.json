@@ -6,9 +6,9 @@
   "enabled": true,
   "tags": [],
   "source": {
-    "type": "import",
-    "ref": null,
-    "subpath": null,
-    "branch": null
+    "type": "git",
+    "ref": "https://github.com/zhukunpenglinyutong/desktop-cc-gui",
+    "subpath": "src-tauri/resources/skills/ccgui-plugin-creator",
+    "branch": "main"
   }
 }
