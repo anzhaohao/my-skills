@@ -6,9 +6,9 @@
   "enabled": true,
   "tags": [],
   "source": {
-    "type": "import",
-    "ref": null,
+    "type": "git",
+    "ref": "https://github.com/nevertoday/xxd-panel-046",
     "subpath": null,
-    "branch": null
+    "branch": "main"
   }
 }

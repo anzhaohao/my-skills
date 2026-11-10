@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "9aea4516-e985-4f7d-831d-0d779f380829",
+  "name": "azf自建skills",
+  "description": "我自己自建的skill",
+  "icon": "home",
+  "sort_order": 999
+}

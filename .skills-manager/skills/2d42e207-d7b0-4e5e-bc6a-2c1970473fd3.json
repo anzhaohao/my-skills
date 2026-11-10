@@ -6,9 +6,9 @@
   "enabled": true,
   "tags": [],
   "source": {
-    "type": "import",
-    "ref": null,
-    "subpath": null,
-    "branch": null
+    "type": "git",
+    "ref": "https://github.com/Yuan1z0825/nature-skills",
+    "subpath": "skills/nature-citation",
+    "branch": "main"
   }
 }

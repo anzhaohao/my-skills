@@ -6,9 +6,9 @@
   "enabled": true,
   "tags": [],
   "source": {
-    "type": "import",
-    "ref": null,
-    "subpath": null,
-    "branch": null
+    "type": "git",
+    "ref": "https://github.com/weijt606/anti-vibe-writing",
+    "subpath": "skills/anti-vibe-writing",
+    "branch": "main"
   }
 }

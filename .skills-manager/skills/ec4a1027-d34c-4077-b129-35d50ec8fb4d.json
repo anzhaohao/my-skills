@@ -6,9 +6,9 @@
   "enabled": true,
   "tags": [],
   "source": {
-    "type": "import",
-    "ref": null,
-    "subpath": null,
-    "branch": null
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable",
+    "subpath": ".agents/skills/impeccable",
+    "branch": "main"
   }
 }
