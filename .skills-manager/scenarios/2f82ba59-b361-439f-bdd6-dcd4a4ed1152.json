@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "2f82ba59-b361-439f-bdd6-dcd4a4ed1152",
+  "name": "图像与视觉创作",
+  "description": "照片加工、艺术化视觉作品、海报、壁纸及指定风格图像创作。网页界面归前端设计与交互，科学图件归科研绘图。",
+  "icon": null,
+  "sort_order": 999
+}

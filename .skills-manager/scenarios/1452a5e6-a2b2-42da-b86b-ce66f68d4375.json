@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "1452a5e6-a2b2-42da-b86b-ce66f68d4375",
+  "name": "科研绘图",
+  "description": "论文图表、机制图、流程图和科研插图的设计、复刻、编辑、审查与修正；包括以 PowerPoint 或 draw.io 为绘图工具的工作。",
+  "icon": null,
+  "sort_order": 999
+}

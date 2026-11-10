@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "scenario_id": "15aeedb5-f82c-4c23-b3b1-d0db293dd0b2",
-  "name": "编程与前端",
-  "description": "网页界面和动画、编程规范、代码与项目理解、PR 维护、部署和客户端开发工具。",
+  "name": "前端设计与交互",
+  "description": "网页与应用界面的审美、布局、配色、字体、组件、响应式、动效和交互实现；包含设计系统提取和多方案视觉核验。",
   "icon": null,
   "sort_order": 999
 }

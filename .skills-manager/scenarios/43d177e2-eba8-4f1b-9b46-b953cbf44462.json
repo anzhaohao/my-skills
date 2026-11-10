@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "43d177e2-eba8-4f1b-9b46-b953cbf44462",
+  "name": "实验与数据分析",
+  "description": "实验设计与记录、训练结果分析、数据探索、统计分析与统计报告、优化及研究用 Notebook。图件制作归科研绘图。",
+  "icon": null,
+  "sort_order": 999
+}

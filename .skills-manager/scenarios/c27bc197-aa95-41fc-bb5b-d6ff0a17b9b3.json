@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "c27bc197-aa95-41fc-bb5b-d6ff0a17b9b3",
+  "name": "编程与后端工程",
+  "description": "后端逻辑、接口、数据库、通用编程规范、代码理解与调试、工程复用、进程管理、部署及后端模型请求诊断。页面审美与交互归前端专类。",
+  "icon": null,
+  "sort_order": 999
+}
