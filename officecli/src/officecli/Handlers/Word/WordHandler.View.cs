@@ -44,6 +44,9 @@ public partial class WordHandler
     {
         foreach (var element in body.ChildElements)
         {
+            // w:sectPr closes the body; it is not content and must not count
+            // as an element (it inflated "N total" by one and shifted ranges).
+            if (element is SectionProperties) continue;
             if (element is SdtBlock sdt)
             {
                 var content = sdt.SdtContentBlock;
@@ -482,7 +485,10 @@ public partial class WordHandler
                     }
                     else
                     {
-                        var text = GetParagraphText(para);
+                        // A soft line break (<w:br/>, read back as \v) is one
+                        // element line here; show it as a space so the words do
+                        // not run together ("line one line two").
+                        var text = GetParagraphText(para).Replace('\v', ' ');
                         var listPrefix = GetListPrefix(para, listCounter);
                         sb.AppendLine($"[{path}] {sdtLabel}{listPrefix}{text}");
                     }
@@ -1171,6 +1177,40 @@ public partial class WordHandler
         };
     }
 
+    /// <summary>
+    /// Effective line height in twips when the paragraph's line rule resolves
+    /// to <c>exact</c> (direct pPr → style chain → docDefaults); null when the
+    /// effective rule is auto/atLeast or no spacing is defined.
+    /// </summary>
+    private int? ResolveExactLineHeightTwips(Paragraph para)
+    {
+        static (int line, string? rule)? Read(SpacingBetweenLines? sp)
+        {
+            if (sp?.Line?.Value == null) return null;
+            if (!int.TryParse(sp.Line.Value, out var line)) return null;
+            return (line, sp.LineRule?.HasValue == true ? sp.LineRule.InnerText : null);
+        }
+
+        var direct = Read(para.ParagraphProperties?.SpacingBetweenLines);
+        if (direct == null)
+        {
+            var visited = new HashSet<string>();
+            var styleId = para.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
+            while (styleId != null && visited.Add(styleId) && direct == null)
+            {
+                var style = FindStyleById(styleId);
+                if (style == null) break;
+                direct = Read(style.StyleParagraphProperties?.SpacingBetweenLines);
+                styleId = style.BasedOn?.Val?.Value;
+            }
+        }
+        direct ??= Read(_doc.MainDocumentPart?.StyleDefinitionsPart?.Styles?.DocDefaults
+            ?.ParagraphPropertiesDefault?.ParagraphPropertiesBaseStyle?.SpacingBetweenLines);
+
+        if (direct == null) return null;
+        return string.Equals(direct.Value.rule, "exact", StringComparison.OrdinalIgnoreCase) ? direct.Value.line : null;
+    }
+
     public List<DocumentIssue> ViewAsIssues(string? issueType = null, int? limit = null)
     {
         var issues = new List<DocumentIssue>();
@@ -1321,7 +1361,12 @@ public partial class WordHandler
             if (pProps != null && IsNormalStyle(styleName))
             {
                 var indent = pProps.Indentation;
-                if (indent?.FirstLine == null || indent.FirstLine.Value == "0")
+                // w:firstLineChars is the character-relative twin of w:firstLine
+                // (200 = 2 characters, exactly what the suggestion below asks
+                // for) and satisfies the check on its own — CJK documents carry
+                // the indent that way and never emit w:firstLine.
+                var hasFirstLineChars = indent?.FirstLineChars != null && indent.FirstLineChars.Value > 0;
+                if (!hasFirstLineChars && (indent?.FirstLine == null || indent.FirstLine.Value == "0"))
                 {
                     // Skip paragraphs where first-line indent is not expected:
                     // - hanging indent (e.g. bibliography entries)
@@ -1348,6 +1393,30 @@ public partial class WordHandler
                             Suggestion = "Set first-line indent to 2 characters"
                         });
                     }
+                }
+            }
+
+            // Inline picture taller than an exact line height: Word clips the
+            // drawing to the line box, so a 7cm figure renders as a thin strip.
+            var exactLineTwips = ResolveExactLineHeightTwips(para);
+            if (exactLineTwips.HasValue)
+            {
+                foreach (var drawing in para.Descendants<Drawing>())
+                {
+                    var inline = drawing.Inline;
+                    if (inline?.Extent?.Cy == null) continue; // anchored (floating) pictures are not clipped
+                    long picTwips = inline.Extent.Cy.Value / 635; // 1 twip = 635 EMU
+                    if (picTwips <= exactLineTwips.Value) continue;
+                    issues.Add(new DocumentIssue
+                    {
+                        Id = $"F{++issueNum}",
+                        Type = IssueType.Format,
+                        Severity = IssueSeverity.Warning,
+                        Subtype = Core.IssueSubtypes.PictureClippedByLineSpacing,
+                        Path = $"/body/{BuildParaPathSegment(para, lineNum + 1)}",
+                        Message = $"Inline picture ({picTwips / 20.0:0.#}pt tall) is clipped by exact line spacing ({exactLineTwips.Value / 20.0:0.#}pt)",
+                        Suggestion = $"Set lineRule=auto on the paragraph, or raise lineSpacing to at least {Math.Ceiling(picTwips / 20.0)}pt"
+                    });
                 }
             }
 
@@ -1650,9 +1719,16 @@ public partial class WordHandler
             var lockEl = sdtProps.GetFirstChild<DocumentFormat.OpenXml.Wordprocessing.Lock>();
             var lockVal = lockEl?.Val?.InnerText;
 
-            // Determine SDT type
+            // Determine SDT type. Mirrors the classifier in
+            // WordHandler.Navigation.cs (SdtToNode) — checkbox first, text last
+            // as fallback. CONSISTENCY(sdt-type-classifier): both sites must
+            // recognize the same set of w:sdtPr content markers.
+            var checkBoxEl = sdtProps.GetFirstChild<DocumentFormat.OpenXml.Office2010.Word.SdtContentCheckBox>();
             string sdtType;
-            if (sdtProps.GetFirstChild<SdtContentDropDownList>() != null) sdtType = "dropdown";
+            if (sdtProps.GetFirstChild<SdtContentGroup>() != null) sdtType = "group";
+            else if (sdtProps.GetFirstChild<SdtContentPicture>() != null) sdtType = "picture";
+            else if (checkBoxEl != null) sdtType = "checkbox";
+            else if (sdtProps.GetFirstChild<SdtContentDropDownList>() != null) sdtType = "dropdown";
             else if (sdtProps.GetFirstChild<SdtContentComboBox>() != null) sdtType = "combobox";
             else if (sdtProps.GetFirstChild<SdtContentDate>() != null) sdtType = "date";
             else if (sdtProps.GetFirstChild<SdtContentText>() != null) sdtType = "text";
@@ -1670,7 +1746,15 @@ public partial class WordHandler
             }
 
             var editable = IsSdtEditable(sdtProps);
-            var displayValue = string.IsNullOrEmpty(text) ? "(empty)" : text;
+            // A checkbox reports its state, not the ☒/☐ glyph it renders —
+            // same shape as the legacy FORMCHECKBOX entry below.
+            bool? sdtChecked = checkBoxEl == null
+                ? null
+                : checkBoxEl.Checked?.Val?.InnerText == "1"
+                  || string.Equals(checkBoxEl.Checked?.Val?.InnerText, "true", StringComparison.OrdinalIgnoreCase);
+            var displayValue = sdtChecked.HasValue
+                ? null
+                : (string.IsNullOrEmpty(text) ? "(empty)" : text);
 
             entries.Add(new FormFieldEntry(
                 Kind: "sdt",
@@ -1680,7 +1764,8 @@ public partial class WordHandler
                 Alias: alias ?? tag,
                 Value: displayValue,
                 Items: items,
-                Lock: lockVal));
+                Lock: lockVal,
+                Checked: sdtChecked));
         }
 
         // 2. Collect legacy form fields

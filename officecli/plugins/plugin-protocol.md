@@ -166,7 +166,7 @@ to stdout and exiting 0. The object describes the plugin to the main binary.
 |---|---|---|
 | `name` | string | Stable identifier, kebab-case (e.g. `officecli-doc`) |
 | `version` | string | SemVer of the plugin (e.g. `1.0.0`) |
-| `protocol` | integer | Protocol major version this plugin implements. v1 plugins MUST set `1`. Main rejects mismatches with exit code 5. |
+| `protocol` | integer | Protocol major version this plugin implements. v1 plugins MUST set `1`. Main refuses to load a mismatched plugin: the open fails with error code `protocol_mismatch` (§6.6) and main's usual exit code 1. (Exit code 5 in §6.5 is what a plugin *process* returns.) |
 | `kinds` | array | One or more declared kinds (see §2). Common case: `["dump-reader"]` |
 | `extensions` | array | File extensions this plugin handles, leading dot (`[".doc"]`) |
 | `idle_timeout_seconds` | object | Idle-timeout budget per verb. See §4.2. |
@@ -481,7 +481,7 @@ Main runs a watchdog thread for every spawned plugin process:
   heartbeat line is consumed by the watchdog and not surfaced to the user
 - When `now - last_activity > idle_timeout`, main `Kill(entire_process_tree)`
   and reports `plugin_idle_timeout` (exit code 6)
-- `--timeout 0` disables the watchdog; manifest cannot disable
+- `OFFICECLI_PLUGIN_IDLE_TIMEOUT_SECONDS=0` in the host environment disables the watchdog (§4.2); manifest cannot disable
 
 Long opaque operations (exporter rendering, format-handler `save` on large
 files) SHOULD emit periodic heartbeats. Plugins that stream output

@@ -148,8 +148,12 @@ public partial class ExcelHandler
     /// Supports cell formatting (font, fill, borders, alignment), merged cells,
     /// column widths, row heights, frozen panes, and sheet tab switching.
     /// </summary>
-    public string ViewAsHtml()
+    /// <param name="ensureRange">Optional cell range ("Sheet1!A1:J20" or "/Sheet1/A1:J20").
+    /// The named sheet's grid is extended to cover it, so screenshot --range corner
+    /// cells beyond the used range still resolve to real grid cells.</param>
+    public string ViewAsHtml(string? ensureRange = null)
     {
+        var ensure = ParseViewRange(ensureRange, ignoreInvalid: true);
         using var _cul = InvariantCultureScope.Enter();
         var sb = new StringBuilder();
         var sheets = GetWorksheets();
@@ -242,7 +246,9 @@ public partial class ExcelHandler
             var pictures = CollectSheetPictures(worksheetPart);
             if (pictures.Count > 0)
                 charts.AddRange(pictures);
-            RenderSheetTable(sb, sheetName, renderPart, stylesheet, renderStyles, charts, sheetIdx, showGridLines);
+            var ensureCell = ensure != null && string.Equals(ensure.Value.Sheet, sheetName, StringComparison.OrdinalIgnoreCase)
+                ? (ensure.Value.R2, ensure.Value.C2) : ((int, int)?)null;
+            RenderSheetTable(sb, sheetName, renderPart, stylesheet, renderStyles, charts, sheetIdx, showGridLines, ensureCell);
             sb.AppendLine("</div>");
         }
         sb.AppendLine("</div>");
@@ -311,7 +317,7 @@ public partial class ExcelHandler
 
     private void RenderSheetTable(StringBuilder sb, string sheetName, WorksheetPart worksheetPart, Stylesheet? stylesheet, RenderStyleArrays renderStyles,
         List<(int fromRow, int toRow, int fromCol, int toCol, double colOffsetPt, string html)>? charts = null, int sheetIdx = 0,
-        bool showGridLines = true)
+        bool showGridLines = true, (int Row, int Col)? ensureCell = null)
     {
         var ws = GetSheet(worksheetPart);
         var sheetData = ws.GetFirstChild<SheetData>();
@@ -463,6 +469,15 @@ public partial class ExcelHandler
                 if (toCol > maxCol) maxCol = toCol;
                 if (toRow > maxRow) maxRow = toRow;
             }
+        // Extend maxRow/maxCol to cover an explicitly requested screenshot range
+        // (issue #246): its corner cells must exist in the grid or the clip-crop
+        // union collapses to whichever corner is inside the used range. Subject
+        // to the same render caps below.
+        if (ensureCell != null)
+        {
+            if (ensureCell.Value.Row > maxRow) maxRow = ensureCell.Value.Row;
+            if (ensureCell.Value.Col > maxCol) maxCol = ensureCell.Value.Col;
+        }
 
         // Column cap: >200 cols is unusable in a browser table regardless of rendering mode.
         // Row cap: default 5000; overridable via OnGetHtmlRowCap when the rendering backend
@@ -855,6 +870,7 @@ public partial class ExcelHandler
                     ? richHtml
                     : BuildCellContent(cellRef, value, ctx.DataBarMap, ctx.IconSetMap);
                 content = WrapVerticalAlign(content, GetCellVerticalAlign(cell, ctx.Stylesheet, ctx.RenderStyles), richHtml);
+                content = WrapRotatedText(cell, ctx.RenderStyles, content);
                 if (ctx.SparklineMap.TryGetValue(cellRef, out var spkSvg)) content = spkSvg + content;
                 var diagSvg = TryBuildCellDiagonalSvg(cell, ctx.Stylesheet, ctx.RenderStyles) ?? "";
                 if (ctx.AutoFilterCells.Contains(cellRef)) content += AutoFilterIndicatorHtml;
@@ -873,6 +889,7 @@ public partial class ExcelHandler
                     ? richHtml
                     : BuildCellContent(cellRef, value, ctx.DataBarMap, ctx.IconSetMap);
                 content = WrapVerticalAlign(content, GetCellVerticalAlign(cell, ctx.Stylesheet, ctx.RenderStyles), richHtml);
+                content = WrapRotatedText(cell, ctx.RenderStyles, content);
                 if (ctx.SparklineMap.TryGetValue(cellRef, out var spkSvg)) content = spkSvg + content;
                 var diagSvg = TryBuildCellDiagonalSvg(cell, ctx.Stylesheet, ctx.RenderStyles) ?? "";
                 // Text-spill emulation (Excel-fidelity): a non-wrapped left/general
@@ -2382,6 +2399,38 @@ public partial class ExcelHandler
     /// formatting) and when there's no content. <sup>/<sub> give both the
     /// raised/lowered baseline and the ~0.83em size reduction natively.
     /// </summary>
+    /// <summary>
+    /// Wrap a rotated cell's content in the span that carries the rotation.
+    /// The rotation must NOT sit on the &lt;td&gt;: a CSS transform rotates the
+    /// element box, so a tall narrow (typically vertically merged) cell paints
+    /// its fill and borders sideways across the neighbouring column, and the
+    /// text is clipped to the swapped extent. Excel rotates only the glyphs.
+    /// Right angles use writing-mode, which lays the text out in a naturally
+    /// narrow-and-tall box (no transform, no layout overflow); oblique angles
+    /// keep a transform on the inline-block span, whose overflow the td already
+    /// allows.
+    /// </summary>
+    private static string WrapRotatedText(Cell? cell, RenderStyleArrays renderStyles, string content)
+    {
+        if (cell == null || string.IsNullOrEmpty(content)) return content;
+        var si = (int)(cell.StyleIndex?.Value ?? 0);
+        var xfsArr = renderStyles.CellFormats;
+        if (si >= xfsArr.Length) return content;
+        var rot = xfsArr[si].Alignment?.TextRotation;
+        if (rot?.HasValue != true || rot.Value == 0 || rot.Value == 255) return content;
+
+        // Excel: 1–90 = counter-clockwise, 91–180 = clockwise (180 = 90° CW).
+        var css = rot.Value switch
+        {
+            // Bottom-to-top: vertical flow, then flipped so it reads upward.
+            90 => "writing-mode:vertical-rl;transform:rotate(180deg)",
+            // Top-to-bottom.
+            180 => "writing-mode:vertical-rl",
+            _ => $"transform:rotate({(rot.Value <= 90 ? -(int)rot.Value : (int)rot.Value - 90)}deg)"
+        };
+        return $"<span class=\"rot-text\" style=\"display:inline-block;white-space:nowrap;{css}\">{content}</span>";
+    }
+
     private static string WrapVerticalAlign(string content, string? vAlign, string? richHtml)
     {
         if (vAlign == null || richHtml != null || string.IsNullOrEmpty(content)) return content;
@@ -2619,13 +2668,17 @@ public partial class ExcelHandler
                 // Excel: 0-90 = counter-clockwise, 91-180 = clockwise (91=1°CW, 180=90°CW)
                 // Excel: 1-90 = CCW (CSS negative), 91-180 = CW (CSS positive, 91=1°, 180=90°)
                 int cssDeg = rot <= 90 ? -(int)rot : (int)rot - 90;
+                // The rotation itself lives on an inner span (see WrapRotatedText):
+                // a transform on the <td> rotates the whole cell BOX, so a tall
+                // narrow merged cell's fill and borders swing out over the
+                // neighbouring column. Excel rotates only the text.
+                _ = cssDeg;
                 // The td's default rule clips its content (overflow:hidden +
                 // text-overflow:ellipsis + max-width:500px) to the un-rotated column
                 // width, so after the rotate the string truncates ("Rotat…") even
                 // though the row was grown tall enough. Override those for rotated
                 // cells: keep the box at column width but let the rotated text run to
                 // its full length (vertically, within the expanded row height).
-                styles.Add($"transform:rotate({cssDeg}deg)");
                 styles.Add("white-space:nowrap");
                 styles.Add("overflow:visible");
                 styles.Add("text-overflow:clip");
@@ -2936,7 +2989,7 @@ public partial class ExcelHandler
         if (value == null || !int.TryParse(value, out int idx)) return null;
 
         var sst = _doc.WorkbookPart?.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
-        var item = sst?.SharedStringTable?.Elements<SharedStringItem>().ElementAtOrDefault(idx);
+        var item = SharedStringAt(sst?.SharedStringTable, idx);
         if (item == null) return null;
 
         var runs = item.Elements<Run>().ToList();

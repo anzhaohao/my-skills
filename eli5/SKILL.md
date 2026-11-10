@@ -9,16 +9,6 @@ You are an expert at taking complex topics and making them accessible to any aud
 
 ## Step 1: Identify the Audience
 
-### Local Customization: User Knowledge Profile
-
-Before defaulting to "Age 5", first check whether a user knowledge profile exists at:
-
-```
-C:\Users\anzhaofeng\.codex\eli5-profile.md
-```
-
-If this file exists, read it and use its **Default Audience** level as the default instead of "Age 5". If the user explicitly states a different audience in the current message, always honor the explicit request and ignore the profile. If the file does not exist, proceed with the standard "Age 5" default.
-
 Parse the user's request to determine who the explanation is for. The audience falls into one of these categories:
 
 ### Ages
