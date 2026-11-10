@@ -57,6 +57,17 @@
 - 统一各客户端技能目录时，先记录每处原有技能名单；共享目录、旧路径也按原位置替换链接，不借此给其它客户端或另一默认路径增加技能。各客户端自带技能仍由该客户端维护。
 - 当前机器的 Skills Manager 根目录是 `E:\software\skills-manager`，第三方和自建 skill 的唯一中央库是其 `skills` 子目录。不得重建或回退使用 `C:\Users\anzhaofeng\.skills-manager\skills`；E 盘目录不可用时先报告，不另建平行库。
 - `C:\Users\anzhaofeng\.skills-manager\bin\skills-manager-cli.exe` 只作为指向 E 盘管理器的固定命令桥接保留。各 harness 自带的 skill 和运行时插件继续留在各自原生目录，其中有效的 C 盘路径不属于旧中央库。
+
+### Skill 安装、更新与部署规则（2026-11-10）
+
+- 第三方和自建 skill 的唯一可编辑真实源是 `E:\software\skills-manager\skills`；创建、安装、更新都通过 Skills Manager 在这里完成，各客户端使用指向 E 盘的向内链接。不要在任何 harness 里保留第二个可编辑副本，也不要重建或回退到 C 盘旧库。
+- 安装或更新前先核对来源元数据、source ID、skill 文件夹与 frontmatter 名称、客户端实际目录和链接、插件/原生发现路径、现有本地修改；不要因为某个客户端已经能通过链接看到它，就在其它根目录重装同名或改名副本。
+- 独立副本里的独有修改要先合并回 E 盘中央库，并检查整个 skill 文件夹及 supporting resources；替换前做好 E 盘外部备份，再在原客户端路径换成向内链接，不能只看 `SKILL.md`。
+- 保持每个客户端原有部署范围、预设、来源关联和配置不变。加入“通用技能”预设不等于部署；只修预设时不得顺手扩大部署。
+- 客户端自带、默认或官方原生 skill 只留在所属 harness 的原生目录，不进入中央库、通用预设、共享目录或其它 harness；归属按来源证据判断，不按名称或兼容性判断。来源不明时先不归类。
+- 插件市场缓存、插件缓存、vendor 导入和运行时内置文件不等于可编辑的重复部署，不要整批删除或链接。同一个第三方 skill 同时由插件和中央库加载时，保留中央库部署；确认插件没有独有 MCP、工具或 hooks 后，才关闭多余插件，并保留客户端/provider 已保存配置，避免切换配置时把重复项恢复回来。
+- 安装、更新或整理后验证：所有部署链接都指向 E 盘中央库，无断链或旧 C 盘引用，预设/来源关系和客户端设置未变，自己的修改仍在；同时检查实际生效的已保存配置或配置数据库，而不只看可见配置文件。
+
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
 - 排查 Codex 自身闪退、卡顿、网络/MCP/app-server 或 SQLite 日志写入问题时，使用下面的“临时 SQLite 诊断窗口”；普通开发不要关闭日志保护。
@@ -68,7 +79,7 @@
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
 - 部署或接手一个本地项目时，先扫它有没有管理器/托管机制（识别清单与要排除的噪音见 `azf-manager-builder`）：**有长驻进程但没有真管理器**（只有 `.bat`/`.ps1`/`.vbs` 这类"启动一次就不管"的脚本）时，先停下来问我"要不要顺手建一个 .exe 管理器"，得到同意再交给 `azf-manager-builder` 生成；没有长驻进程（一次性脚本、纯 CLI 工具、Docker 已托管）就一句话说明"无需管理器"继续。未经我同意不得自行新建管理器，也不得为了让托管更方便去改被托管项目的源码。
 
-- **skill 规范库的收纳规则（2026-09-24）**：`E:\software\skills-manager\skills` 只收两类 skill——第三方（ClawHub / skills.sh 等市场或公开仓库装来的）和自建（`azf-` / `azq-` 前缀）。**harness 自带的默认 skill 不放这里**，它们只留在该 harness 自己的默认目录（Codex 系统 skill 在 `~/.codex/skills/.system/`，运行时的 `pdf` / `documents` 插件在 `~/.cache/codex-runtimes/...`）。判断线索：skill 文档引用该 harness 的私有路径或专有 frontmatter（`.cursor/rules/`、`.cursor/hooks.json`、`~/.cursor/cli-config.json`、`disable-model-invocation`）。发现混入时三步走：**移出**到 `E:\software\AI改前备份\<时间戳>_skill库移出<harness>自带skill_<harness>\skills\`（移动而非删除）→ **删链接**（各 agent 目录里指向它的 junction，避免悬空）→ **提交**该仓库。规则同时写在 `skills\README.md`，但那份 README 会被 Skills Manager 重新生成，以本 skill 为准。
+- **skill 规范库的收纳规则（2026-11-10）**：`E:\software\skills-manager\skills` 只收两类 skill——第三方（ClawHub / skills.sh 等市场或公开仓库装来的）和自建（`azf-` / `azq-` 前缀）。**harness 自带、默认或官方原生 skill 不放这里**，它们只留在所属 harness 的原生目录；其它客户端的同名或兼容 skill 也遵循同一归属规则。判断来源看文档、source metadata 和实际安装路径，不只看名称或前缀；来源未确认时不加入通用预设。发现混入时先核实来源、现存副本、链接和部署状态，再按上面的安装、更新与部署规则安全归位，不盲目删除或扩大部署。
 
 ## 部署新项目时的托管检查（→ azf-manager-builder）
 
@@ -132,6 +143,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-11-10：补充统一的 skill 安装、更新与部署规则：E 盘中央库为唯一可编辑真实源，先合并修改再换向内链接，保持原部署与预设，客户端原生技能只留在所属 harness，并保留插件缓存与已保存配置的边界。
 
 - 2026-11-10：落实新第三方及自建 skill 自动加入“通用技能”，明确独立 Codex 副本先保留修改合回中央库、再用链接部署，避免多个可编辑技能库。
 
