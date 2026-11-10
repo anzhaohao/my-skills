@@ -1,13 +1,13 @@
 # Skill 规范库
 
-这个目录是 An Zhaofeng 的 **skill 规范库**，同时也是它的 GitHub 备份仓库（`github.com/anzhaohao/my-skills`，分支 `main`）。
+这个目录是 An Zhaofeng 的 **skill 规范库**，真实位置为 `E:\software\skills-manager\skills`，同时也是它的 GitHub 备份仓库（`github.com/anzhaohao/my-skills`，分支 `main`）。
 
-各个 agent / harness 通过 **junction 指向这里**读取 skill：
+各个 agent / harness 通过 **逐个 skill 的 junction 指向这里**读取已部署的 skill：
 
-- 整目录链接：`~/.agents/skills`、`~/.claude/skills`
-- 逐个 skill 链接：`~/.codex/skills`、`~/.cursor/skills`、`~/.trae/skills`、`~/.antigravity/skills` 等
+- 部署位置包括 `~/.agents/skills`、`~/.claude/skills`、`~/.codex/skills`、`~/.cursor/skills`、`~/.trae/skills`、`~/.antigravity/skills` 等。
+- 哪些 skill 部署到哪些 harness，由 Skills Manager 当前预设及客户端部署设置决定；harness 自带的 skill 和运行时插件保留在各自原生目录。
 
-因此**改这里的 skill = 所有 agent 同时生效**；往这里放东西前请先看下面的收纳规则。
+因此**改这里的 skill = 已部署该 skill 的 agent 同时读取更新**；往这里放东西前请先看下面的收纳规则。
 
 ## 收纳规则（只放两类）
 
@@ -42,7 +42,7 @@
 ## 关于旧管理软件（Skills Manager）留下的东西
 
 - `.claude-plugin/marketplace.json`（Claude Code 市场清单）与本文档原先那张 `## Skills (NNN)` 自动表格，都是旧工具生成的。**2026-09-24：清单已删除**（准备更换 skill 管理软件），本文档改为**手写维护**，不再放会过期的自动表格。
-- 旧工具的数据仍在 `.skills-manager` 根目录下（不在本仓库内）：`config.json`、`github-config.json`、`usage.db`、`cache/`、`hooks/`、`link-backups/`、`logs/`、`retired-skills/`、`update-backups/`。
+- **2026-11-10：中央库已迁移至 E 盘**。当前管理器根目录为 `E:\software\skills-manager`，中央库为其 `skills` 子目录，数据库为 `skills-manager.db`。`C:\Users\anzhaofeng\.skills-manager` 只保留 `bin` 下的 CLI 桥接，不再存放 skill 或数据库；禁止把它当作备用库。旧数据仅作历史追溯，迁移备份位于 `E:\software\AI改前备份\20261110_174900_SkillsManager中央库迁移_修改前备份_codex`。
 
 ## 当前规模
 

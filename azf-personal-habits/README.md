@@ -52,6 +52,8 @@
 - 整理我已有的 Obsidian 笔记时，先保留原文判断链，再做结构化优化；不要把能说明“为什么后来这样决策”的解释段、截图序列或折叠 callout 压平成泛化摘要。
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
 - `E:\software\skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
+- 当前机器的 Skills Manager 根目录是 `E:\software\skills-manager`，第三方和自建 skill 的唯一中央库是其 `skills` 子目录。不得重建或回退使用 `C:\Users\anzhaofeng\.skills-manager\skills`；E 盘目录不可用时先报告，不另建平行库。
+- `C:\Users\anzhaofeng\.skills-manager\bin\skills-manager-cli.exe` 只作为指向 E 盘管理器的固定命令桥接保留。各 harness 自带的 skill 和运行时插件继续留在各自原生目录，其中有效的 C 盘路径不属于旧中央库。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
 - 排查 Codex 自身闪退、卡顿、网络/MCP/app-server 或 SQLite 日志写入问题时，使用下面的“临时 SQLite 诊断窗口”；普通开发不要关闭日志保护。
@@ -127,6 +129,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-11-10：确认默认中央库为 `E:\software\skills-manager\skills`，明确 E 盘不可用时不得回退或重建 C 盘旧库；区分有效的 C 盘 CLI 桥接及 harness 原生 skill / 插件目录。
 
 - 2026-09-25：移除个人习惯中容易把普通 Docker 或本地部署误引导至服务器的默认路由；明确以用户指定的本机项目位置为准，只有明确要求服务器部署时才应用服务器约定。独立的 `azf-server-deploy` skill 保留。
 

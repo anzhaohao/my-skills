@@ -53,8 +53,8 @@ E:\software\skills-manager\skills\azf-deepsight\
 ## Skills Manager 与宿主入口关系
 
 - **Skills Manager**：`E:\software\skills-manager\skills\azf-deepsight` — Skill 真实副本
-- **Claude Code 入口**：`~\.claude\skills\azf-deepsight` — 当前拓扑为父级 Junction
-  继承（`~\.claude\skills` → `E:\software\skills-manager\skills`），即两个路径指向同一物理目录。
+- **Claude Code 入口**：`~\.claude\skills\azf-deepsight` — 当前为逐技能 Junction，
+  指向 `E:\software\skills-manager\skills\azf-deepsight`；父级 `~\.claude\skills` 是普通目录。
 - **其他宿主**：只需将 SKILL.md 集成到对应 Agent 的 Skill 发现路径，
   命令统一通过 `invoke-deepsight.ps1` 调用。
 
@@ -67,13 +67,13 @@ E:\software\skills-manager\skills\azf-deepsight\
    ```
 3. 验证：
    ```
-   powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' status
+   powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' status
    ```
 
-Skill 中统一使用这条 `-Command` + `@args` 模板：外层单引号阻止 Claude Code 的 Bash
-提前展开 PowerShell 的 `$env:USERPROFILE`，参数仍以独立 argv 转发。不要改写成
-`-File "$env:USERPROFILE\..."`；该写法在 Bash 宿主中会把 `$env` 当作 Bash 变量，
-导致首次命令以无效路径退出并诱发宿主重试。
+Skill 中统一使用这条 `-Command` + `@args` 模板：脚本路径固定为 E 盘中央库，
+外层单引号阻止 Claude Code 的 Bash 提前展开 PowerShell 表达式，参数仍以独立 argv 转发。
+不要回退到旧的 `$env:USERPROFILE` 拼接路径；在 Bash 中将此表达式放在双引号内还会
+把 `$env` 当作 Bash 变量，导致首次命令以无效路径退出并诱发宿主重试。
 
 ## 失败停止闸门与内部重试的边界（F.2.9）
 
@@ -121,7 +121,7 @@ DeepSight 直连 provider，破坏失败语义与验收完整性。
 
 ## 最新维护
 
-- 最后更新：2026-08-13（最终黑盒追修：调用模板改为跨 PowerShell/Bash 安全的 `-Command` + `@args`，避免宿主变量预展开导致错误重试）
+- 最后更新：2026-11-10（调用路径统一为 E 盘中央库，更新逐技能 Junction 说明；沿用 2026-08-13 确定的 `-Command` + `@args` 调用模板）
 - 实现提交：待提交
-- 拓扑类型：parent_junction（`.claude\skills` → `.skills-manager\skills`）
+- 拓扑类型：per_skill_junction（`.claude\skills\azf-deepsight` → `E:\software\skills-manager\skills\azf-deepsight`）
 - 总控台地址：`http://127.0.0.1:8765`

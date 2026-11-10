@@ -205,7 +205,11 @@ When creating diagrams, visual notes, paper idea maps, project maps, or Excalidr
 
 ## Skill Maintenance Habit
 
-When creating, installing, updating, or optimizing a personal skill, use `E:\software\skills-manager\skills` as An Zhaofeng's default skill root. Do not install or scaffold personal skills under `.agent`, `.agents`, `.codex/skills`, a project-local folder, or an Obsidian vault folder unless An Zhaofeng explicitly requests that alternate location in the current turn. For existing skills found in the wrong root, report the mismatch before moving anything. When working under `E:\software\skills-manager\skills`:
+When creating, installing, updating, or optimizing a personal skill, use `E:\software\skills-manager\skills` as An Zhaofeng's default skill root. Do not install or scaffold personal skills under `.agent`, `.agents`, `.codex/skills`, a project-local folder, or an Obsidian vault folder unless An Zhaofeng explicitly requests that alternate location in the current turn. For existing skills found in the wrong root, report the mismatch before moving anything.
+
+On An Zhaofeng's current machine, the Skills Manager base is `E:\software\skills-manager`, and its `skills` subfolder is the sole canonical library for third-party and personal skills. Never recreate or use `C:\Users\anzhaofeng\.skills-manager\skills` as a fallback library. If the E-drive library is unavailable, report the missing path instead of creating a parallel library. `C:\Users\anzhaofeng\.skills-manager\bin\skills-manager-cli.exe` is a valid fixed CLI bridge to the E-drive manager, not a skill library. Harness-owned bundled skills and runtime plugins remain in their respective native locations, including valid C-drive locations.
+
+When working under `E:\software\skills-manager\skills`:
 
 1. Update the skill's `SKILL.md` with only the instructions needed for agents.
 2. Update or create the skill folder's `README.md` in Chinese so An Zhaofeng can quickly understand it.

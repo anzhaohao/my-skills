@@ -51,7 +51,7 @@ Use the bundled PowerShell scanner as a deterministic preprocessor:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File `
-  "$env:USERPROFILE\.skills-manager\skills\azf-deep-learning-experiment-record\scripts\azf-experiment-scan.ps1" `
+  "E:\software\skills-manager\skills\azf-deep-learning-experiment-record\scripts\azf-experiment-scan.ps1" `
   -RunPath "D:\Postgraduate_JilinUniversity\02_Project\project\experiments\run-001"
 ```
 

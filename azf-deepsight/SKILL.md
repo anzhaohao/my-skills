@@ -110,7 +110,7 @@ DeepSight 服务层会自动按档案优先级切换到下一个档案重试，*
 ### 1. 普通图片（有绝对路径）
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision analyze <image-path> [--prompt <text>] [--profile <id>] [--no-fallback]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision analyze <image-path> [--prompt <text>] [--profile <id>] [--no-fallback]
 ```
 
 - 默认使用 DeepSight 总控台中当前活动档案。
@@ -122,7 +122,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 仅当当前宿主为 Claude Code 且粘贴的图片没有可访问文件路径时：
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision recover-paste [--count N] [--session <id>] [--transcript <path>] [--cwd <path>] [--analyze] [--prompt <text>]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' vision recover-paste [--count N] [--session <id>] [--transcript <path>] [--cwd <path>] [--analyze] [--prompt <text>]
 ```
 
 - 这是宿主特定适配能力，不是通用前置条件。
@@ -138,9 +138,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 先检查 PDF 基本信息，再决定读取策略：
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf inspect <pdf-path>
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf read <pdf-path> [--dpi 200] [--pages 1-5] [--no-cache]
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf search <pdf-path> <query> [--max 20] [--case] [--no-cache]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf inspect <pdf-path>
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf read <pdf-path> [--dpi 200] [--pages 1-5] [--no-cache]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf search <pdf-path> <query> [--max 20] [--case] [--no-cache]
 ```
 
 - 不要为了读取普通文本把每页都送入视觉模型。
@@ -151,8 +151,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 ### 4. PDF 指定页面 / 图表 / 扫描页 / 公式 / 版面
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf render <pdf-path> [--page 1] [--dpi 200] [--output <path>] [--no-cache]
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf analyze-page <pdf-path> [--page 1] [--prompt <text>] [--profile <id>] [--no-fallback] [--dpi 200] [--no-cache]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf render <pdf-path> [--page 1] [--dpi 200] [--output <path>] [--no-cache]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' pdf analyze-page <pdf-path> [--page 1] [--prompt <text>] [--profile <id>] [--no-fallback] [--dpi 200] [--no-cache]
 ```
 
 - 需要页面图像时使用 `pdf render`。
@@ -163,9 +163,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 ### 5. 复杂 / 扫描 PDF（MinerU Docker）
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru run <pdf-path> [--mode auto|fast|mineru] [--gpu] [--timeout 1800] [--no-cache]
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru check-gpu
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru status
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru run <pdf-path> [--mode auto|fast|mineru] [--gpu] [--timeout 1800] [--no-cache]
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru check-gpu
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' mineru status
 ```
 
 - 需要 Docker Desktop 运行中 + MinerU 镜像已构建。
@@ -176,8 +176,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.ski
 ### 6. 诊断
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' doctor
-powershell -NoProfile -ExecutionPolicy Bypass -Command '& "$env:USERPROFILE\.skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' status
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' doctor
+powershell -NoProfile -ExecutionPolicy Bypass -Command '& "E:\software\skills-manager\skills\azf-deepsight\scripts\invoke-deepsight.ps1" @args' status
 ```
 
 检查各组件状态并给出可操作建议。
