@@ -6,6 +6,7 @@ description: >
   YouTube（字幕、转录）、GitHub、V2EX、雪球/股票行情、LinkedIn/Boss直聘 职位、
   Instagram、Facebook、小宇宙播客；或说"帮我搜/看看/读一下这个链接"而自带网页搜索/读取不可用、失败或拿不到正文；
   或要安装、加上/去掉某个平台、登录/退出、看状态、更新、卸载 Agent Reach。
+  Hana 环境的既有多平台调研、搜索触发词与后端配置见本技能中的本机适配说明。
   不做：发帖、评论、点赞、私信等任何写操作；不替用户登录、不索要密码。
   公开内容优先用 Agent 自带工具，Reach 补缺口。
 metadata:
@@ -18,6 +19,14 @@ metadata:
 一个命令读所有平台：`agent-reach`。只读，默认输出一行 JSON。
 
 动手前先说一句"用 agent-reach skill（X 渠道）"。本 skill 被调用后全程有效，以下规则一直适用。
+
+## 本机适配与原有定制
+
+真实文件统一维护在 `E:\software\skills-manager\skills\agent-reach`，各客户端只保留指向这里的链接。
+
+- 在 Hana 环境执行既有调研工作流时，按需读取 [Hana 原有路由与触发词](references/local-adapters/hana-original/SKILL.md)。原有分类文档一并保留在该文件旁边的 `references/`，包括 Hana 已有的社交平台定制。
+- 共享目录原有的社交平台说明完整保存在 [共享目录原有说明](references/local-adapters/shared-social-original.md)，用于保留与核对本机定制。
+- 这些原有文档包含旧版后端命令。使用前先用当前 `agent-reach channels` / `doctor` 核实可用能力；认证、只读、错误停止与更新确认继续以本入口当前规则为准。不要因归并目录而安装、更新后端或迁移登录态。
 
 ## 选路
 

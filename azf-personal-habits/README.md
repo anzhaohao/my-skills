@@ -53,6 +53,7 @@
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
 - `E:\software\skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
 - 新安装或接管的第三方和 `azf-` / `azq-` 自建 skill 必须加入“通用技能”预设；安装后核对，遗漏时补加。软件界面与命令行新增入库由本机自动归组规则覆盖，定义和恢复说明在 `E:\software\skills-manager\maintenance`。客户端自带 skill 不加入；客户端的独立副本要先保留修改合回 E 盘，再替换为链接。加入预设不等于自动部署到各个客户端。
+- 统一各客户端技能目录时，先记录每处原有技能名单；共享目录、旧路径也按原位置替换链接，不借此给其它客户端或另一默认路径增加技能。各客户端自带技能仍由该客户端维护。
 - 当前机器的 Skills Manager 根目录是 `E:\software\skills-manager`，第三方和自建 skill 的唯一中央库是其 `skills` 子目录。不得重建或回退使用 `C:\Users\anzhaofeng\.skills-manager\skills`；E 盘目录不可用时先报告，不另建平行库。
 - `C:\Users\anzhaofeng\.skills-manager\bin\skills-manager-cli.exe` 只作为指向 E 盘管理器的固定命令桥接保留。各 harness 自带的 skill 和运行时插件继续留在各自原生目录，其中有效的 C 盘路径不属于旧中央库。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。

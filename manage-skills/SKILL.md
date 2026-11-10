@@ -85,6 +85,15 @@ On this computer, every newly installed third-party skill and personal `azf-` /
 `E:/software/skills-manager/skills`; agent directories contain links back here.
 Never keep an independent Codex copy or recreate the former C-drive library.
 
+When consolidating another harness, snapshot its actual skill-directory entries
+before editing. Preserve that exact deployed name set, including unmanaged
+third-party skills already present. Merge or retain divergent local instructions
+inside the canonical skill, archive originals outside client roots, then replace
+copies with links. Do not deploy an entire preset to accomplish this. For legacy
+or shared roots without a registered agent adapter, replace links only at their
+existing paths; do not enable another agent or substitute its configured root.
+Leave client-bundled skills and their refresh mechanisms in their native roots.
+
 The local database trigger `azf_auto_general_preset_after_insert` adds eligible new
 records to that preset for both GUI and CLI installs. Its definition and recovery
 notes are under `E:/software/skills-manager/maintenance/`. After installing or
