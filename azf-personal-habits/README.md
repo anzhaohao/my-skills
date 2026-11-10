@@ -51,7 +51,7 @@
 - 创建或总结 Obsidian / Markdown 笔记时，不要写得过于专业。优先让“未来的我一眼看懂”：先写人话含义，再补必要技术细节；可以有一点温度，比如说明为什么这一步容易误解、这个结论为什么重要，但不要变成长篇抒情。
 - 整理我已有的 Obsidian 笔记时，先保留原文判断链，再做结构化优化；不要把能说明“为什么后来这样决策”的解释段、截图序列或折叠 callout 压平成泛化摘要。
 - An Zhaofeng 的个人 skill 文件夹名和 `SKILL.md` frontmatter `name` 都要使用 `azf-` 前缀。
-- `C:\Users\anzhaofeng\.skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
+- `E:\software\skills-manager\skills` 是本地 skill 的统一源目录，里面应保存真实 skill 目录；其它 agent 或 plugin 目录需要共用 skill 时，应从它们那边链接回 Skills Manager，而不是让 Skills Manager 反向链接到外部目录。
 - 当任务同时匹配通用 skill 和 An Zhaofeng 自定义 `azf-` skill 时，优先读取并遵循 `azf-` skill。
 - 如果用户明确指定自定义 skill，要优先按用户给出的 skill 做，而不是只按通用/system skill。
 - 排查 Codex 自身闪退、卡顿、网络/MCP/app-server 或 SQLite 日志写入问题时，使用下面的“临时 SQLite 诊断窗口”；普通开发不要关闭日志保护。
@@ -63,7 +63,7 @@
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
 - 部署或接手一个本地项目时，先扫它有没有管理器/托管机制（识别清单与要排除的噪音见 `azf-manager-builder`）：**有长驻进程但没有真管理器**（只有 `.bat`/`.ps1`/`.vbs` 这类"启动一次就不管"的脚本）时，先停下来问我"要不要顺手建一个 .exe 管理器"，得到同意再交给 `azf-manager-builder` 生成；没有长驻进程（一次性脚本、纯 CLI 工具、Docker 已托管）就一句话说明"无需管理器"继续。未经我同意不得自行新建管理器，也不得为了让托管更方便去改被托管项目的源码。
 
-- **skill 规范库的收纳规则（2026-09-24）**：`C:\Users\anzhaofeng\.skills-manager\skills` 只收两类 skill——第三方（ClawHub / skills.sh 等市场或公开仓库装来的）和自建（`azf-` / `azq-` 前缀）。**harness 自带的默认 skill 不放这里**，它们只留在该 harness 自己的默认目录（Codex 系统 skill 在 `~/.codex/skills/.system/`，运行时的 `pdf` / `documents` 插件在 `~/.cache/codex-runtimes/...`）。判断线索：skill 文档引用该 harness 的私有路径或专有 frontmatter（`.cursor/rules/`、`.cursor/hooks.json`、`~/.cursor/cli-config.json`、`disable-model-invocation`）。发现混入时三步走：**移出**到 `E:\software\AI改前备份\<时间戳>_skill库移出<harness>自带skill_<harness>\skills\`（移动而非删除）→ **删链接**（各 agent 目录里指向它的 junction，避免悬空）→ **提交**该仓库。规则同时写在 `skills\README.md`，但那份 README 会被 Skills Manager 重新生成，以本 skill 为准。
+- **skill 规范库的收纳规则（2026-09-24）**：`E:\software\skills-manager\skills` 只收两类 skill——第三方（ClawHub / skills.sh 等市场或公开仓库装来的）和自建（`azf-` / `azq-` 前缀）。**harness 自带的默认 skill 不放这里**，它们只留在该 harness 自己的默认目录（Codex 系统 skill 在 `~/.codex/skills/.system/`，运行时的 `pdf` / `documents` 插件在 `~/.cache/codex-runtimes/...`）。判断线索：skill 文档引用该 harness 的私有路径或专有 frontmatter（`.cursor/rules/`、`.cursor/hooks.json`、`~/.cursor/cli-config.json`、`disable-model-invocation`）。发现混入时三步走：**移出**到 `E:\software\AI改前备份\<时间戳>_skill库移出<harness>自带skill_<harness>\skills\`（移动而非删除）→ **删链接**（各 agent 目录里指向它的 junction，避免悬空）→ **提交**该仓库。规则同时写在 `skills\README.md`，但那份 README 会被 Skills Manager 重新生成，以本 skill 为准。
 
 ## 部署新项目时的托管检查（→ azf-manager-builder）
 
@@ -173,7 +173,7 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 2026-07-08：补充 Obsidian 旧笔记整理偏好：整理已有主线、调试记录或 callout 时，要保留原文的观察、证据截图、依据链接和后续判断顺序；结构化不等于压缩成泛化摘要。
 - 2026-07-07：确认 skill 与 `agent-memory vault` 分层。`azf-personal-habits` 保留为行为层，负责自动触发的操作规程；用户正式事实、边界和长期治理偏好改由 `agent-memory/vault/用户记忆/` 维护。冲突时以 vault 为准并提醒用户。
 - 2026-07-04：加入独立前端偏好。以后做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits + GSAP 的组合：React Bits 用于现成动画组件和视觉素材，GSAP 用于自定义动画编排和 React 动画工程规范，但以可用性、项目风格和轻量性优先。
-- 2026-07-04：加入 Skills Manager 链接方向规则。`C:\Users\anzhaofeng\.skills-manager\skills` 必须作为真实源目录；其它 agent/plugin 目录需要共用 skill 时，反向链接回 Skills Manager。
+- 2026-07-04：加入 Skills Manager 链接方向规则。`E:\software\skills-manager\skills` 必须作为真实源目录；其它 agent/plugin 目录需要共用 skill 时，反向链接回 Skills Manager。
 - 2026-07-02：将 Codex 默认回滚备份根目录从桌面迁移到 `E:\software\CodexPlusPlus\Codex备份`，以后只在该目录下创建时间戳任务子目录。
 - 2026-06-30：加入 Obsidian frontmatter 防重复规则。以后创建/补充 AI 笔记属性时，必须使用 UTF-8 无 BOM、文件首行纯 `---`、全文件只保留一个顶部 YAML 属性块，避免 `Update time on edit` 误判后重复创建 `创建时间/修改时间`。
 - 2026-06-23：首次加入论文精读默认路由规则；该规则已于 2026-07-17 调整为优先进入总流程 Skill。

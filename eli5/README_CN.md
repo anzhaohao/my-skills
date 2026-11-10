@@ -13,7 +13,7 @@
 ## 当前保存的关键事实
 
 - 来源仓库：https://github.com/DreambigOu/ELI5 （MIT 协议）
-- 安装位置：`C:\Users\anzhaofeng\.skills-manager\skills\eli5`
+- 安装位置：`E:\software\skills-manager\skills\eli5`
 - 不是个人自定义 skill，不加 `azf-` 前缀
 - 默认受众：如果用户没指定，按 5 岁小孩解释（经典 ELI5）
 - 原始 SKILL.md 在 `skills/eli5/SKILL.md`，顶层也复制了一份方便 Codex 发现

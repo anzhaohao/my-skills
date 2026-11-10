@@ -26,7 +26,7 @@
 
 ## 维护、验证与删除
 
-- 唯一维护源：`C:\Users\anzhaofeng\.skills-manager\skills\azf-deep-learning-experiment-record`。
+- 唯一维护源：`E:\software\skills-manager\skills\azf-deep-learning-experiment-record`。
 - Codex 入口：`C:\Users\anzhaofeng\.codex\skills\azf-deep-learning-experiment-record`，应为指向维护源的 Junction。
 - 修改字段、证据规则或增量算法时，同时更新 `SKILL.md`、本 README、`scripts/azf-experiment-scan.ps1` 和 `schemas/experiment-evidence.schema.json`；若改变 Obsidian 分工，再同步检查 `azf-obsidian-project-record` 的接口说明。
 - 修改后运行 PowerShell 语法解析、Schema JSON 解析、首次扫描和第二次增量扫描，并以 UTF-8 模式运行 `skill-creator/scripts/quick_validate.py`。测试只能使用临时实验目录，不要把原始日志或 checkpoint 复制进 Vault。

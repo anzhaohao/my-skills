@@ -32,7 +32,7 @@ Council 负责发现问题定义、风险、取舍和失败条件；Spec Kit 负
 # 当前安装位置
 
 - Codex 生效目录：`C:\Users\anzhaofeng\.codex\skills\council`
-- 统一管理目录：`C:\Users\anzhaofeng\.skills-manager\skills\council`
+- 统一管理目录：`E:\software\skills-manager\skills\council`
 
 目录内包含：
 

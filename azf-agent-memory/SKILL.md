@@ -382,7 +382,7 @@ agentic tools:
 ## Harness Adapters
 
 Keep one canonical skill at
-`C:\Users\anzhaofeng\.skills-manager\skills\azf-agent-memory\SKILL.md`. Harness
+`E:\software\skills-manager\skills\azf-agent-memory\SKILL.md`. Harness
 adapters must be thin bootstraps; never copy the full skill into each harness.
 
 - Claude Code discovers the Skills Manager through `~\.claude\skills` and reads

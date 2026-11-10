@@ -23,7 +23,7 @@ Use two rounds every time this Skill is invoked for a paper task.
 Run from any directory:
 
 ```powershell
-& 'C:/Users/anzhaofeng/.skills-manager/skills/azf-literature-reading-workflow/scripts/run_workflow.ps1' locate
+& 'E:/software/skills-manager/skills/azf-literature-reading-workflow/scripts/run_workflow.ps1' locate
 ```
 
 Round 1 may read the registry, scan the Obsidian vault, check the flat central concept-card directory, and create a pending location manifest. It must not modify paper notes, concept cards, Zotero, or paper workspaces, and must not create in-directory index/Base/card subfolders.
@@ -46,7 +46,7 @@ Never treat a remembered or default path as confirmed. If multiple candidates ex
 Only after the user explicitly confirms the paths, run:
 
 ```powershell
-& 'C:/Users/anzhaofeng/.skills-manager/skills/azf-literature-reading-workflow/scripts/run_workflow.ps1' confirm-locations
+& 'E:/software/skills-manager/skills/azf-literature-reading-workflow/scripts/run_workflow.ps1' confirm-locations
 ```
 
 Then run `doctor --strict` and the requested workflow command. Write-enabled commands require the confirmed manifest. If a folder moved, a fingerprint changed, a location disappeared, or a workspace is outside the confirmed `paper_root`, stop and return to Round 1.

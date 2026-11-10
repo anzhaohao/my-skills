@@ -35,7 +35,7 @@
 
 ## 维护、验证与删除
 
-- 唯一维护源：`C:\Users\anzhaofeng\.skills-manager\skills\azf-html-ui-loop`。
+- 唯一维护源：`E:\software\skills-manager\skills\azf-html-ui-loop`。
 - Codex 入口：`C:\Users\anzhaofeng\.codex\skills\azf-html-ui-loop`，应为指向维护源的 Junction。
 - 修改候选数量、截图尺寸、隔离方式或应用闸门时，同时更新 `SKILL.md`、本 README、相关 PowerShell/Node 脚本、`schemas/` 和 `agents/openai.yaml`。不要把审美方向重新冻结成单一设计契约。
 - 修改后运行 PowerShell 和 Node 语法检查、Schema JSON 解析、批量候选清单、画廊生成、候选应用确认闸门、已有修改保护，并以 UTF-8 模式运行 `skill-creator/scripts/quick_validate.py`。真实截图测试缺少 Playwright 时应失败关闭，不自动安装依赖。

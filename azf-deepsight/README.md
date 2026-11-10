@@ -39,7 +39,7 @@ Skill，而是旁路 `ls` 同目录、读取 `SCENARIOS.json` 与生成脚本 `g
 ## 调用器结构
 
 ```text
-~\.skills-manager\skills\azf-deepsight\
+E:\software\skills-manager\skills\azf-deepsight\
 ├── SKILL.md              # Skill 定义（本文件的同级文件）
 ├── local-config.json     # 本地配置（安装时生成，不提交 Git）
 └── scripts\
@@ -52,9 +52,9 @@ Skill，而是旁路 `ls` 同目录、读取 `SCENARIOS.json` 与生成脚本 `g
 
 ## Skills Manager 与宿主入口关系
 
-- **Skills Manager**：`~\.skills-manager\skills\azf-deepsight` — Skill 真实副本
+- **Skills Manager**：`E:\software\skills-manager\skills\azf-deepsight` — Skill 真实副本
 - **Claude Code 入口**：`~\.claude\skills\azf-deepsight` — 当前拓扑为父级 Junction
-  继承（`~\.claude\skills` → `~\.skills-manager\skills`），即两个路径指向同一物理目录。
+  继承（`~\.claude\skills` → `E:\software\skills-manager\skills`），即两个路径指向同一物理目录。
 - **其他宿主**：只需将 SKILL.md 集成到对应 Agent 的 Skill 发现路径，
   命令统一通过 `invoke-deepsight.ps1` 调用。
 

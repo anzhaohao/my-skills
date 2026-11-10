@@ -28,7 +28,7 @@ description: >-
 先从需求提取平台、语言、部署方式、硬件、许可证、联网、隐私、预算和维护限制，确定扫描范围。默认只扫描：
 
 1. 当前工作区、父级项目目录和用户明确指定的项目根目录。
-2. `C:\Users\anzhaofeng\.skills-manager\skills` 中的已有 Skills、脚本、模板和适配器；需要发现可安装 Skill 时使用 `find-skills`。
+2. `E:\software\skills-manager\skills` 中的已有 Skills、脚本、模板和适配器；需要发现可安装 Skill 时使用 `find-skills`。
 3. 需求相关的已知软件目录，例如 `E:\software`，但只读取仓库元数据、README、清单和部署配置。
 
 使用 `rg --files`、Git 元数据和项目清单做有界扫描，不默认遍历整盘、Obsidian 私人笔记库或大型数据目录。排除 `.git`、`node_modules`、`.venv`、缓存、构建产物、模型权重、备份和数据集；不要读取或复制 `.env`、密钥、Cookie、令牌、私钥等敏感内容。

@@ -38,10 +38,10 @@ def run(args) -> int:
         "docker": docker_status(),
         "mineru": {"image": args.mineru_image, "image_available": mineru_image_available(args.mineru_image)},
         "skills": {
-            "pdf_figure_render_extractor": Path("C:/Users/anzhaofeng/.skills-manager/skills/azf-pdf-figure-render-extractor/SKILL.md").exists(),
+            "pdf_figure_render_extractor": Path("E:/software/skills-manager/skills/azf-pdf-figure-render-extractor/SKILL.md").exists(),
             "pdf_figure_render_extractor_script": figure_skill_status(),
             "opencv_cv2": importlib.util.find_spec("cv2") is not None,
-            "azf_paper_zh_reading_translator": Path("C:/Users/anzhaofeng/.skills-manager/skills/azf-paper-zh-reading-translator/SKILL.md").exists(),
+            "azf_paper_zh_reading_translator": Path("E:/software/skills-manager/skills/azf-paper-zh-reading-translator/SKILL.md").exists(),
         },
     }
     status["ready_for_reuse"] = all([

@@ -5,7 +5,7 @@ description: 把参考图复刻为可编辑的科研插图（Microsoft PowerPoin
 
 # Scientific Illustrator（路由入口）
 
-本 skill 是 [icebird1998/scientific-illustrator](https://github.com/icebird1998/scientific-illustrator) 插件在 Skills Manager 中的安装副本，按 Skills Manager 惯例以真实目录形式存放在 `C:\Users\anzhaofeng\.skills-manager\skills\scientific-illustrator`。
+本 skill 是 [icebird1998/scientific-illustrator](https://github.com/icebird1998/scientific-illustrator) 插件在 Skills Manager 中的安装副本，按 Skills Manager 惯例以真实目录形式存放在 `E:\software\skills-manager\skills\scientific-illustrator`。
 
 ## 子技能（本目录 skills/ 下）
 

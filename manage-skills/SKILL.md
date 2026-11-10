@@ -69,7 +69,7 @@ aside and retry. Never delete it for them.
 
 ## Mental model
 
-There's **one central library** at `~/.skills-manager/skills/` that all agents share. Each skill has source metadata, preset membership, tags, and zero or more real deployments in agent directories. A **preset** is a reusable group; several presets may be deployed at the same time.
+There's **one central library** at `E:/software/skills-manager/skills/` on this computer that all agents share. Each skill has source metadata, preset membership, tags, and zero or more real deployments in agent directories. A **preset** is a reusable group; several presets may be deployed at the same time.
 
 Keep these three states separate:
 - **Library**: install/remove controls whether Skills Manager owns the skill.
