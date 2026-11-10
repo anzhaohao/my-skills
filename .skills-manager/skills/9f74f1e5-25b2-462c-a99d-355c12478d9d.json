@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "9f74f1e5-25b2-462c-a99d-355c12478d9d",
+  "path": "socratic-questor",
+  "path_key": "socratic-questor",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/tronghieu/agent-skills/tree/main/skills/socratic-questor",
+    "subpath": "skills/socratic-questor",
+    "branch": "main"
+  }
+}
