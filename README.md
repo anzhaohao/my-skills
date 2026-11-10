@@ -16,6 +16,8 @@
 
 新安装或接管的这两类 skill 都必须加入 **“通用技能” preset**。本机数据库已配置自动归组规则，软件界面与命令行安装共用；Agent 安装后仍须核对成员关系，遗漏时补加。自动归组不额外部署到其它客户端，部署范围按当前设置与用户要求决定。规则定义和恢复说明在 `E:\software\skills-manager\maintenance`。
 
+**每个 harness 的原生技能都不计入通用预设**，能在其它客户端运行也不能据此归类为通用。客户端目录内作者或官方/第三方归属未确认的技能先不加入，待确认后再归组。
+
 **不收**：
 
 - **harness 厂商自家发布的 skill**（OpenAI 为 Codex、Cursor 为 Cursor、Anthropic 为 Claude Code、DeepSeek 为 DSH 出的）——它们只放在**对应 harness 自己的 skill 目录**里；
@@ -42,6 +44,8 @@
 - **2026-09-24 · 其它清理**：`eli5` 从内嵌 git 仓库（gitlink 空指针）改为随库保存的真实内容；`dshx` 的外链方向问题已随删除解决；`.gitignore` 已忽略 `__pycache__` / `*.pyc` 等噪音并停止跟踪 145 个缓存文件。
 - **2026-11-10 · Codex 统一接管**：原先 25 个未部署记录中，24 个是 Codex 独立目录，先保留修改合回中央库，再将原件移入 E 盘备份并部署中央库链接；另 1 个是 `officecli` 内嵌 skill 的重复登记，去掉重复管理记录，实际项目文件保留。备份位于 `E:\software\AI改前备份\20261110_182449_Codex技能接管_修改前备份_codex`。
 - **2026-11-10 · 其他客户端统一**：核对 23 个目录的 647 个目录项，接管共享目录、Hana、Copilot、旧 Windsurf 目录的 5 份独立副本，并修复 Understand 插件的 8 条旧库链接；各客户端技能名单保持一致。Hana 的路由定制完整保存在 `agent-reach/references/local-adapters`；原件与管理状态备份在 `E:\software\AI改前备份\20261110_183559_其他客户端技能统一_修改前备份_codex`。
+- **2026-11-10 · 通用预设归属纠正**：移出 `frontend-design`、`cloudflare-deploy`、`jupyter-notebook`、`screenshot` 这 4 个厂商官方项；Hana 的 `video-summarizer` 来源尚未确认，也不计入通用。此次只调整归组，保留现有技能文件和客户端部署。
+- **同期外部原生入口整理**：复核时发现共享 `.agents/skills` 中的 9 个 Cursor 原生入口被其它操作移除，对应 `.cursor/skills` 目录仍完整。本轮保留该外部变动，没有补回共享入口。
 
 ## 关于旧管理软件（Skills Manager）留下的东西
 
@@ -50,7 +54,7 @@
 
 ## 当前规模
 
-**“通用技能” preset 有 107 个有效成员，Codex 保持 106 个受管部署**（2026-11-10 核对）。`officecli` 重复登记已去重；本次接管后新增的 `video-summarizer` 原本只供 Hana 使用，目前仍仅部署在 Hana。预设归组与客户端部署分别管理，不为凑齐预设数量扩大任何客户端的技能范围。主要构成：
+**“通用技能” preset 有 102 个有效成员，Codex 覆盖 102/102，受管部署总数保持 106**（2026-11-10 核对）。`officecli` 重复登记已去重；4 个厂商官方项已移出通用，保留原有部署。Hana 的 `video-summarizer` 官方/第三方归属未确认，暂不计入通用，仍仅供 Hana 使用。预设归组与客户端部署分别管理。主要构成：
 
 - 自建：`azf-*`（个人习惯、agent 记忆、项目管理、论文工作流、管理器生成、校园网代理修复等）、`azq-*`
 - 第三方：`nature-*` 学术写作系列、`gsap-*` 动画系列、`understand-*`、`xxd-panel-*`、`officecli` 等

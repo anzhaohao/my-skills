@@ -93,12 +93,18 @@ copies with links. Do not deploy an entire preset to accomplish this. For legacy
 or shared roots without a registered agent adapter, replace links only at their
 existing paths; do not enable another agent or substitute its configured root.
 Leave client-bundled skills and their refresh mechanisms in their native roots.
+Harness-native skills never count as general skills, even if their instructions
+can run in other clients. Check the originating vendor, source repository, and
+native installation manifest before classification. Official OpenAI/Codex and
+Anthropic/Claude skills are excluded from the general preset under this user's
+policy. If a client-local skill's origin is unverified, leave it out of that
+preset until confirmed; portability alone is insufficient evidence.
 
 The local database trigger `azf_auto_general_preset_after_insert` adds eligible new
 records to that preset for both GUI and CLI installs. Its definition and recovery
 notes are under `E:/software/skills-manager/maintenance/`. After installing or
-adopting a skill, verify membership and use `presets add-skill "通用技能" <skill>`
-if it is missing. Harness-bundled skills remain native to their own harness and
+adopting a confirmed third-party or personal skill, verify membership and use
+`presets add-skill "通用技能" <skill>` if it is missing. Harness-bundled skills remain native to their own harness and
 must not be added. Preset membership does not authorize deploying to more agents;
 use only the agent scope requested by the user.
 
