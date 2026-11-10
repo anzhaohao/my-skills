@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "80a32fc6-0d9f-4642-8b98-361832901ecd",
+  "name": "通用工具与表达",
+  "description": "方案讨论、通俗解释、提示词与文本润色，以及技能管理、跨平台内容读取、邮件和截图。",
+  "icon": null,
+  "sort_order": 999
+}

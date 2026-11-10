@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scenario_id": "15aeedb5-f82c-4c23-b3b1-d0db293dd0b2",
+  "name": "编程与前端",
+  "description": "网页界面和动画、编程规范、代码与项目理解、PR 维护、部署和客户端开发工具。",
+  "icon": null,
+  "sort_order": 999
+}

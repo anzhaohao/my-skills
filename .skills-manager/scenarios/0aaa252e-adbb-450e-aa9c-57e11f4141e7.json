@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "scenario_id": "0aaa252e-adbb-450e-aa9c-57e11f4141e7",
-  "name": "Default",
+  "name": "通用技能",
   "description": "通用技能：第三方与自建技能；排除 Harness／客户端自带或专用封装技能。",
   "icon": null,
   "sort_order": 0
