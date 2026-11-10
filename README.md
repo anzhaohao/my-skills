@@ -41,6 +41,7 @@
 - **2026-09-24 · 清理 40 个悬空链接**：11 个在库里已不存在的 skill 名（`api-relay-audit`、`azf-codex-claude-bridge`、`azf-hardware-skill`、`azf-obsidian-work-record`、`azf-obsidian-workflow`、`azf-paper-sentence-deep-reading`、`azf-project-note-binding`、`azf-shanghai-high-school-score-report`、`deep-learning-experiment-record`、`paper-obsidian-review`、`shanghai-high-school-score-report`）残留在各 agent 目录里的死链。它们在 6/1、7/18、8/13 就被旧软件的 `Force sync` 删除过，内容可从 git 历史取回（如 `git checkout e74ebc3^ -- <名字>`）。
 - **2026-09-24 · 其它清理**：`eli5` 从内嵌 git 仓库（gitlink 空指针）改为随库保存的真实内容；`dshx` 的外链方向问题已随删除解决；`.gitignore` 已忽略 `__pycache__` / `*.pyc` 等噪音并停止跟踪 145 个缓存文件。
 - **2026-11-10 · Codex 统一接管**：原先 25 个未部署记录中，24 个是 Codex 独立目录，先保留修改合回中央库，再将原件移入 E 盘备份并部署中央库链接；另 1 个是 `officecli` 内嵌 skill 的重复登记，去掉重复管理记录，实际项目文件保留。备份位于 `E:\software\AI改前备份\20261110_182449_Codex技能接管_修改前备份_codex`。
+- **2026-11-10 · 其他客户端统一**：核对 23 个目录的 647 个目录项，接管共享目录、Hana、Copilot、旧 Windsurf 目录的 5 份独立副本，并修复 Understand 插件的 8 条旧库链接；各客户端技能名单保持一致。Hana 的路由定制完整保存在 `agent-reach/references/local-adapters`；原件与管理状态备份在 `E:\software\AI改前备份\20261110_183559_其他客户端技能统一_修改前备份_codex`。
 
 ## 关于旧管理软件（Skills Manager）留下的东西
 
@@ -49,7 +50,7 @@
 
 ## 当前规模
 
-**“通用技能” preset 有 106 个有效成员，Codex 已部署 106/106**（2026-11-10 核对）。原 107 个成员中包含 1 个 `officecli` 重复记录，去重后实际技能文件保留。主要构成：
+**“通用技能” preset 有 107 个有效成员，Codex 保持 106 个受管部署**（2026-11-10 核对）。`officecli` 重复登记已去重；本次接管后新增的 `video-summarizer` 原本只供 Hana 使用，目前仍仅部署在 Hana。预设归组与客户端部署分别管理，不为凑齐预设数量扩大任何客户端的技能范围。主要构成：
 
 - 自建：`azf-*`（个人习惯、agent 记忆、项目管理、论文工作流、管理器生成、校园网代理修复等）、`azq-*`
 - 第三方：`nature-*` 学术写作系列、`gsap-*` 动画系列、`understand-*`、`xxd-panel-*`、`officecli` 等
