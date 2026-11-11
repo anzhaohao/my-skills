@@ -61,6 +61,39 @@ const sandboxOn = { console: { log: () => {} } };
 vm.createContext(sandboxOn);
 vm.runInContext(srcOn, sandboxOn);
 
+// --- 1b) Tailscale 共存补丁（2026-11-11 并入模板）---
+// 开 TUN 时 100.64.0.0/10 会被劫持、*.ts.net 会被 fake-ip 吃掉，
+// 补丁必须在 main() 最前面、自带 try/catch、且幂等。
+console.log('\n=== 1b. Tailscale 共存补丁 ===');
+check(/TS_ROUTE_EXCLUDE/.test(src), '含 TS_* 开关');
+check(/100\.64\.0\.0\/10/.test(src), '排除 tailnet 网段 100.64.0.0/10');
+check(/fd7a:115c:a1e0::\/48/.test(src), '排除 tailnet IPv6 段');
+check(/PROCESS-NAME,tailscaled\.exe,DIRECT/.test(src), 'tailscaled 进程规则');
+check(/100\.100\.100\.100/.test(src), 'MagicDNS 上游');
+check(/catch \(tsErr\)/.test(src), '独立 try/catch');
+
+{
+  const tsCfg = {
+    proxies: [],                       // 触发早退，隔离出补丁本身的行为
+    rules: ['DOMAIN,a.example,DIRECT'],
+    tun: { 'route-exclude-address': ['103.56.112.21/32'] },
+    dns: { 'fake-ip-filter': ['*.lan'], 'nameserver-policy': { '+.jlu.edu.cn': ['10.0.0.1'] } },
+  };
+  const tsOut = sandbox.main(tsCfg, 'T');
+  check(tsOut.tun['route-exclude-address'].includes('100.64.0.0/10') &&
+        tsOut.tun['route-exclude-address'].includes('103.56.112.21/32'),
+        '注入 tun 排除项且保留原有排除项');
+  check(/^PROCESS-NAME,tailscaled\.exe,DIRECT$/.test(tsOut.rules[0]), '直连规则置顶');
+  check(JSON.stringify(tsOut.dns['nameserver-policy']) ===
+        JSON.stringify({ '+.jlu.edu.cn': ['10.0.0.1'], '+.ts.net': ['100.100.100.100'] }),
+        '注入 MagicDNS 策略且保留原有 nameserver-policy');
+  check(tsOut['find-process-mode'] === 'strict', '补齐 find-process-mode: strict');
+  check(JSON.stringify(sandbox.main(JSON.parse(JSON.stringify(tsOut)), 'T')) ===
+        JSON.stringify(tsOut), '补丁幂等（重复运行不堆积）');
+  check(sandbox.main(null, 'T') === null, 'null 配置不抛异常');
+}
+
+
 // --- 取出所有订阅，逐个跑 ---
 const dumpFile = path.join(os.tmpdir(), 'cnfx_dump.json');
 if (!fs.existsSync(dumpFile)) {

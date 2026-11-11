@@ -113,6 +113,8 @@ Clash Verge 的执行顺序是：
 这些是本 Skill 存在的理由，也是排查时的先验知识：
 
 - **TUN 模式会污染一切本地测量**。开启后所有 UDP/53 返回同一个 fake-ip，被丢包的 IP 也「连得上」。内核用 `IP_UNICAST_IF` 把所有探测 socket 绑到物理网卡来绕过，并在画像里做**通道自检**。如果 `channel.raw_channel_ok` 是 false，**画像结论一律不可信**，不要拿它做判断。
+
+- **TUN 会和 Tailscale 抢同一层**。开 TUN 时 `100.64.0.0/10` 被 Clash 路由接管、`*.ts.net` 被 fake-ip 吃掉，表现是 Tailscale 卡在 `Starting` 或 100.x 地址整段不通。2026-11-11 起 `apply` 三处一起做：全局脚本管 `exclude-interface`、`PROCESS-NAME,tailscaled/tailscale*` 直连、`ts.net → 100.100.100.100`（`TS_*` 四个开关，排在入口 IP 修复之前、自带 try/catch）；**网段排除必须由 `apply` 写进数据目录的 `config.yaml`**，因为实测脚本和 Merge.yaml 里的 `tun.route-exclude-address` 都会被 Verge 的 TUN 设置层顶掉（同一次实验里 `exclude-interface` / `rules` / `dns` 都活下来了，只有这个字段被覆盖）。写完要**完全退出并重启 Clash Verge**才生效，刷新订阅不够；改了 `override.py` 模板就别再去手改 Script.js。
 - **「知名被封 SNI 被拦」≠「节点不可用」**。`www.google.com` 的 SNI 在任何网络（含手机热点）都会被拦，那是国家级过滤。策略相关的判据是**节点自己的 SNI**（`layers.sni_node`）与优选 IP 实测（`cf_preferred.working`）。
 - **服务端 doh 端点不能硬编码**。实测同一个校园网里 `223.5.5.5` 被丢包而 `223.6.6.6` 正常，换个网络可能正好相反 —— 候选池实测。
 - **`dialer-proxy` 链式代理对 REALITY / Hysteria2 节点无效**（链式机制本身可用，两个 CF 节点互链成功）。所以直连型 REALITY 节点在 IP 被封时救不回来。

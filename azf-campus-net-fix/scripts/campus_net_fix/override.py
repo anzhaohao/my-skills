@@ -41,10 +41,108 @@ SCRIPT_TEMPLATE = r"""// =======================================================
 //    这个功能的收益不足以承担它的事故半径。
 //
 //  注意：CF_IPS 是**本网络实测结果**，换校园网后必须重新运行 apply 生成。
+//
+//  附带：Tailscale 共存补丁（2026-11-11 加入，默认开启）
+//    开 TUN 时：tailnet 网段不被接管、`*.tailscale.com` 解析成真实 IP、
+//    ts.net 域名交给 MagicDNS、Clash 不把 Tailscale 虚拟网卡当出口。
+//    ⚠ 不要默认让 tailscaled 直连：校园网通常直连不通控制面，只有已注册的
+//      节点能靠缓存 DERP 撑住，一需要重新注册就卡死。TS_DIRECT_PROCESS 默认 false。
+//    ⚠ 路由层的网段排除（tun.route-exclude-address）**不在这个脚本里生效**：
+//      Verge 的 TUN 设置层会把它顶回 config.yaml 的值，所以由 apply() 直接改
+//      config.yaml。脚本里那份只是给不覆盖该字段的版本兜底。
+//    四个开关见 main() 顶部的 TS_* 变量。
 // ============================================================================
 
 function main(config, profileName) {
   try {
+    // ========================================================================
+    //  Tailscale 共存补丁（2026-11-11 并入模板）
+    //  作用：Clash 开着 TUN 时，tailnet(100.64.0.0/10) 流量不被接管、
+    //        Tailscale 进程的外网连接走直连、ts.net 域名交给 MagicDNS。
+    //  独立 try/catch：本段出错只跳过本段，绝不影响下面的入口 IP 修复。
+    //  要关某一项，把对应开关改成 false 即可。
+    // ========================================================================
+    try {
+      var TS_ROUTE_EXCLUDE  = true;  // 兜底；2.5.x 会被 Verge 设置层覆盖（见 apply 写 config.yaml）
+      var TS_DIRECT_PROCESS = false; // 默认 false：让 tailscaled 走正常规则（校园网直连控制面常不通）
+      var TS_MAGIC_DNS      = true;  // ts.net 交给 MagicDNS(100.100.100.100)
+      var TS_EXCLUDE_IFACE  = true;  // 不让 Clash 把 Tailscale 虚拟网卡当出口
+      var TS_V4 = '100.64.0.0/10';
+      var TS_V6 = 'fd7a:115c:a1e0::/48';
+
+      var tsPush = function (arr, val) {
+        if (!Array.isArray(arr)) arr = [];
+        if (arr.indexOf(val) === -1) arr.push(val);
+        return arr;
+      };
+      var tsLog = [];
+
+      if (config && typeof config === 'object') {
+        config.tun = config.tun || {};
+
+        if (TS_ROUTE_EXCLUDE) {
+          var excl = tsPush(config.tun['route-exclude-address'], TS_V4);
+          excl = tsPush(excl, TS_V6);
+          config.tun['route-exclude-address'] = excl;
+          tsLog.push('route-exclude');
+        }
+
+        if (TS_EXCLUDE_IFACE) {
+          var inc = config.tun['include-interface'];
+          if (inc && inc.length) {
+            tsLog.push('skip-iface(已有include-interface)');
+          } else {
+            config.tun['exclude-interface'] =
+              tsPush(config.tun['exclude-interface'], 'Tailscale');
+            tsLog.push('exclude-iface');
+          }
+        }
+
+        if (TS_DIRECT_PROCESS) {
+          var tsRules = [
+            'PROCESS-NAME,tailscaled.exe,DIRECT',
+            'PROCESS-NAME,tailscale.exe,DIRECT',
+            'PROCESS-NAME,tailscale-ipn.exe,DIRECT',
+            'IP-CIDR,' + TS_V4 + ',DIRECT,no-resolve',
+            'IP-CIDR6,' + TS_V6 + ',DIRECT,no-resolve'
+          ];
+          var rules = Array.isArray(config.rules) ? config.rules : [];
+          var kept = [];
+          for (var k = 0; k < rules.length; k++) {
+            if (tsRules.indexOf(rules[k]) === -1) kept.push(rules[k]);   // 去重，重复应用不堆积
+          }
+          config.rules = tsRules.concat(kept);
+          if (!config['find-process-mode']) config['find-process-mode'] = 'strict';
+          tsLog.push('rules');
+        }
+
+        if (TS_MAGIC_DNS) {
+          config.dns = config.dns || {};
+          var fif = tsPush(config.dns['fake-ip-filter'], '+.ts.net');
+          fif = tsPush(fif, '*.ts.net');
+          fif = tsPush(fif, 'ts.net');
+          // 控制面 / DERP 必须解析成真实 IP：这些域名若拿到 fake-ip(198.18.x)，
+          // 走 DIRECT 的 tailscaled 会把包发到只存在于 Clash 内部的地址，注册必超时。
+          fif = tsPush(fif, '+.tailscale.com');
+          fif = tsPush(fif, '*.tailscale.com');
+          fif = tsPush(fif, '+.tailscale.io');
+          config.dns['fake-ip-filter'] = fif;
+
+          var np = config.dns['nameserver-policy'];
+          if (!np || typeof np !== 'object') np = {};
+          np['+.ts.net'] = ['100.100.100.100'];
+          config.dns['nameserver-policy'] = np;
+          tsLog.push('magicdns');
+        }
+
+        if (typeof console !== 'undefined' && console.log) {
+          console.log('[tailscale] ' + tsLog.join(',') + ' | ' + profileName);
+        }
+      }
+    } catch (tsErr) {
+      /* Tailscale 补丁异常一律忽略 */
+    }
+
     if (!config || !config.proxies || !config.proxies.length) return config;
 
     // ---- 开关：剔除实测连不通的节点（默认关闭，见文件头说明）-------------
@@ -155,6 +253,88 @@ function main(config, profileName) {
 """
 
 
+# ---------------------------------------------------------------------------
+# Verge 的 TUN 设置存储（实测 2026-11-11）
+# ---------------------------------------------------------------------------
+# 只有数据目录下 config.yaml 里的 tun.route-exclude-address 会进入运行时配置。
+# 全局扩展脚本和全局扩展配置（Merge.yaml）里写的同名字段，都会被 Verge 的 TUN
+# 设置层顶回 config.yaml 的值 —— 同一次实验里 exclude-interface / rules / dns
+# 都活了下来，唯独这个字段被覆盖。所以 Tailscale 的网段排除必须写进 config.yaml，
+# 而且要重启 Clash Verge（刷新订阅不够）才生效。
+CORE_CONFIG_NAME = "config.yaml"
+TS_ROUTE_EXCLUDE = ("100.64.0.0/10", "fd7a:115c:a1e0::/48")
+
+
+def core_config_path(env: dict):
+    data_dir = (env.get("client") or {}).get("data_dir")
+    if not data_dir:
+        return None
+    p = os.path.join(data_dir, CORE_CONFIG_NAME)
+    return p if os.path.isfile(p) else None
+
+
+def app_running(env: dict):
+    """Clash Verge 的 GUI 是否在运行；判断不了返回 None。"""
+    from . import clashverge
+
+    name = os.path.basename(((env.get("client") or {}).get("gui_exe") or "")).lower()
+    if not name:
+        return None
+    try:
+        paths = clashverge.list_process_paths()
+    except Exception:
+        return None
+    if not paths:
+        return None
+    return any(os.path.basename(p).lower() == name for _pid, p in paths)
+
+
+def patch_core_tun_exclude(env: dict, dry_run: bool = False):
+    """把 tailnet 网段写进 config.yaml 的 tun.route-exclude-address。
+
+    返回 (ok, info)。ok=False 只表示这一项没写成，不阻断脚本本身的实施。
+    """
+    from . import yamlcompat
+
+    path = core_config_path(env)
+    if not path:
+        return False, {"error": "数据目录里没有 config.yaml",
+                       "hint": "该版本可能不把 TUN 设置存在这里，需在 GUI 的 TUN 设置里手工加排除网段"}
+
+    try:
+        cfg = yamlcompat.load_file(path) or {}
+    except Exception as e:
+        return False, {"error": "config.yaml 解析失败：%s" % e, "path": path}
+    if not isinstance(cfg, dict):
+        return False, {"error": "config.yaml 顶层不是映射", "path": path}
+
+    tun = cfg.get("tun")
+    if not isinstance(tun, dict):
+        tun = {}
+        cfg["tun"] = tun
+    cur = tun.get("route-exclude-address")
+    cur = list(cur) if isinstance(cur, list) else []
+    added = [c for c in TS_ROUTE_EXCLUDE if c not in cur]
+
+    info = {"path": path, "before": list(cur), "added": added,
+            "app_running": app_running(env), "changed": bool(added)}
+    if not added:
+        info["after"] = list(cur)
+        return True, info
+
+    tun["route-exclude-address"] = cur + added
+    info["after"] = tun["route-exclude-address"]
+    if dry_run:
+        info["dry_run"] = True
+        return True, info
+
+    backup = path + ".bak"
+    shutil.copy2(path, backup)
+    info["backup"] = backup
+    yamlcompat.dump(cfg, path)
+    return True, info
+
+
 def render(env: dict, profile: dict, decision: dict, enable_filter: bool = False) -> str:
     ips = [r["ip"] for r in ((profile.get("cf_preferred") or {}).get("results") or [])]
     if not ips:
@@ -219,6 +399,12 @@ def apply(env: dict, profile: dict, decision: dict, dry_run: bool = False,
         fh.write(text)
     summary["preview_path"] = out_local
 
+    # TUN 排除网段只能写进 Verge 的 config.yaml，写在脚本里会被设置层覆盖。
+    # 放在干跑分支之前，这样 --dry-run 也能告诉用户"将会改什么"。
+    ok_core, core = patch_core_tun_exclude(env, dry_run=dry_run)
+    summary["core_config_ok"] = ok_core
+    summary["core_config"] = core
+
     if dry_run:
         summary["dry_run"] = True
         return True, summary
@@ -269,6 +455,26 @@ def summarize_result(ok: bool, result: dict) -> str:
         L.append("  剔除死节点     : 已关闭（可剔除 %d 个：%s；用 --filter-dead 启用）"
                  % (sum(avail.values()), avail))
     L.append("  脚本大小       : %d 字节" % result.get("script_bytes", 0))
+    L.append("  Tailscale 兼容 : 已内置（进程直连 + MagicDNS + 排除网段）")
+
+    core = result.get("core_config") or {}
+    if core.get("error"):
+        L.append("  TUN 排除网段   : 未写入 — %s" % core["error"])
+        if core.get("hint"):
+            L.append("                   %s" % core["hint"])
+    elif core.get("dry_run") and core.get("changed"):
+        L.append("  TUN 排除网段   : 将写入 config.yaml（%s）— 干跑未落盘"
+                 % "、".join(core.get("added") or []))
+    elif core.get("changed"):
+        L.append("  TUN 排除网段   : 已写入 config.yaml（%s）"
+                 % "、".join(core.get("added") or []))
+        L.append("                   备份 %s" % core.get("backup"))
+        L.append("                   ⚠ 必须完全退出并重启 Clash Verge 才生效（刷新订阅不够）")
+        if core.get("app_running"):
+            L.append("                   ⚠ Clash Verge 正在运行：它退出时会回写 config.yaml，"
+                     "建议先退出再跑 apply")
+    elif core:
+        L.append("  TUN 排除网段   : 已存在，无需改动")
     L.append("  预演副本       : %s" % result.get("preview_path"))
     return "\n".join(L)
 

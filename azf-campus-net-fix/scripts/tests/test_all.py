@@ -15,6 +15,7 @@ import io
 import json
 import os
 import sys
+import tempfile
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -364,6 +365,75 @@ class TestFixSemantics(unittest.TestCase):
         self.assertFalse(reach._is_pseudo({"server": "a.example.com"}))
 
 
+class TestCoreConfigTunExclude(unittest.TestCase):
+    """tailnet 网段排除必须写进 config.yaml（脚本和 Merge 都会被 Verge 覆盖）。"""
+
+    def _env(self, tmp):
+        return {"host": "H",
+                "client": {"data_dir": tmp,
+                           "gui_exe": os.path.join(tmp, "clash-verge.exe"),
+                           "global_script": os.path.join(tmp, "profiles", "Script.js"),
+                           "supports_global_script": True},
+                "subscriptions": []}
+
+    def _write(self, tmp, body):
+        p = os.path.join(tmp, "config.yaml")
+        with io.open(p, "w", encoding="utf-8") as fh:
+            fh.write(body)
+        return p
+
+    def test_adds_tailnet_ranges_and_keeps_existing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write(tmp, "tun:\n  enable: true\n"
+                                 "  route-exclude-address:\n  - 103.56.112.21/32\n")
+            ok, info = override.patch_core_tun_exclude(self._env(tmp))
+            self.assertTrue(ok, info)
+            self.assertTrue(info["changed"])
+            self.assertEqual(info["added"], list(override.TS_ROUTE_EXCLUDE))
+            self.assertTrue(os.path.isfile(p + ".bak"), "改前必须备份")
+            cfg = yamlcompat.load_file(p)
+            self.assertEqual(cfg["tun"]["route-exclude-address"],
+                             ["103.56.112.21/32", "100.64.0.0/10",
+                              "fd7a:115c:a1e0::/48"])
+            self.assertTrue(cfg["tun"]["enable"], "不得改动 TUN 开关")
+
+    def test_second_run_is_noop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write(tmp, "tun:\n  route-exclude-address:\n  - 103.56.112.21/32\n")
+            override.patch_core_tun_exclude(self._env(tmp))
+            ok, info = override.patch_core_tun_exclude(self._env(tmp))
+            self.assertTrue(ok, info)
+            self.assertFalse(info["changed"])
+            self.assertEqual(info["added"], [])
+
+    def test_dry_run_does_not_touch_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write(tmp, "tun:\n  route-exclude-address:\n  - 1.2.3.4/32\n")
+            before = io.open(p, encoding="utf-8").read()
+            ok, info = override.patch_core_tun_exclude(self._env(tmp), dry_run=True)
+            self.assertTrue(ok, info)
+            self.assertTrue(info["changed"])
+            self.assertEqual(io.open(p, encoding="utf-8").read(), before)
+            self.assertFalse(os.path.isfile(p + ".bak"), "干跑不应产生备份")
+
+    def test_creates_tun_block_when_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write(tmp, "mixed-port: 7897\n")
+            ok, _info = override.patch_core_tun_exclude(self._env(tmp))
+            self.assertTrue(ok)
+            cfg = yamlcompat.load_file(p)
+            self.assertEqual(cfg["tun"]["route-exclude-address"],
+                             list(override.TS_ROUTE_EXCLUDE))
+            self.assertEqual(cfg["mixed-port"], 7897, "其它配置必须原样保留")
+
+    def test_missing_config_is_reported_not_raised(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ok, info = override.patch_core_tun_exclude(self._env(tmp))
+            self.assertFalse(ok)
+            self.assertIn("config.yaml", info["error"])
+            self.assertIn("hint", info)
+
+
 class TestOverrideRender(unittest.TestCase):
 
     def test_render_contains_expected_constants(self):
@@ -400,6 +470,34 @@ class TestOverrideRender(unittest.TestCase):
         self.assertNotIn("%(", text)
         self.assertNotIn("%%", text)
         self.assertIn("CF_IPS[fixedCount % CF_IPS.length]", text)
+
+    def test_render_includes_tailscale_compat(self):
+        """Tailscale 共存补丁必须随模板一起生成（2026-11-11 并入）。
+
+        背景：开 TUN 时 100.64.0.0/10 被劫持、*.ts.net 被 fake-ip 吃掉，
+        Tailscale 会卡在 Starting。补丁必须在 main() 最前面、且自带 try/catch，
+        不能影响后面的入口 IP 修复。
+        """
+        env = {"host": "H", "client": {"global_script": "x.js",
+                                       "supports_global_script": True},
+               "subscriptions": [{"name": "A"}]}
+        prof = _profile({})
+        prof["cf_preferred"] = {"results": [{"ip": "104.16.0.1", "delay": 1}]}
+        prof["nodes"] = {"total": 1, "reachable": 0, "subs": {}}
+        text = override.render(env, prof, strategy.choose(prof))
+
+        for token in ("TS_ROUTE_EXCLUDE", "TS_DIRECT_PROCESS", "TS_MAGIC_DNS",
+                      "100.64.0.0/10", "fd7a:115c:a1e0::/48",
+                      "PROCESS-NAME,tailscaled.exe,DIRECT",
+                      "100.100.100.100", "+.ts.net"):
+            self.assertIn(token, text)
+
+        # 独立 try/catch：补丁异常不得拖垮入口 IP 修复
+        self.assertIn("catch (tsErr)", text)
+        # 补丁必须排在 campus-fix 之前（先跑兼容层，再改节点）
+        # 用代码里的 var 声明定位，避免命中文件头注释里的同名开关
+        self.assertLess(text.index("var TS_ROUTE_EXCLUDE"),
+                        text.index("var ENABLE_DEAD_FILTER"))
 
     def test_apply_refuses_when_not_implementable(self):
         env = {"host": "H", "client": {"global_script": "x.js",

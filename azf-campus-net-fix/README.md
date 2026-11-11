@@ -122,6 +122,7 @@ Clash Verge 的执行顺序是：
 - **WireGuard 端口是否被封不可观测**：没有对端时 WireGuard 对非法握手静默丢弃，所以画像里这一项老实标 `untested`，不编。
 - **`dialer-proxy` 链式代理救不了 REALITY 节点**：链式机制本身是好的（两个 CF 节点互链 108ms 成功），但 REALITY 握手会失败；Hysteria2 的 UDP 中继也走不通。所以直连型 REALITY 节点在 IP 被封时没救。
 - **一元机场这类没有 CF 前置节点的订阅**：换不了入口 IP，只能靠可达性剔组；实测它 19 个节点当前全部不可达。
+- **TUN 会和 Tailscale 抢同一层**（2026-11-11 补）：开 TUN 时 `100.64.0.0/10` 被 Clash 接管、`*.ts.net` 被 fake-ip 吃掉，Tailscale 会卡在 `Starting`。`apply` 因此分两处写：全局脚本负责 `exclude-interface`、`tailscaled` 进程直连、`ts.net → 100.100.100.100`；**网段排除写进数据目录的 `config.yaml`**——实测脚本与 Merge.yaml 里的 `tun.route-exclude-address` 都会被 Verge 的 TUN 设置层顶回 `config.yaml` 的值，只有那一个字段被覆盖。改完必须**完全退出并重启 Clash Verge**（刷新订阅不够）。
 
 ## 换电脑 / 换校园网
 
