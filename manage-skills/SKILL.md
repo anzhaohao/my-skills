@@ -1,6 +1,6 @@
 ---
 name: manage-skills
-description: Manage the user's shared agent-skill library via skills-manager-cli — install, update, remove, deploy or undeploy skills per agent, manage presets, organize tags, search, and adopt existing skills. Use this whenever the user wants Claude Code, Codex, Cursor, or another agent to gain or lose a skill, wants to organize the central library, or asks what is installed or deployed. Prefer this over direct agent-folder installs because Skills Manager preserves source metadata, preset membership, updates, and cross-agent deployment state.
+description: Manage the user's shared agent-skill library via skills-manager-cli — install, update, remove, deploy or undeploy skills per agent, manage presets, organize tags, search, adopt existing skills, and register newly created local skills. Use this whenever the user wants Claude Code, Codex, Cursor, or another agent to gain or lose a skill, creates a skill that needs registration, wants to organize the central library, or asks what is installed or deployed. Prefer this over direct agent-folder installs because Skills Manager preserves source metadata, preset membership, updates, and cross-agent deployment state.
 ---
 
 ## Before doing anything
@@ -107,6 +107,16 @@ adopting a confirmed third-party or personal skill, verify membership and use
 `presets add-skill "通用技能" <skill>` if it is missing. Harness-bundled skills remain native to their own harness and
 must not be added. Preset membership does not authorize deploying to more agents;
 use only the agent scope requested by the user.
+
+### Registration after creation or installation (2026-11-17)
+
+Use this gate after authoring a personal skill, installing or adopting a verified third-party skill, or updating an existing managed skill. Writing a directory or `SKILL.md` does not create a Skills Manager record. The local general-preset trigger only handles new database records; it is not a filesystem watcher.
+
+1. **Resolve identity and provenance.** Compare the folder/frontmatter name, resolved real directory, and source with `--json skills list` / `skills show <name-or-id>`. Reuse a matching record and its ID. A same-name skill with different content or source needs comparison before import. Nested reference copies of `SKILL.md` are not automatically independent skills. Keep native or unverified content outside the general preset under the local policy.
+2. **Register through a supported manager operation.** Prefer GUI/CLI installation into the canonical library. For files already created but unregistered, preview the specific directory with `--json skills adopt <source-path> --dry-run`, check that the intended skill is adoptable rather than merely skipped, and use the verified safe path for the real adoption. Never remove/reinstall an existing record, write database or portable-metadata files by hand, or invent an upstream Git source to make registration appear complete.
+3. **Protect existing files during adoption.** Back up the whole skill folder and compare content hashes before and after, including supporting resources. In v1.43.4, do not blindly pass the exact central directory as both source and destination: self-import can be rejected or reach replacement logic. An existing client link resolving to that same canonical directory can be used only after confirming that the installed version recognizes the canonical-path equality and preserves files; dry-run alone is not proof. Do not create a deployment merely to get such a path. If no safe supported registration route is verified, leave files and deployments intact and report `文件已创建，尚未登记` with the blocker.
+4. **Verify the completed registration.** Confirm exactly one record for the canonical skill with truthful source metadata, its corresponding `.skills-manager/skills/<id>.json` portable record, and membership in `通用技能` with the corresponding `.skills-manager/scenario-skills/<preset-id>/<id>.json` entry. Use `--json presets show "通用技能"` to check membership and `--json presets add-skill "通用技能" <skill-name-or-id>` only if missing; do not rely solely on the automatic trigger. Updating an already registered skill reuses its record and does not call `adopt` again.
+5. **Preserve scope and report evidence.** Registration and membership changes do not authorize `deploy`, `sync`, `presets apply`, enabling agents, replacing existing client copies/links, or migrating another machine. Preserve the current deployment rows and client paths. Report canonical files, registration ID, preset membership, deployment changes, and backup status separately. When a backup/push is authorized or configured automation runs, inspect the actual commit scope and remote revision before claiming remote backup; never bundle unrelated changes or rewrite a published automatic-backup commit.
 
 ## Install
 
@@ -380,6 +390,7 @@ Report which skills actually refreshed (`refreshed: true` in the JSON) vs which 
 
 ## Pitfalls
 
+- **`SKILL.md` exists but the manager cannot find it** → files exist without registration. Follow the registration gate above; automatic general-preset membership does not discover directories or create records.
 - **Install succeeded but skill doesn't appear in the agent** → install defaults to library-only. Use `skills deploy <skill> --agent <key>`.
 - **Preset membership changed but agent files did not** → membership is organization only. Follow with `presets deploy` or `skills deploy` when the user also asked to make it visible.
 - **No active preset** only affects legacy `skills sync` / `presets apply`; additive deploy commands do not require one.
