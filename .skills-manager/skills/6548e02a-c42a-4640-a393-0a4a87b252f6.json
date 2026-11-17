@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "6548e02a-c42a-4640-a393-0a4a87b252f6",
+  "path": "azq-pastlines-graph",
+  "path_key": "azq-pastlines-graph",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

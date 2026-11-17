@@ -1,0 +1,43 @@
+{
+  "format": "pastlines-style",
+  "version": 1,
+  "id": "pastlines-default",
+  "name": "暖纸桌面",
+  "colors": {
+    "canvas": "#f3efe5",
+    "workspace": "#fbf7ec",
+    "card": "#fffdf6",
+    "cardBorder": "#ded4c1",
+    "text": "#26211b",
+    "mutedText": "#837a6c",
+    "line": "#ded5c5",
+    "arrow": "#a8542f",
+    "selected": "#2f5d50",
+    "hover": "#f0e9da",
+    "pending": "#8b8274",
+    "cutPoint": "#6b6a44",
+    "removed": "#a79d8d",
+    "error": "#a5442f",
+    "button": "#26211b",
+    "buttonText": "#fbf7ec",
+    "input": "#fffdf6",
+    "panel": "#fbf7ec",
+    "notice": "#2e2821",
+    "overlay": "rgba(38, 33, 27, .38)"
+  },
+  "metrics": {
+    "fontSize": 13,
+    "nodeFontSize": 17,
+    "lineHeight": 1.55,
+    "fontWeight": 600,
+    "gap": 16,
+    "padding": 14,
+    "radius": 11,
+    "borderWidth": 1,
+    "shadow": 10,
+    "lineWidth": 1.5,
+    "removedOpacity": 0.45
+  },
+  "resources": {},
+  "backgroundImage": null
+}
