@@ -1,6 +1,6 @@
 ---
 name: manage-skills
-description: Manage the user's shared agent-skill library via skills-manager-cli — install, update, remove, deploy or undeploy skills per agent, manage presets, organize tags, search, adopt existing skills, and register newly created local skills. Use this whenever the user wants Claude Code, Codex, Cursor, or another agent to gain or lose a skill, creates a skill that needs registration, wants to organize the central library, or asks what is installed or deployed. Prefer this over direct agent-folder installs because Skills Manager preserves source metadata, preset membership, updates, and cross-agent deployment state.
+description: Manage the user's shared agent-skill library via skills-manager-cli — install, update, remove, deploy or undeploy skills per agent or into a project's own agent directories, manage presets, organize tags, search, and adopt existing skills. Use this whenever the user wants Claude Code, Codex, Cursor, or another agent to gain or lose a skill (globally or in one repo), wants to organize the central library, or asks what is installed or deployed. Prefer this over direct agent-folder installs because Skills Manager preserves source metadata, preset membership, updates, and cross-agent deployment state.
 ---
 
 ## Before doing anything
@@ -67,56 +67,30 @@ Tell the user which path is in the way, that its contents are untouched, and
 offer the two ways out: adopt it into the library (`skills adopt`), or move it
 aside and retry. Never delete it for them.
 
+The project commands refuse the same way, with these `reason`s:
+
+| reason | from | what to tell the user |
+|---|---|---|
+| `exists and is not this library skill` | `projects deploy` | that directory holds something else; it was left alone and nothing in the batch was written |
+| `skills "…" (…) and "…" (…) would both be written here` | `projects deploy` | two library skills have the same directory name and only one can live there; ask the user which one, then deploy just that one |
+| `has content not in the library (…)` | `projects undeploy` | the project copy may have edits, extra files (`.gitignore`, `.git`, links) or be a link the user made to somewhere else; `projects import` it first, or remove it with `--force` only if they say it can go |
+| `library copy differs from the project copy` | `projects import` | importing would overwrite the library version; `--force` only if they want the project version to win |
+| `another copy of this skill also differs from the library` | `projects import` | several agents' copies were edited differently; they must pick one by hand |
+
+Never add `--force` on your own.
+
 ## Mental model
 
-There's **one central library** at `E:/software/skills-manager/skills/` on this computer that all agents share. Each skill has source metadata, preset membership, tags, and zero or more real deployments in agent directories. A **preset** is a reusable group; several presets may be deployed at the same time.
+There's **one central library** at `~/.skills-manager/skills/` that all agents share. Each skill has source metadata, preset membership, tags, and zero or more real deployments in agent directories. A **preset** is a reusable group; several presets may be deployed at the same time.
 
 Keep these three states separate:
 - **Library**: install/remove controls whether Skills Manager owns the skill.
 - **Preset membership**: `presets add-skill/remove-skill` organizes the library only.
 - **Deployment**: `skills deploy/undeploy` and `presets deploy/undeploy` control what an agent can actually see.
 
+**Project deployments are a separate thing.** `projects deploy` puts a library skill into one project's agent directory (e.g. `<repo>/.claude/skills`). It is not recorded as a deployment: `skills status` and `deployed_to` never show it; read it with `projects show`. Deploying a preset into a project copies its current members once and makes no lasting link.
+
 Internally, presets are still stored as scenarios for backward-compatible Git Backup. The CLI and UI call them presets.
-
-### Local installation policy
-
-On this computer, every newly installed third-party skill and personal `azf-` /
-`azq-` skill must belong to the `通用技能` preset. Install real files only under
-`E:/software/skills-manager/skills`; agent directories contain links back here.
-Never keep an independent Codex copy or recreate the former C-drive library.
-
-When consolidating another harness, snapshot its actual skill-directory entries
-before editing. Preserve that exact deployed name set, including unmanaged
-third-party skills already present. Merge or retain divergent local instructions
-inside the canonical skill, archive originals outside client roots, then replace
-copies with links. Do not deploy an entire preset to accomplish this. For legacy
-or shared roots without a registered agent adapter, replace links only at their
-existing paths; do not enable another agent or substitute its configured root.
-Leave client-bundled skills and their refresh mechanisms in their native roots.
-Harness-native skills never count as general skills, even if their instructions
-can run in other clients. Check the originating vendor, source repository, and
-native installation manifest before classification. Official OpenAI/Codex and
-Anthropic/Claude skills are excluded from the general preset under this user's
-policy. If a client-local skill's origin is unverified, leave it out of that
-preset until confirmed; portability alone is insufficient evidence.
-
-The local database trigger `azf_auto_general_preset_after_insert` adds eligible new
-records to that preset for both GUI and CLI installs. Its definition and recovery
-notes are under `E:/software/skills-manager/maintenance/`. After installing or
-adopting a confirmed third-party or personal skill, verify membership and use
-`presets add-skill "通用技能" <skill>` if it is missing. Harness-bundled skills remain native to their own harness and
-must not be added. Preset membership does not authorize deploying to more agents;
-use only the agent scope requested by the user.
-
-### Registration after creation or installation (2026-11-17)
-
-Use this gate after authoring a personal skill, installing or adopting a verified third-party skill, or updating an existing managed skill. Writing a directory or `SKILL.md` does not create a Skills Manager record. The local general-preset trigger only handles new database records; it is not a filesystem watcher.
-
-1. **Resolve identity and provenance.** Compare the folder/frontmatter name, resolved real directory, and source with `--json skills list` / `skills show <name-or-id>`. Reuse a matching record and its ID. A same-name skill with different content or source needs comparison before import. Nested reference copies of `SKILL.md` are not automatically independent skills. Keep native or unverified content outside the general preset under the local policy.
-2. **Register through a supported manager operation.** Prefer GUI/CLI installation into the canonical library. For files already created but unregistered, preview the specific directory with `--json skills adopt <source-path> --dry-run`, check that the intended skill is adoptable rather than merely skipped, and use the verified safe path for the real adoption. Never remove/reinstall an existing record, write database or portable-metadata files by hand, or invent an upstream Git source to make registration appear complete.
-3. **Protect existing files during adoption.** Back up the whole skill folder and compare content hashes before and after, including supporting resources. In v1.43.4, do not blindly pass the exact central directory as both source and destination: self-import can be rejected or reach replacement logic. An existing client link resolving to that same canonical directory can be used only after confirming that the installed version recognizes the canonical-path equality and preserves files; dry-run alone is not proof. Do not create a deployment merely to get such a path. If no safe supported registration route is verified, leave files and deployments intact and report `文件已创建，尚未登记` with the blocker.
-4. **Verify the completed registration.** Confirm exactly one record for the canonical skill with truthful source metadata, its corresponding `.skills-manager/skills/<id>.json` portable record, and membership in `通用技能` with the corresponding `.skills-manager/scenario-skills/<preset-id>/<id>.json` entry. Use `--json presets show "通用技能"` to check membership and `--json presets add-skill "通用技能" <skill-name-or-id>` only if missing; do not rely solely on the automatic trigger. Updating an already registered skill reuses its record and does not call `adopt` again.
-5. **Preserve scope and report evidence.** Registration and membership changes do not authorize `deploy`, `sync`, `presets apply`, enabling agents, replacing existing client copies/links, or migrating another machine. Preserve the current deployment rows and client paths. Report canonical files, registration ID, preset membership, deployment changes, and backup status separately. When a backup/push is authorized or configured automation runs, inspect the actual commit scope and remote revision before claiming remote backup; never bundle unrelated changes or rewrite a published automatic-backup commit.
 
 ## Install
 
@@ -136,10 +110,7 @@ Use this gate after authoring a personal skill, installing or adopting a verifie
 "$SM" skills install ./looks-like/owner-repo --local
 ```
 
-**Upstream defaults to library-only.** On this computer, eligible installs also
-join `通用技能` automatically under the local policy above, but do not appear in
-an agent until deployed. Prefer an explicit follow-up deployment so scope is
-unambiguous:
+**Default is library-only** — the skill enters the DB but doesn't appear in any agent yet. Prefer an explicit follow-up deployment so scope is unambiguous:
 
 ```bash
 "$SM" skills deploy <skill> --agent claude_code --agent codex
@@ -340,6 +311,36 @@ The no-`--agent` defaults intentionally differ: deploy targets all installed, en
 
 Preset create/update/delete and add-skill/remove-skill are organization-only CLI operations. They never deploy or undeploy agent files implicitly.
 
+## Projects
+
+A project must be registered before any project command touches it. `<project>` is an id, the project's path (any spelling; `.` works when you are in it), or its exact name.
+
+```bash
+"$SM" --json projects list                     # registered projects; path_exists=false means the folder is gone
+"$SM" projects add .                           # register the current repo (creates .claude/skills and .claude/skills-disabled)
+"$SM" --json projects show .                   # agent directories (with shared_by) and the skills found in them
+"$SM" --json projects show . --agent codex
+
+"$SM" projects deploy . <skill>... --agent claude_code --dry-run
+"$SM" projects deploy . <skill>... --agent claude_code
+"$SM" projects deploy . --preset "Web Dev" --agent claude_code --agent codex
+
+"$SM" projects undeploy . <skill>... --agent claude_code --dry-run
+"$SM" projects undeploy . <skill>...           # every agent directory in the project
+
+"$SM" projects import . <relative_path> --agent claude_code --dry-run
+"$SM" projects import . <relative_path> --agent claude_code
+
+"$SM" projects remove . --dry-run              # unregister only; files stay
+```
+
+- `deploy` needs at least one `--agent`, and the agent must be installed and enabled. Re-running it is safe: a target that already holds this skill reports `already_deployed` with its `sync_status`.
+- Several agents can read one project directory (`.agents/skills` is read by Cline, Warp, GitLab Duo and others). Any of their keys works; `shared_by` in the output says who else sees the change, and `agent` is the key the directory is filed under.
+- `undeploy` only removes copies that match a library skill. A skill that exists only in the project (`sync_status: project_only`) is never removed by the CLI; tell the user to delete it in the app if they want it gone.
+- `import` takes the `relative_path` that `projects show` reports. `action` is `create` (new library skill), `overwrite` or `unchanged`.
+- If a project path no longer exists (`path_exists: false`), `deploy`, `undeploy` and `import` are refused. Ask the user whether it moved; do not `projects add` a new path on their behalf. `projects remove` still works to unregister it.
+- Project commands cannot be combined with `--skills-root`.
+
 ## Health check
 
 When sync misbehaves or a command errors in a confusing way:
@@ -373,6 +374,18 @@ Use `agents disable <agent>` when the user wants the whole Agent integration tur
 
 The `preset_ids`, `presets`, `deployed_to`, `tags`, and `source_type` fields are usually the most informative. The legacy `enabled` field is not deployment state.
 
+### "Add skill X to this repo for Claude Code"
+
+1. `projects show .`. If it says the project is not registered, run `projects add .` (tell the user it creates `.claude/skills`).
+2. `projects deploy . X --agent claude_code --dry-run`, then the same without `--dry-run`.
+3. If X is not in the library yet, install it first (`skills install`), without deploying it globally unless asked.
+
+### "Save the skill I wrote in this repo to my library"
+
+1. `projects show .` and find its `relative_path` and `agent`.
+2. `projects import . <relative_path> --agent <agent> --dry-run`. If it is refused, report the paths (see the refusal table above).
+3. Run it without `--dry-run`.
+
 ### "Pull in the skills already installed in my agent directories"
 
 1. `skills adopt ~/.claude/skills --dry-run` (and any other agent dirs the user mentions) — show the candidate list.
@@ -390,9 +403,10 @@ Report which skills actually refreshed (`refreshed: true` in the JSON) vs which 
 
 ## Pitfalls
 
-- **`SKILL.md` exists but the manager cannot find it** → files exist without registration. Follow the registration gate above; automatic general-preset membership does not discover directories or create records.
 - **Install succeeded but skill doesn't appear in the agent** → install defaults to library-only. Use `skills deploy <skill> --agent <key>`.
 - **Preset membership changed but agent files did not** → membership is organization only. Follow with `presets deploy` or `skills deploy` when the user also asked to make it visible.
 - **No active preset** only affects legacy `skills sync` / `presets apply`; additive deploy commands do not require one.
 - **Adopted skills can't be `update`d from git** → `npx skills add` and manual `git clone` don't leave source metadata, so adopt has to treat them as `local`. Re-point them with `skills set-source`. Do **not** reach for `adopt --git-url` here: adopt only ever creates new library entries, and it fails *late* — `--dry-run` returns `ok: true` with the skill sitting in `skipped`, and only the real run errors with `--git-url requires exactly one adoptable skill, found 0`. Do **not** remove-then-reinstall either — that drops the skill id, and with it the tags, preset membership and every per-agent deployment.
-- Use `--dry-run` before bulk remove, tag delete, preset delete, deploy, or undeploy operations. Use `check` before `update`.
+- **Deployed into a project but `skills status` does not show it** → expected. Project deployments are read with `projects show`.
+- **`projects ...` says "project not registered"** → run `projects add <path>` only if the user wants that folder managed.
+- Use `--dry-run` before bulk remove, tag delete, preset delete, deploy, or undeploy operations, including the `projects` ones. Use `check` before `update`.

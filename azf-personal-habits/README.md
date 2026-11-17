@@ -60,11 +60,17 @@
 
 ### Skill 创建后的登记与收尾（2026-11-17）
 
-- 创建自建 skill 时，写完文件后还要交给 `manage-skills` 核验登记并加入“通用技能”；第三方技能安装或接管后也要核验，更新时复用原记录。无需再建一个登记 skill。
+- 创建自建 skill 时，写完文件后还要按本 skill 的 `references/skill-registration.md` 核验登记并加入“通用技能”；第三方技能安装或接管后也要核验，更新时复用原记录。上游 `manage-skills` 只提供原版命令用法，个人登记约定由本 skill 维护。
 - 只有目录和 `SKILL.md` 不算登记完成。本机自动归组规则只在 Skills Manager 新增数据库记录后运行，不会监控新建文件夹。
 - 收尾确认：E 盘真实源目录正确、名称与真实路径无重复、来源信息真实、管理器记录唯一、可移植登记元数据存在、“通用技能”成员关系正确。
-- 补登记不等于重装或部署。保留已有文件、技能 ID、来源关联、客户端副本及链接，不整组部署、不切换活动预设，也不顺带做 Mac 迁移。安全导入的具体步骤由 `manage-skills` 维护。
+- 补登记不等于重装或部署。保留已有文件、技能 ID、来源关联、客户端副本及链接，不整组部署、不切换活动预设，也不顺带做 Mac 迁移。安全导入的个人检查清单维护在本 skill 的登记附属说明中。
 - 最后分别说明文件、登记、预设、部署、Git 提交和远端备份状态。无法安全登记时明确写“文件已创建，尚未登记”，不要把文件创建或本地提交当成全部完成。
+
+### 上游技能与个人规则的边界（2026-11-17）
+
+- `manage-skills` 保持上游原版，来源关联和更新能力保留。E 盘路径、自动归组、登记收尾等个人约定集中放在 `azf-personal-habits` 及其附属说明里。
+- 不为满足中文说明要求给第三方 skill 新增上游没有的文件。上游示例中的默认路径不改变本机已配置的 E 盘中央库。
+- 恢复原版前先把旧规则和文件备份到中央库外；保留技能 ID、来源、预设和现有部署路径。不绕过管理器的文件删除保护，也不把个人规则直接丢掉。
 
 ### Skill 安装、更新与部署规则（2026-11-10）
 
@@ -81,7 +87,7 @@
 - 排查 Codex 自身闪退、卡顿、网络/MCP/app-server 或 SQLite 日志写入问题时，使用下面的“临时 SQLite 诊断窗口”；普通开发不要关闭日志保护。
 - 网站克隆及相关咨询默认进入 `D:\Postgraduate_JilinUniversity\03_Sundries\02_DevLab\20260720-ai-website-cloner-template`，使用 Conda 环境 `ai-website-cloner-template`。开始前读取项目的 `AGENTS.md` 和 `.codex/skills/clone-website/SKILL.md`，按 `/clone-website <url1> [<url2> ...]` 工作流执行；不同目标网站使用独立分支、worktree 或项目副本隔离。若我在当前回合明确指定其他工具、路径或流程，则以当前要求为准。
 - 我说“精读文献”“精读论文”“论文精读”或要求生成论文精读笔记时，默认以 `azf-literature-reading-workflow` 作为总流程入口。只有我明确说“逐句精读”或“逐段精读”时，才参考 `【已归档】论文逐句精读与PDF++定位工作流.md`；如果我明确说“不需要跳转”，不要强制 PDF++ 链接，改用页码、段落和句子定位。
-- 创建、补充、优化 skill 时，要同步维护该 skill 文件夹下的中文 `README.md`。
+- 创建、补充、优化自建 skill 时，同步维护其中文 `README.md`。上游维护的第三方 skill 保持原版，不因本机习惯往里添加 README 或个人规则；这些说明放在自己的 skill 中。只有我明确要求修改该第三方 skill 时才做局部补丁。
 - 通过代码运行的 QuickAdd UserScript 统一放在 `E:\software\Obsidian\安钊锋的外置大脑\05-Junk Drawer\3_Plugin Mods\QuickAdd\Scripts`；移动或修改时同步更新 `.obsidian/plugins/quickadd/data.json`，并同步维护该目录下的 `QuickAdd脚本说明.md`，然后重新加载 QuickAdd。
 - 涉及 Excalidraw、论文思路图、项目图谱等视觉产物时，实际生成、布局、箭头路由和 QA 统一使用 `excalidraw-diagram` skill；本 skill 只负责提醒优先级和路由。
 - 做前端、网站、应用、dashboard、landing page、游戏或交互页面时，优先考虑 React Bits 作为 React 动画组件和视觉素材来源，优先用 GSAP 处理自定义动画编排、滚动动画、timeline 和 React 动画清理；两者可结合使用，但不要为了炫技牺牲可用性、轻量性或既有设计风格。
@@ -151,6 +157,8 @@ sqlite3 $db "PRAGMA busy_timeout=20000; CREATE TRIGGER IF NOT EXISTS codex_block
 - 生成 Excalidraw 图后必须做视觉核对，确认文字标签真实显示；只有空色块/空框不能算完成。
 
 ## 最近维护
+
+- 2026-11-17：将 `manage-skills` 中的本机规则迁回本 skill 的登记附属说明；明确上游技能保持原版，中文 README 要求针对自建 skill，避免更新时覆盖规则或触发本地新增文件删除保护。
 
 - 2026-11-17：补充创建后必须登记的收尾要求，交由 `manage-skills` 核验唯一记录、可移植元数据和“通用技能”成员关系；区分文件创建、登记、部署与远端备份，保留原部署范围。
 
