@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f49143a1-59f1-4244-997b-28372d24536d",
+  "path": "nature-paper-trans",
+  "path_key": "nature-paper-trans",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

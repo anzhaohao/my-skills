@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "6ab4589c-e38e-4358-996f-ba21c5d06e38",
+  "path": "nature-paper-xray",
+  "path_key": "nature-paper-xray",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

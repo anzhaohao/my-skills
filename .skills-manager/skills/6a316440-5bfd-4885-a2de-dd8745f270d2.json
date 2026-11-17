@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "6a316440-5bfd-4885-a2de-dd8745f270d2",
+  "path": "nature-paper2word",
+  "path_key": "nature-paper2word",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

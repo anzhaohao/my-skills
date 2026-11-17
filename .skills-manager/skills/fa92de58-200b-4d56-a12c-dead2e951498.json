@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "fa92de58-200b-4d56-a12c-dead2e951498",
+  "path": "agent-figure-gallery",
+  "path_key": "agent-figure-gallery",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

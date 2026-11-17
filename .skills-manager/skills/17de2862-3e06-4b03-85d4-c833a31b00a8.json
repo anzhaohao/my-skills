@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "17de2862-3e06-4b03-85d4-c833a31b00a8",
+  "path": "nature-social-science",
+  "path_key": "nature-social-science",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

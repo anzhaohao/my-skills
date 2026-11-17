@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "70c6fa0b-a115-4cfa-9b35-a096cabc221a",
+  "path": "azf-campus-net-fix",
+  "path_key": "azf-campus-net-fix",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}
